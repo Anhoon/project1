@@ -11,7 +11,6 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,7 +39,7 @@ public class XcubeProjectDataSource {
             throws Exception {
         SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
         factoryBean.setDataSource(dataSource);
-        //factoryBean.setConfigLocation(applicationContext.getResource("classpath:mybatis-config-primary.xml"));
+        factoryBean.setConfigLocation(applicationContext.getResource("classpath:mybatis-config.xml"));
         factoryBean.setMapperLocations(applicationContext.getResources("classpath:mapper/xcube/**/*.xml"));
         return factoryBean.getObject();
     }

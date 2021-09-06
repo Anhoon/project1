@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd">
+
+<mapper namespace="user">
+	
+	<select id="selectUserList" resultType="ParamMap">
+		SELECT 
+			OBID,
+			CREATED_ON,
+			EMAIL,
+			PASSWORD,
+			NAME,
+			USER_TYPE,
+			USER_STATUS,
+			MOBILE,
+			IDN,
+			COMPANY_NAME,
+			ADDR,
+			TEL,
+			BUSINESS_TYPE,
+			SALES,
+			EMPLOYEE_SIZE
+		FROM USERS
+	</select>
+
+	<select id="selectUser" resultType="ParamMap">
+		SELECT 
+			OBID,
+			CREATED_ON,
+			EMAIL,
+			PASSWORD,
+			NAME,
+			USER_TYPE,
+			USER_STATUS,
+			MOBILE,
+			IDN,
+			COMPANY_NAME,
+			ADDR,
+			TEL,
+			BUSINESS_TYPE,
+			SALES,
+			EMPLOYEE_SIZE
+		FROM USERS
+		WHERE EMAIL = #{email}
+		<if test="obid != null and obid != '' " >
+			AND OBID = #{obid}
+		</if>
+	</select>
+
+	<insert id="insertUser" parameterType="java.util.HashMap">
+		INSERT INTO USERS 
+		(
+			OBID,
+			CREATED_ON,
+			EMAIL,
+			PASSWORD,
+			NAME,
+			USER_TYPE,
+			USER_STATUS,
+			MOBILE,
+			IDN,
+			COMPANY_NAME,
+			ADDR,
+			TEL,
+			BUSINESS_TYPE,
+			SALES,
+			EMPLOYEE_SIZE
+		) 
+		VALUES 
+		(
+			#{obid},
+			SYSDATE(),
+			#{email}, 
+			#{password},
+			#{name},
+			#{userType},
+			#{userStatus},
+			#{mobile},
+			#{idn},
+			#{companyName},
+			#{addr},
+			#{tel},
+			#{businessType},
+			#{sales},
+			#{employeeSize}
+		)
+	</insert>
+
+	<update id="updateUser" parameterType="java.util.HashMap">
+		UPDATE USERS SET 
+			PASSWORD = #{password},
+			NAME = #{name},
+			MOBILE = #{mobile},
+			IDN = #{idn},
+			COMPANY_NAME = #{companyName},
+			ADDR = #{addr},
+			TEL = #{tel},
+			BUSINESS_TYPE = #{businessType},
+			SALES = #{sales},
+			EMPLOYEE_SIZE =#{employeeSize}
+		WHERE OBID = #{obid}
+		AND EMAIL = #{email}
+	</update>
+
+	<update id="updateUserStatus" parameterType="java.util.HashMap">
+		UPDATE USERS SET 
+			USER_STATUS = #{userStatus}
+		WHERE OBID = #{obid}
+		AND EMAIL = #{email}
+	</update>
+
+	<insert id="insertUserHistory" parameterType="java.util.HashMap">
+		INSERT INTO USERS_HISTORY 
+		(
+			OBID,
+			CREATED_ON,
+			REQ_TYPE,
+			DETAIL,
+			REF_OBID
+		) 
+		VALUES 
+		(
+			#{obid},
+			SYSDATE(),
+			#{reqType}, 
+			#{detail},
+			#{refObid}
+		)
+	</insert>
+
+</mapper>
