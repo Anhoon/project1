@@ -6,6 +6,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,9 @@ public class EmailService {
 
     @Autowired
     private JavaMailSender javaMailSender;
+	
+    @Value("${spring.mail.username}")
+    private String userName;
     
     public void sendMail(Map<String, Object> map) throws MessagingException {
         String email = (String) map.get("email");
@@ -49,12 +53,11 @@ public class EmailService {
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
     	MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+		helper.setFrom(userName);
     	helper.setTo(email);
     	helper.setSubject("[XCUBE 이메일 인증]");
     	helper.setText(emailcontent.toString(), true);
-
         javaMailSender.send(mimeMessage);
 
 	}
-    
 }
