@@ -87,6 +87,9 @@ public class Util {
     
     public static String objToStr(Object param){
         String returnParam = "";
+        
+        if(isEmpty(param)) return "";
+
         if(param instanceof Integer){
             returnParam = Integer.toString((Integer)param);
         } else if(param instanceof String){

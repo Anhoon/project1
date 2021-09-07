@@ -56,6 +56,29 @@
 			PASSWORD,
 			NAME,
 			USER_TYPE,
+			USER_STATUS
+		) 
+		VALUES 
+		(
+			#{obid},
+			SYSDATE(),
+			#{email}, 
+			#{password},
+			#{name},
+			#{userType},
+			#{userStatus}
+		)
+	</insert>
+
+	<insert id="insertUserCompany" parameterType="java.util.HashMap">
+		INSERT INTO USERS 
+		(
+			OBID,
+			CREATED_ON,
+			EMAIL,
+			PASSWORD,
+			NAME,
+			USER_TYPE,
 			USER_STATUS,
 			MOBILE,
 			IDN,
@@ -89,6 +112,14 @@
 	<update id="updateUser" parameterType="java.util.HashMap">
 		UPDATE USERS SET 
 			PASSWORD = #{password},
+			NAME = #{name}
+		WHERE OBID = #{obid}
+		AND EMAIL = #{email}
+	</update>
+
+	<update id="updateUserCompany" parameterType="java.util.HashMap">
+		UPDATE USERS SET 
+			PASSWORD = #{password},
 			NAME = #{name},
 			MOBILE = #{mobile},
 			IDN = #{idn},
@@ -101,6 +132,7 @@
 		WHERE OBID = #{obid}
 		AND EMAIL = #{email}
 	</update>
+
 
 	<update id="updateUserStatus" parameterType="java.util.HashMap">
 		UPDATE USERS SET 

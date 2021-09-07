@@ -52,12 +52,13 @@ public class UserService {
     public void insertUser(Map<String, Object> map){
         try {
             String password = Util.objToStr(map.get("password"));
+            String userType = Util.objToStr(map.get("userType"));
             String obid = UUID.randomUUID().toString();
             map.put("obid", obid);
             map.put("password", passwordEncoder.encode(password));
-            map.put("businessType",Util.objToJson(map.get("businessType")));
-            map.put("userStatus", "3");
-            int i = userDao.insertUser(map);
+            map.put("userStatus", "0");
+            if(!Util.isEmpty(map.get("businessType"))) map.put("businessType",Util.objToJson(map.get("businessType")));
+            int i = userType.equals("0") ? userDao.insertUser(map) : userType.equals("1") || userType.equals("2") ? userDao.insertUserCompany(map) : 0;
             if(i > 0) userDao.insertUserHistory(getHistMap(map,"I",map)); //이력 저장
             emailService.sendMail(map); //메일전송
         } catch (DuplicateKeyException e) {
@@ -69,18 +70,21 @@ public class UserService {
 
     @Transactional
     public void updateUser(Map<String, Object> map){
-        String password = Util.objToStr(map.get("password"));
         try {
             Map<String, Object> resultList = userDao.selectUser(map); //현재 등록된 
             Map<String, Object> detailMap = new HashMap<String,Object>(); //이력 Detail컬럼 Map
             if(!Util.isEmpty(resultList)){
+                String password = Util.objToStr(map.get("password"));
+                String userType = Util.objToStr(resultList.get("userType"));
                 boolean pwdChk = passwordEncoder.matches(password, Util.objToStr(resultList.get("password")));
                 if(!pwdChk) {
                     map.put("password", passwordEncoder.encode(password));
                     detailMap.put("password", map.get("password"));
+                }else{
+                    map.put("password", resultList.get("password"));
                 }
-                map.put("businessType",Util.objToJson(map.get("businessType")));
-                int i = userDao.updateUser(map);
+                if(!Util.isEmpty(map.get("businessType"))) map.put("businessType",Util.objToJson(map.get("businessType")));
+                int i = userType.equals("0") ? userDao.updateUser(map) : userType.equals("1") || userType.equals("2") ? userDao.updateUserCompany(map) : 0;
                 if(i > 0) {
                     for(String key : map.keySet()){
                         if(!Util.objToStr(map.get(key)).equals(Util.objToStr(resultList.get(key)))){
@@ -116,6 +120,7 @@ public class UserService {
             throw new XcubeException(e.toString());
         }
     }
+
     @Transactional
     public void deleteUserStatus(Map<String, Object> map){
         try {

@@ -25,8 +25,14 @@ public class UserDao {
 	public int insertUser(Map<String, Object> param){
 		return sqlSession.insert(NAMESPACE + "insertUser",param);
 	}
+	public int insertUserCompany(Map<String, Object> param){
+		return sqlSession.insert(NAMESPACE + "insertUserCompany",param);
+	}
 	public int updateUser(Map<String, Object> param){
 		return sqlSession.update(NAMESPACE + "updateUser",param);
+	}
+	public int updateUserCompany(Map<String, Object> param){
+		return sqlSession.update(NAMESPACE + "updateUserCompany",param);
 	}
 	public int updateUserStatus(Map<String, Object> param){
 		return  sqlSession.update(NAMESPACE + "updateUserStatus",param);
