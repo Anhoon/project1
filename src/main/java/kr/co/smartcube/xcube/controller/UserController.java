@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,10 +33,9 @@ public class UserController {
         return resultList; 
     }
 
-    @GetMapping("/userInfo")
-    public Map<String, Object> selectUser(@RequestParam(value = "obid", required = false) String obid, @RequestParam(value = "email") String email) throws Exception {
+    @GetMapping("/{email}")
+    public Map<String, Object> selectUser(@PathVariable String email) throws Exception {
         Map<String,Object> paramMap = new HashMap<String,Object>();
-        paramMap.put("obid", obid);
         paramMap.put("email", email);
         Map<String, Object> resultMap = userService.selectUser(paramMap);
         if(!Util.isEmpty(resultMap)){
@@ -44,19 +44,19 @@ public class UserController {
         return resultMap; 
     }
 
-    @PostMapping("/register")
+    @PostMapping("/")
     public Map<String, Object> insertData(@RequestBody Map<String, Object> map){
         userService.insertUser(map); //등록
         return Util.getResult(true);
     }
 
-    @PatchMapping("/register")
+    @PatchMapping("/")
     public Map<String, Object> updateData(@RequestBody Map<String, Object> map){
         userService.updateUser(map);
         return Util.getResult(true);
     }
 
-    @DeleteMapping("/register")
+    @DeleteMapping("/")
     public Map<String, Object> deleteData(@RequestBody Map<String, Object> map){
         userService.deleteUserStatus(map);
         return Util.getResult(true);

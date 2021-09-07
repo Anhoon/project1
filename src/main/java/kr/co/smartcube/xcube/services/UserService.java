@@ -53,6 +53,9 @@ public class UserService {
         try {
             String password = Util.objToStr(map.get("password"));
             String userType = Util.objToStr(map.get("userType"));
+            if(Util.isEmpty(userType)){
+                throw new XcubeException("userTpye Is Null");    
+            }
             String obid = UUID.randomUUID().toString();
             map.put("obid", obid);
             map.put("password", passwordEncoder.encode(password));
@@ -106,6 +109,7 @@ public class UserService {
         try {
             Map<String,Object> userMap = userDao.selectUser(map);
             if(!Util.isEmpty(userMap)) {
+                if(!Util.objToStr(userMap.get("userStatus")).equals("0")) throw new XcubeException("이미 인증된 회원입니다.");
                 map.put("userStatus", "1"); //정상가입
                 int i = userDao.updateUserStatus(map);
                 if(i > 0) {
