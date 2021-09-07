@@ -19,7 +19,7 @@ import kr.co.smartcube.xcube.services.UserService;
 import kr.co.smartcube.xcube.util.Util;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins="*")
 @RequestMapping("/api/user")
 public class UserController {
 

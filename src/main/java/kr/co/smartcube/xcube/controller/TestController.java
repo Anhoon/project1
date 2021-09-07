@@ -15,7 +15,7 @@ import kr.co.smartcube.xcube.services.TestService;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins="*")
 @Slf4j
 public class TestController {
 
