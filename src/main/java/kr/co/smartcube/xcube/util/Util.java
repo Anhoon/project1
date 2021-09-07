@@ -11,6 +11,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.http.HttpStatus;
+
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Util {
@@ -31,10 +33,10 @@ public class Util {
     public static Map<String,Object> getResult(boolean flag){
         Map<String,Object> returnMap = new HashMap<String,Object>();
         if(flag){
-            returnMap.put("status", "1");
+            returnMap.put("status", HttpStatus.OK);
             returnMap.put("message","성공");
         }else{
-            returnMap.put("status", "2");
+            returnMap.put("status", HttpStatus.NOT_FOUND);
             returnMap.put("message","실패");
         }
         return returnMap;
