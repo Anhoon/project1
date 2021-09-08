@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd">
+
+<mapper namespace="login">
+	<select id="selectLoginInfo" resultType="ParamMap">
+		SELECT *
+        FROM users
+		WHERE email = #{email} 
+	</select>
+
+	<select id="getLoginInfo" resultType="ParamMap">
+		SELECT *
+        FROM users
+		WHERE email = #{email} 
+	</select>
+
+	<update id="updateToken">
+		update users
+		set	access_token = #{accessToken},
+		    refresh_token = #{refreshToken}
+		where email = #{email}
+	</update>
+
+	<update id="deleteToken">
+		update users
+		set	access_token = null,
+		    refresh_token = null
+		where email = #{email}
+	</update>
+</mapper>
