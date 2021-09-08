@@ -65,9 +65,11 @@ public class LoginService implements UserDetailsService {
             throw new RuntimeException("사용자 정보가 없습니다.");
         }
 
+        /*
         if (!login.get("refreshToken").equals((String)paramMap.get("refreshToken"))) {
             throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
         }
+        */
 
         Map<String,Object> token = tokenProvider.generateToken(authentication);
         //updateToken(token);

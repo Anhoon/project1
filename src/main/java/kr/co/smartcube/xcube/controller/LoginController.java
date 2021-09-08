@@ -18,7 +18,7 @@ import kr.co.smartcube.xcube.services.LoginService;
 import kr.co.smartcube.xcube.util.Util;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins="*")
 public class LoginController {
 
     @Autowired

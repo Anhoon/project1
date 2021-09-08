@@ -7,4 +7,10 @@
         FROM
 		test_table
 	</select>
+
+	<select id="selectHistory1" resultType="ParamMap">
+		SELECT *
+        FROM
+		test_table1
+	</select>
 </mapper>

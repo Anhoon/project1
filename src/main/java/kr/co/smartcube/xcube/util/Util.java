@@ -99,4 +99,20 @@ public class Util {
         }
         return returnParam;
     }
+
+    public static Map<String, Object> initPaginagtion(Map<String, Object> param){
+        if(param.get("pageNum") == null){
+            param.put("pageNum", 0);
+        }
+
+        if(param.get("pageSize") == null){
+            param.put("pageSize", 2);
+        }
+        
+        if(param.get("orderBy") == null){
+            param.put("orderBy", "1 desc");
+        }
+
+        return param;
+    }
 }
