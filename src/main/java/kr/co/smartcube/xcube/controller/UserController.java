@@ -38,7 +38,7 @@ public class UserController {
         Map<String,Object> paramMap = new HashMap<String,Object>();
         paramMap.put("email", email);
         Map<String, Object> resultMap = userService.selectUser(paramMap);
-        if(!Util.isEmpty(resultMap)){
+        if(!Util.isEmpty(resultMap) && !Util.isEmpty(resultMap.get("businessType"))){
             resultMap.put("businessType", Util.jsonToArray((String) resultMap.get("businessType")));
         }
         return resultMap; 

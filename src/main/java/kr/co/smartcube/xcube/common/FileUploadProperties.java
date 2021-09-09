@@ -2,17 +2,16 @@ package kr.co.smartcube.xcube.common;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/* application.yml에 설정한 파일 업로드 경로를 가져옴 */
-@ConfigurationProperties(prefix = "file.upload")
+@ConfigurationProperties(prefix = "file")
 public class FileUploadProperties {
 
-    private String location;
-
-    public String getLocation() {
-        return location;
+    private String uploadDir;
+ 
+    public String getUploadDir() {
+        return uploadDir;
     }
-
-    public void setLocation(String location) {
-        this.location = location;
+ 
+    public void setUploadDir(String uploadDir) {
+        this.uploadDir = uploadDir;
     }
 }

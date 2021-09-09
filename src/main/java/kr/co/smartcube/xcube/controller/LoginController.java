@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -59,7 +60,7 @@ public class LoginController {
 
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(token), headers, HttpStatus.OK);  
         } catch (RuntimeException e){
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);  
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);  
         } catch (Exception e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);  
         }

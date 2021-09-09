@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -12,6 +13,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
@@ -115,4 +119,18 @@ public class Util {
 
         return param;
     }
+
+    public static Map<String,Object> fileToFileInfoMap(MultipartFile file){
+        Map<String,Object> map = new HashMap<String, Object>();
+
+        if(!isEmpty(file)){
+            map.put("obid", UUID.randomUUID().toString());
+            map.put("fileName", StringUtils.cleanPath(file.getOriginalFilename()));
+            map.put("fileContentType", file.getContentType());
+            map.put("fileSize", file.getSize());
+            map.put("fileDownLoadUrl", ServletUriComponentsBuilder.fromCurrentContextPath().toUriString()+"/api/test/download/"+file.getOriginalFilename());
+        }
+        
+        return map;
+    }   
 }

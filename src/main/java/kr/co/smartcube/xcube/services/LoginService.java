@@ -36,7 +36,7 @@ public class LoginService implements UserDetailsService {
 		if(login != null){
 			return new User((String)login.get("email"), (String)login.get("password"), Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
 		}else{
-			throw new UsernameNotFoundException("User not found with username: " + username);
+			throw new UsernameNotFoundException("사용자 정보를 찾을 수 없습니다. ");
 		}
 	}
 
