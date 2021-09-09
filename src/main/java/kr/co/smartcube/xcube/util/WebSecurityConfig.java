@@ -63,7 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
             .antMatchers("/api/test/**").permitAll()
             .antMatchers("/api/login/**").permitAll()
-            .antMatchers(HttpMethod.POST, "/api/user/register").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/user/").permitAll()
             .antMatchers(HttpMethod.GET, "/api/user/certified").permitAll()
             .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
 
