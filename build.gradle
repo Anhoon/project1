@@ -42,10 +42,6 @@ dependencies {
 	implementation group: 'com.github.pagehelper', name: 'pagehelper-spring-boot-starter', version: '1.2.10'
 }
 
-test {
-	useJUnitPlatform()
-}
-
 ext.profile = (!project.hasProperty('profile') || !profile) ? 'dev' : profile
 
 sourceSets {
@@ -59,4 +55,10 @@ sourceSets {
 bootRun {
 	systemProperty "spring.config.activate.on-profile", profile
 	systemProperty "spring.profiles.default", profile
+}
+
+test {
+	systemProperty "spring.config.activate.on-profile", profile
+	systemProperty "spring.profiles.default", profile
+	useJUnitPlatform()
 }
