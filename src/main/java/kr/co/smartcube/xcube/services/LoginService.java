@@ -1,6 +1,5 @@
 package kr.co.smartcube.xcube.services;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -20,7 +19,9 @@ import kr.co.smartcube.xcube.common.security.jwt.TokenProvider;
 import kr.co.smartcube.xcube.mybatis.dao.LoginDao;
 import kr.co.smartcube.xcube.util.Util;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LoginService implements UserDetailsService {
@@ -36,7 +37,7 @@ public class LoginService implements UserDetailsService {
 		if(login != null){
 			return new User((String)login.get("email"), (String)login.get("password"), Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
 		}else{
-			throw new UsernameNotFoundException("사용자 정보를 찾을 수 없습니다. ");
+			throw new UsernameNotFoundException("사용자 정보를 찾을 수 없습니다.");
 		}
 	}
 
@@ -46,9 +47,16 @@ public class LoginService implements UserDetailsService {
 
     @Transactional
     public Map<String,Object> login(Map<String,Object> paramMap) throws Exception{
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(new UsernamePasswordAuthenticationToken(paramMap.get("email"), paramMap.get("password")) );
-        Map<String,Object> token = tokenProvider.generateToken(authentication);
-        //updateToken(token);
+        Map<String,Object> token = null;
+        
+        try {
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(new UsernamePasswordAuthenticationToken(paramMap.get("email"), paramMap.get("password")) );
+            token = tokenProvider.generateToken(authentication);
+            //updateToken(token);
+        } catch (Exception e) {
+           log.error(e.getMessage());
+        }
+        
         return token;
     }
 

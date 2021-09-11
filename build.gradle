@@ -45,3 +45,18 @@ dependencies {
 test {
 	useJUnitPlatform()
 }
+
+ext.profile = (!project.hasProperty('profile') || !profile) ? 'dev' : profile
+
+sourceSets {
+	main {
+		resources {
+			srcDir "src/main/resources-${profile}" 
+		}
+	}
+}
+
+bootRun {
+	systemProperty "spring.config.activate.on-profile", profile
+	systemProperty "spring.profiles.default", profile
+}
