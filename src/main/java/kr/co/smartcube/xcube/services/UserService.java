@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import kr.co.smartcube.xcube.exception.XcubeException;
 import kr.co.smartcube.xcube.mybatis.dao.UserDao;
 import kr.co.smartcube.xcube.util.Util;
 
@@ -50,7 +49,7 @@ public class UserService {
         String password = Util.objToStr(map.get("password"));
         String userType = Util.objToStr(map.get("userType"));
         if(Util.isEmpty(userType)){
-            throw new XcubeException("userTpye Is Null");    
+            throw new RuntimeException("USER_TPYE 정보가 없습니다.");    
         }
         String obid = UUID.randomUUID().toString();
         map.put("obid", obid);
