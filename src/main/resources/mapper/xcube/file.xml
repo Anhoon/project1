@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd">
+
+<mapper namespace="file">
+	
+	<select id="selectFileList" resultType="ParamMap">
+		SELECT 
+			OBID,
+			CREATED_ON,
+			FILE_NAME,
+			FILE_PATH,
+			FILE_SIZE
+		FROM ATTACH_FILE
+	</select>
+
+	<select id="selectFile" resultType="ParamMap">
+		SELECT 
+			OBID,
+			CREATED_ON,
+			FILE_NAME,
+			FILE_PATH,
+			FILE_SIZE
+		FROM ATTACH_FILE
+		AND OBID = #{obid}
+	</select>
+
+	<insert id="insertFile" parameterType="java.util.HashMap">
+		INSERT INTO ATTACH_FILE 
+		(
+			OBID,
+			CREATED_ON,
+			FILE_NAME,
+			FILE_PATH,
+			FILE_SIZE
+		) 
+		VALUES 
+		(
+			#{obid},
+			SYSDATE(),
+			#{fileName}, 
+			#{fileDownLoadUrl},
+			#{fileSize}
+		)
+	</insert>
+
+	<delete id="deleteFile" parameterType="java.util.HashMap">
+		DELETE FROM ATTACH_FILE
+		WHERE OBID = #{obid}
+	</delete>
+
+</mapper>

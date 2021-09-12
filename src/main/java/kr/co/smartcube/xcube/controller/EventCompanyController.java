@@ -1,11 +1,9 @@
 package kr.co.smartcube.xcube.controller;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,97 +14,76 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import kr.co.smartcube.xcube.common.CommonResult;
 import kr.co.smartcube.xcube.common.ResponseService;
-import kr.co.smartcube.xcube.services.UserService;
+import kr.co.smartcube.xcube.services.EventCompanyService;
 import kr.co.smartcube.xcube.util.Util;
 
 @RestController
 @CrossOrigin(origins="*")
-@RequestMapping("/api/user")
-public class UserController {
+@RequestMapping("/api/event/company")
+public class EventCompanyController {
 
     @Autowired
-    private UserService userService;
-
+    private EventCompanyService eventCompanyService;
+    
     @Autowired
     private ResponseService responseService;
 
-    @GetMapping("/")
-    public ResponseEntity<CommonResult> selectUserList() throws Exception{
+    @GetMapping("/license/master/")
+    public ResponseEntity<CommonResult> selectMasterLicenseList(){
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("pageNum", 0);
         map.put("pageSize", 2);
         map.put("orderBy", "1 desc");
         map = Util.initPaginagtion(map);
         try {
-            return new ResponseEntity<CommonResult>(responseService.getListResult(userService.selectUserList(map)), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getListResult(eventCompanyService.selectMasterLicenseList(map)), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         }
     }
 
-    @GetMapping("/{email}")
-    public ResponseEntity<CommonResult> selectUser(@PathVariable String email) throws Exception {
+    @GetMapping("/license/master/{obid}")
+    public ResponseEntity<CommonResult> selectMasterLicense(@PathVariable String obid) throws Exception {
         Map<String,Object> paramMap = new HashMap<String,Object>();
-        paramMap.put("email", email);
+        paramMap.put("obid", obid);
         try {
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(userService.selectUser(paramMap)), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(eventCompanyService.selectMasterLicense(paramMap)), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         }
     }
 
-    @PostMapping("/")
-    public ResponseEntity<CommonResult> insertData(@RequestBody Map<String, Object> map) throws Exception{
+    @PostMapping("/license/master/")
+    public ResponseEntity<CommonResult> insertMasterLicense(@RequestBody Map<String, Object> map) throws Exception{
         try {
-            userService.insertUser(map);
-        } catch (Exception e) {
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
-        }
-        return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
-    }
-
-    @PatchMapping("/")
-    public ResponseEntity<CommonResult> updateData(@RequestBody Map<String, Object> map) throws Exception{
-        try {
-            userService.updateUser(map);
+            eventCompanyService.insertMasterLicense(map);
         } catch (Exception e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         }
         return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/")
-    public ResponseEntity<CommonResult> deleteData(@RequestBody Map<String, Object> map) throws Exception{
+    @PatchMapping("/license/master/")
+    public ResponseEntity<CommonResult> updateMasterLicense(@RequestBody Map<String, Object> map){
         try {
-            userService.deleteUserStatus(map);
+            eventCompanyService.updateMasterLicense(map);
         } catch (Exception e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         }
         return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/certified")
-    public ResponseEntity<CommonResult> mailCheck(@RequestParam(value = "obid") String obid, @RequestParam(value = "email") String email) throws Exception{
-        Map<String,Object> map = new HashMap<String,Object>();
-        map.put("obid", obid);
-        map.put("email", email);
+    @PatchMapping("/license/master/list")
+    public ResponseEntity<CommonResult> updateMasterLicenseList(@RequestBody Map<String, Object> map){
         try {
-            userService.userCertified(map);
+            eventCompanyService.updateMasterLicenseList(map);
         } catch (Exception e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         }
-        /*
-        URI redirectUri = new URI("http://www.naver.com");
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(redirectUri);
-        return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
-        */
         return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
     }
-
 }

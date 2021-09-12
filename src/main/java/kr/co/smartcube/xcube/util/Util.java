@@ -1,5 +1,6 @@
 package kr.co.smartcube.xcube.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,7 +91,7 @@ public class Util {
         } 
         return array;
     }
-    
+
     public static String objToStr(Object param){
         String returnParam = "";
         
@@ -132,5 +133,41 @@ public class Util {
         }
         
         return map;
-    }   
+    }
+    
+    public static Map<String,Object> fileToFileInfoMap(File file){
+        Map<String,Object> map = new HashMap<String, Object>();
+
+        if(!isEmpty(file)){
+            map.put("obid", UUID.randomUUID().toString());
+            map.put("fileName", StringUtils.cleanPath(file.getName()));
+            map.put("fileContentType", file.getPath());
+            map.put("fileSize", file.length());
+            map.put("fileDownLoadUrl", ServletUriComponentsBuilder.fromCurrentContextPath().toUriString()+"/api/test/download/"+file.getName());
+        }
+        
+        return map;
+    }
+
+    public static List<Map<String,Object>> objToList(Object param){
+        List<Map<String,Object>> returnList = new ArrayList<Map<String,Object>>();
+        if(isEmpty(param)) return returnList;
+        if(param instanceof List){
+            returnList = (List<Map<String,Object>>) param;
+        }else if(param instanceof ArrayList){
+            returnList = (List<Map<String,Object>>) param;
+        }
+        return returnList;
+    }
+
+    public static Map<String,Object> objToMap(Object param){
+        Map<String,Object> returnMap = new HashMap<String,Object>();
+        
+        if(isEmpty(param)) return returnMap;
+
+        if(param instanceof Map){
+            returnMap = (Map<String,Object>) param;
+        }
+        return returnMap;
+    }
 }

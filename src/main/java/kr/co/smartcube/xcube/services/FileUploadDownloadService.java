@@ -1,11 +1,15 @@
 package kr.co.smartcube.xcube.services;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,11 +67,8 @@ public class FileUploadDownloadService {
             if(fileName.contains("..")){
                 throw new FileUploadException("파일명에 부적합 문자가 포함되어 있습니다. " + fileName);
             }
-
             Path targetLocation = this.fileLocation.resolve(fileName);
-            
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            
             return Util.fileToFileInfoMap(file);
         }catch(Exception e) {
             throw new FileUploadException("["+fileName+"] 파일 업로드에 실패하였습니다. 다시 시도하십시오.",e);
@@ -86,6 +87,32 @@ public class FileUploadDownloadService {
             }
         } catch(MalformedURLException e) {
             throw new RuntimeException(fileName + " 파일을 찾을 수 없습니다.", e);
+        }
+    }
+
+    public Map<String, Object> fileUploadByte(String fileName, String fileBase64) throws Exception{
+
+        try {
+            if(fileBase64 == null || fileBase64.equals("")) {
+                throw new RuntimeException(fileName + " 파일을 찾을 수 없습니다.");
+            }
+            // 파일명에 부적합 문자가 있는지 확인한다.
+            if(fileName.contains("..")){
+                throw new FileUploadException("파일명에 부적합 문자가 포함되어 있습니다. " + fileName);
+            }
+            Path targetLocation = this.fileLocation.resolve(fileName);
+            File file = new File(targetLocation.toString());
+            // BASE64를 일반 파일로 변환하고 저장합니다.
+            Base64.Decoder decoder = Base64.getDecoder();
+            byte[] decodedBytes = decoder.decode(fileBase64.getBytes());
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            fileOutputStream.write(decodedBytes);
+            fileOutputStream.close();
+            return Util.fileToFileInfoMap(file);
+        } catch(IOException e) {
+            throw new IOException("["+fileName+"] 파일 업로드에 실패하였습니다. 다시 시도하십시오.",e);
+        } catch(Exception e) {
+            throw new FileUploadException("["+fileName+"] 파일 업로드에 실패하였습니다. 다시 시도하십시오.",e);
         }
     }
 }

@@ -16,8 +16,8 @@ public class UserDao {
     @Qualifier("sqlSession")
 	private SqlSession sqlSession;
 
-	public List<Map<String, Object>> selectUserList() {
-		return sqlSession.selectList(NAMESPACE + "selectUserList");
+	public List<Map<String, Object>> selectUserList(Map<String, Object> map) {
+		return sqlSession.selectList(NAMESPACE + "selectUserList", map);
     }
 	public Map<String, Object> selectUser(Map<String, Object> param) {
 		return sqlSession.selectOne(NAMESPACE + "selectUser",param);
