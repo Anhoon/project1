@@ -25,16 +25,12 @@ import org.springframework.web.multipart.MultipartFile;
 import kr.co.smartcube.xcube.common.CommonResult;
 import kr.co.smartcube.xcube.common.ResponseService;
 import kr.co.smartcube.xcube.services.FileUploadDownloadService;
-import kr.co.smartcube.xcube.services.TestService;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @CrossOrigin(origins="*")
 @Slf4j
 public class FileController {
-
-  @Autowired
-  private TestService testService;
 
   @Autowired
   private ResponseService responseService;

@@ -2,7 +2,9 @@ package kr.co.smartcube.xcube.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -169,5 +171,14 @@ public class Util {
             returnMap = (Map<String,Object>) param;
         }
         return returnMap;
+    }
+
+    public static String objToDate(Object param) throws Exception{
+        
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = inputFormat.parse(objToStr(param));
+        String formattedDate = outputFormat.format(date);
+        return formattedDate;
     }
 }

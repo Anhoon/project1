@@ -44,20 +44,25 @@ public class EventCompanyService {
         Map<String,Object> fileMap = new HashMap<String,Object>();
         List<Map<String,Object>> fileList = new ArrayList<Map<String,Object>>();
         Map<String,Object> masterLicense = new HashMap<String,Object>();
+        Map<String,Object> masterLicenseFileMap = Util.objToMap(map.get("files"));
         masterLicense.putAll(map);
         masterLicense.remove("masterList");
-        fileMap = fileService.fileUploadByte(Util.objToStr(masterLicense.get("fileName")), Util.objToStr(masterLicense.get("file")));
+        fileMap = fileService.fileUploadByte(Util.objToStr(masterLicenseFileMap.get("fileName")), Util.objToStr(masterLicenseFileMap.get("fileContent")));
         masterLicense.put("attatchObid", fileMap.get("obid"));
         String obid = UUID.randomUUID().toString();
         masterLicense.put("obid", obid);
         fileList.add(fileMap);
-        List<Map<String,Object>> masterLicenseList = Util.objToList(map.get("masterList"));
+        List<Map<String,Object>> masterLicenseList = Util.objToList(map.get("masterLicenseLists"));
+        Map<String,Object> masterLicenseListFileMap = new HashMap<String,Object>();
         for(int i=0; i<masterLicenseList.size(); i++){
             Map<String,Object> listMap = masterLicenseList.get(i);
-            fileMap = fileService.fileUploadByte(Util.objToStr(listMap.get("fileName")), Util.objToStr(listMap.get("file")));
+            masterLicenseListFileMap = Util.objToMap(listMap.get("files"));
+            fileMap = fileService.fileUploadByte(Util.objToStr(masterLicenseListFileMap.get("fileName")), Util.objToStr(masterLicenseListFileMap.get("fileContent")));
             listMap.put("obid", UUID.randomUUID().toString());
             listMap.put("refObid", obid);
             listMap.put("attatchObid", fileMap.get("obid"));
+            listMap.put("openDate", Util.objToDate(listMap.get("openDate")));
+            listMap.put("closeDate", Util.objToDate(listMap.get("closeDate")));
             fileList.add(fileMap);
         }
         eventCompanyDao.insertMasterLicense(masterLicense);

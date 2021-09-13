@@ -32,6 +32,7 @@ public class FileUploadDownloadService {
     @Autowired
     public FileUploadDownloadService(FileUploadProperties prop) throws Exception{
         this.fileLocation = Paths.get(prop.getUploadDir()).toAbsolutePath().normalize();
+        System.out.println(fileLocation.toString());
         try {
             Files.createDirectories(this.fileLocation);
         }catch(Exception e) {
@@ -93,7 +94,7 @@ public class FileUploadDownloadService {
     public Map<String, Object> fileUploadByte(String fileName, String fileBase64) throws Exception{
 
         try {
-            if(fileBase64 == null || fileBase64.equals("")) {
+            if(Util.isEmpty(fileBase64)) {
                 throw new RuntimeException(fileName + " 파일을 찾을 수 없습니다.");
             }
             // 파일명에 부적합 문자가 있는지 확인한다.
