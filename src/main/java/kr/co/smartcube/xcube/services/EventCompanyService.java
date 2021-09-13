@@ -61,8 +61,8 @@ public class EventCompanyService {
             listMap.put("obid", UUID.randomUUID().toString());
             listMap.put("refObid", obid);
             listMap.put("attatchObid", fileMap.get("obid"));
-            listMap.put("openDate", Util.objToDate(listMap.get("openDate")));
-            listMap.put("closeDate", Util.objToDate(listMap.get("closeDate")));
+            //listMap.put("openDate", Util.objToDate(listMap.get("openDate")));
+            //listMap.put("closeDate", Util.objToDate(listMap.get("closeDate")));
             fileList.add(fileMap);
         }
         eventCompanyDao.insertMasterLicense(masterLicense);
