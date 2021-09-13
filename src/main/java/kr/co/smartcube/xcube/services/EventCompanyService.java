@@ -45,25 +45,45 @@ public class EventCompanyService {
         List<Map<String,Object>> fileList = new ArrayList<Map<String,Object>>();
         Map<String,Object> masterLicense = new HashMap<String,Object>();
         Map<String,Object> masterLicenseFileMap = Util.objToMap(map.get("files"));
+        if(Util.isEmpty(map.get("email"))){
+            throw new RuntimeException("이메일 정보를 입력해 주세요.");
+        }
         masterLicense.putAll(map);
         masterLicense.remove("masterList");
-        fileMap = fileService.fileUploadByte(Util.objToStr(masterLicenseFileMap.get("fileName")), Util.objToStr(masterLicenseFileMap.get("fileContent")));
-        masterLicense.put("attatchObid", fileMap.get("obid"));
         String obid = UUID.randomUUID().toString();
         masterLicense.put("obid", obid);
-        fileList.add(fileMap);
+        if(!Util.isEmpty(masterLicenseFileMap)){
+            fileMap = fileService.fileUploadByte(Util.objToStr(masterLicenseFileMap.get("fileName")), Util.objToStr(masterLicenseFileMap.get("fileContent")));
+            masterLicense.put("attatchObid", fileMap.get("obid"));
+            fileList.add(fileMap);
+        }
         List<Map<String,Object>> masterLicenseList = Util.objToList(map.get("masterLicenseLists"));
         Map<String,Object> masterLicenseListFileMap = new HashMap<String,Object>();
         for(int i=0; i<masterLicenseList.size(); i++){
             Map<String,Object> listMap = masterLicenseList.get(i);
+            if(Util.isEmpty(listMap.get("status"))){
+                throw new RuntimeException("라이센스리스트 상태 정보를 입력해 주세요.");
+            }
+            if(Util.isEmpty(listMap.get("openDate"))){
+                throw new RuntimeException("라이센스 시작개최기간 정보를 입력해 주세요.");
+            }
+            if(Util.isEmpty(listMap.get("closeDate"))){
+                throw new RuntimeException("라이센스 종료개최기간 정보를 입력해 주세요.");
+            }
+            if(!Util.dateCheck(listMap.get("openDate"))){
+                throw new RuntimeException("라이센스 시작개최기간 날짜 형식이 맞지 않습니다.");
+            }
+            if(!Util.dateCheck(listMap.get("closeDate"))){
+                throw new RuntimeException("라이센스 종료개최기간 날짜 형식이 맞지 않습니다.");
+            }
             masterLicenseListFileMap = Util.objToMap(listMap.get("files"));
-            fileMap = fileService.fileUploadByte(Util.objToStr(masterLicenseListFileMap.get("fileName")), Util.objToStr(masterLicenseListFileMap.get("fileContent")));
+            if(!Util.isEmpty(masterLicenseListFileMap)){
+                fileMap = fileService.fileUploadByte(Util.objToStr(masterLicenseListFileMap.get("fileName")), Util.objToStr(masterLicenseListFileMap.get("fileContent")));
+                listMap.put("attatchObid", fileMap.get("obid"));
+                fileList.add(fileMap);
+            }            
             listMap.put("obid", UUID.randomUUID().toString());
             listMap.put("refObid", obid);
-            listMap.put("attatchObid", fileMap.get("obid"));
-            //listMap.put("openDate", Util.objToDate(listMap.get("openDate")));
-            //listMap.put("closeDate", Util.objToDate(listMap.get("closeDate")));
-            fileList.add(fileMap);
         }
         eventCompanyDao.insertMasterLicense(masterLicense);
         eventCompanyDao.insertMasterLicenseList(masterLicenseList);
