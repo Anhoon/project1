@@ -43,8 +43,8 @@
 			REF_OBID, 
 			TYPE, 
 			STATUS, 
-			OPEN_DATE, 
-			CLOSE_DATE, 
+			START_DATE, 
+			END_DATE, 
 			EXPRESSION, 
 			HOLD_TYPE, 
 			ATTATCH_OBID
@@ -88,8 +88,8 @@
 			REF_OBID, 
 			TYPE, 
 			STATUS, 
-			OPEN_DATE, 
-			CLOSE_DATE, 
+			START_DATE, 
+			END_DATE, 
 			EXPRESSION, 
 			HOLD_TYPE, 
 			ATTATCH_OBID
@@ -125,8 +125,8 @@
 		UPDATE MASTER_LICENSE_LIST SET
 			TYPE = #{type},
 			STATUS = #{status},
-			OPEN_DATE = #{openDate},
-			CLOSE_DATE = #{closeDate},
+			START_DATE = #{startDate},
+			END_DATE = #{endDate},
 			EXPRESSION = #{expression},
 			HOLD_TYPE = #{holdType}
 		WHERE OBID = #{obid}
