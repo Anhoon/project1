@@ -101,8 +101,8 @@
 			#{item.refObid}, 
 			#{item.type},
 			#{item.status},
-			CONVERT(#{item.openDate}, DATETIME),
-			CONVERT(#{item.closeDate}, DATETIME),
+			CONVERT(#{item.startDate}, DATETIME),
+			CONVERT(#{item.endDate}, DATETIME),
 			#{item.expression},
 			#{item.holdType},
 			#{item.attatchObid}

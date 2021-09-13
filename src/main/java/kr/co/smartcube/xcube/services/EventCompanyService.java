@@ -64,16 +64,16 @@ public class EventCompanyService {
             if(Util.isEmpty(listMap.get("status"))){
                 throw new RuntimeException("라이센스리스트 상태 정보를 입력해 주세요.");
             }
-            if(Util.isEmpty(listMap.get("openDate"))){
+            if(Util.isEmpty(listMap.get("startDate"))){
                 throw new RuntimeException("라이센스 시작개최기간 정보를 입력해 주세요.");
             }
-            if(Util.isEmpty(listMap.get("closeDate"))){
+            if(Util.isEmpty(listMap.get("endDate"))){
                 throw new RuntimeException("라이센스 종료개최기간 정보를 입력해 주세요.");
             }
-            if(!Util.dateCheck(listMap.get("openDate"))){
+            if(!Util.dateCheck(listMap.get("startDate"))){
                 throw new RuntimeException("라이센스 시작개최기간 날짜 형식이 맞지 않습니다.");
             }
-            if(!Util.dateCheck(listMap.get("closeDate"))){
+            if(!Util.dateCheck(listMap.get("endDate"))){
                 throw new RuntimeException("라이센스 종료개최기간 날짜 형식이 맞지 않습니다.");
             }
             masterLicenseListFileMap = Util.objToMap(listMap.get("files"));
