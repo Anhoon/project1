@@ -115,22 +115,42 @@ public class EventCompanyService {
     }   
 
     public void validationMasterLicenseListCheck(List<Map<String,Object>> list){
+        int i = 1;
         for(Map<String,Object> map : list){
+            if(Util.isEmpty(map.get("obid"))){
+                throw new RuntimeException(i+"번째 obid 정보가 없습니다.");
+            }
+            if(Util.isEmpty(map.get("refObid"))){
+                throw new RuntimeException(i+"번째 refObid 정보가 없습니다.");
+            }
+            if(Util.isEmpty(map.get("type"))){
+                throw new RuntimeException(i+"번째 라이선스리스트 라이선스종류 정보를 입력해 주세요.");
+            }
             if(Util.isEmpty(map.get("status"))){
-                throw new RuntimeException("라이선스리스트 상태 정보를 입력해 주세요.");
+                throw new RuntimeException(i+"번째 라이선스리스트 상태 정보를 입력해 주세요.");
+            }
+            if(Util.isEmpty(map.get("title"))){
+                throw new RuntimeException(i+"번째 라이선스리스트 행사타이틀 정보를 입력해 주세요.");
             }
             if(Util.isEmpty(map.get("startDate"))){
-                throw new RuntimeException("라이선스리스트 시작개최기간 정보를 입력해 주세요.");
+                throw new RuntimeException(i+"번째 라이선스리스트 시작개최기간 정보를 입력해 주세요.");
             }
             if(Util.isEmpty(map.get("endDate"))){
-                throw new RuntimeException("라이선스리스트 종료개최기간 정보를 입력해 주세요.");
+                throw new RuntimeException(i+"번째 라이선스리스트 종료개최기간 정보를 입력해 주세요.");
+            }
+            if(Util.isEmpty(map.get("expression"))){
+                throw new RuntimeException(i+"번째 라이선스리스트 행사내용 정보를 입력해 주세요.");
+            }
+            if(Util.isEmpty(map.get("holdType"))){
+                throw new RuntimeException(i+"번째 라이선스리스트 개최타입 정보를 입력해 주세요.");
             }
             if(!Util.dateCheck(map.get("startDate"))){
-                throw new RuntimeException("라이선스리스트 시작개최기간 날짜 형식이 맞지 않습니다.");
+                throw new RuntimeException(i+"번째 라이선스리스트 시작개최기간 날짜 형식이 맞지 않습니다.");
             }
             if(!Util.dateCheck(map.get("endDate"))){
-                throw new RuntimeException("라이선스리스트 종료개최기간 날짜 형식이 맞지 않습니다.");
+                throw new RuntimeException(i+"번째 라이선스리스트 종료개최기간 날짜 형식이 맞지 않습니다.");
             }
+            i++;
         }
     }
 }

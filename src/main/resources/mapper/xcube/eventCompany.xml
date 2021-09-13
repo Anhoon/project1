@@ -86,7 +86,8 @@
 		(
 			OBID, 
 			REF_OBID, 
-			TYPE, 
+			TYPE,
+			TITLE,
 			STATUS, 
 			START_DATE, 
 			END_DATE, 
@@ -100,6 +101,7 @@
 			#{item.obid},
 			#{item.refObid}, 
 			#{item.type},
+			#{item.title},
 			#{item.status},
 			CONVERT(#{item.startDate}, DATETIME),
 			CONVERT(#{item.endDate}, DATETIME),
