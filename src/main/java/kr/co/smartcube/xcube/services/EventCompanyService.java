@@ -45,9 +45,6 @@ public class EventCompanyService {
         List<Map<String,Object>> fileList = new ArrayList<Map<String,Object>>();
         Map<String,Object> masterLicense = new HashMap<String,Object>();
         Map<String,Object> masterLicenseFileMap = Util.objToMap(map.get("files"));
-        if(Util.isEmpty(map.get("email"))){
-            throw new RuntimeException("이메일 정보를 입력해 주세요.");
-        }
         masterLicense.putAll(map);
         masterLicense.remove("masterList");
         String obid = UUID.randomUUID().toString();
@@ -116,24 +113,23 @@ public class EventCompanyService {
             throw new RuntimeException("행사이력 정보를 입력해 주세요.");
         }
     }   
-     
-    public void validationMasterLicenseListCheck(List<Map<String,Object>> list){
 
+    public void validationMasterLicenseListCheck(List<Map<String,Object>> list){
         for(Map<String,Object> map : list){
             if(Util.isEmpty(map.get("status"))){
-                throw new RuntimeException("라이센스리스트 상태 정보를 입력해 주세요.");
+                throw new RuntimeException("라이선스리스트 상태 정보를 입력해 주세요.");
             }
             if(Util.isEmpty(map.get("startDate"))){
-                throw new RuntimeException("라이센스 시작개최기간 정보를 입력해 주세요.");
+                throw new RuntimeException("라이선스리스트 시작개최기간 정보를 입력해 주세요.");
             }
             if(Util.isEmpty(map.get("endDate"))){
-                throw new RuntimeException("라이센스 종료개최기간 정보를 입력해 주세요.");
+                throw new RuntimeException("라이선스리스트 종료개최기간 정보를 입력해 주세요.");
             }
             if(!Util.dateCheck(map.get("startDate"))){
-                throw new RuntimeException("라이센스 시작개최기간 날짜 형식이 맞지 않습니다.");
+                throw new RuntimeException("라이선스리스트 시작개최기간 날짜 형식이 맞지 않습니다.");
             }
             if(!Util.dateCheck(map.get("endDate"))){
-                throw new RuntimeException("라이센스 종료개최기간 날짜 형식이 맞지 않습니다.");
+                throw new RuntimeException("라이선스리스트 종료개최기간 날짜 형식이 맞지 않습니다.");
             }
         }
     }
