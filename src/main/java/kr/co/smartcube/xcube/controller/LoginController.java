@@ -54,8 +54,7 @@ public class LoginController {
         try {
             MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
             Map<String, Object> token = loginService.refreshToken(paramMap);
-		    headers.add("at-jwt-access-token", (String) token.get("accessToken"));
-            headers.add("at-jwt-refresh-token", (String) token.get("refreshToken"));
+		    headers.add("Set-Cookie", "refreshToken="+(String) token.get("refreshToken"));
 
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(token), headers, HttpStatus.OK);  
         } catch (RuntimeException e){

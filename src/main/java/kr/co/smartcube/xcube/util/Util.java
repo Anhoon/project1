@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -16,7 +14,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.Format;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -126,28 +123,54 @@ public class Util {
     }
 
     public static Map<String,Object> fileToFileInfoMap(MultipartFile file){
+        return fileToFileInfoMap(file, null);
+    }
+
+    public static Map<String,Object> fileToFileInfoMap(MultipartFile file, Map<String, Object> paramMap){
         Map<String,Object> map = new HashMap<String, Object>();
+        String path = "/api/test/download/";
+
+        if(!isEmpty(paramMap) && !isEmpty(paramMap.get("fileGroup"))){
+            path += paramMap.get("fileGroup")+"/";
+
+            if(!isEmpty(paramMap.get("fileSubGroup"))){
+                path += paramMap.get("fileSubGroup")+"/";
+            }
+        }
 
         if(!isEmpty(file)){
             map.put("obid", UUID.randomUUID().toString());
             map.put("fileName", StringUtils.cleanPath(file.getOriginalFilename()));
             map.put("fileContentType", file.getContentType());
             map.put("fileSize", file.getSize());
-            map.put("fileDownLoadUrl", ServletUriComponentsBuilder.fromCurrentContextPath().toUriString()+"/api/test/download/"+file.getOriginalFilename());
+            map.put("fileDownLoadUrl", ServletUriComponentsBuilder.fromCurrentContextPath().toUriString()+path+file.getOriginalFilename());
         }
         
         return map;
     }
-    
+
     public static Map<String,Object> fileToFileInfoMap(File file){
+        return fileToFileInfoMap(file, null);
+    }
+    
+    public static Map<String,Object> fileToFileInfoMap(File file, Map<String, Object> paramMap){
         Map<String,Object> map = new HashMap<String, Object>();
+        String path = "/api/file/download/";
+
+        if(!isEmpty(paramMap) && !isEmpty(paramMap.get("fileGroup"))){
+            path += paramMap.get("fileGroup")+"/";
+
+            if(!isEmpty(paramMap.get("fileSubGroup"))){
+                path += paramMap.get("fileSubGroup")+"/";
+            }
+        }
 
         if(!isEmpty(file)){
             map.put("obid", UUID.randomUUID().toString());
             map.put("fileName", StringUtils.cleanPath(file.getName()));
             map.put("fileContentType", file.getPath());
             map.put("fileSize", file.length());
-            map.put("fileDownLoadUrl", ServletUriComponentsBuilder.fromCurrentContextPath().toUriString()+"/api/test/download/"+file.getName());
+            map.put("fileDownLoadUrl", ServletUriComponentsBuilder.fromCurrentContextPath().toUriString()+path+file.getName());
         }
         
         return map;
