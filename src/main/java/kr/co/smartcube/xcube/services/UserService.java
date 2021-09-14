@@ -33,7 +33,8 @@ public class UserService {
     }
 
     public Map<String, Object> selectUser(Map<String, Object> map) throws Exception{
-        Map<String, Object> resultMap = userDao.selectUser(map);
+        Map<String, Object> resultMap = new HashMap<String,Object>();
+        resultMap.putAll(userDao.selectUser(map));
         if(!Util.isEmpty(resultMap)){
             if(!Util.isEmpty(resultMap.get("businessType"))){
                 resultMap.put("businessType", Util.jsonToArray(Util.objToStr(resultMap.get("businessType"))));
@@ -41,6 +42,7 @@ public class UserService {
         }else{
             throw new RuntimeException("일치하는 정보가 없습니다.");
         }
+
 		return resultMap;
     }
     
