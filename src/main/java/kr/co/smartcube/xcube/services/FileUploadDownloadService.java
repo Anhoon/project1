@@ -94,7 +94,10 @@ public class FileUploadDownloadService {
     public Map<String, Object> fileUploadByte(String fileName, String fileBase64) throws Exception{
 
         try {
+            String regex = "^\\S+;(base64,)";
+            fileBase64 = fileBase64.replaceAll(regex, "");
             if(Util.isEmpty(fileBase64)) {
+
                 throw new RuntimeException(fileName + " 파일을 찾을 수 없습니다.");
             }
             // 파일명에 부적합 문자가 있는지 확인한다.
@@ -104,6 +107,7 @@ public class FileUploadDownloadService {
             Path targetLocation = this.fileLocation.resolve(fileName);
             File file = new File(targetLocation.toString());
             // BASE64를 일반 파일로 변환하고 저장합니다.
+            
             Base64.Decoder decoder = Base64.getDecoder();
             byte[] decodedBytes = decoder.decode(fileBase64.getBytes());
             FileOutputStream fileOutputStream = new FileOutputStream(file);

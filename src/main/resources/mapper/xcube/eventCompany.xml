@@ -31,10 +31,7 @@
 			HISTORY, 
 			ATTATCH_OBID
 		FROM MASTER_LICENSE
-		WHERE OBID = #{obid}
-		<if test="email != null and email != '' " >
-			AND EMAIL = #{email}
-		</if>
+		WHERE EMAIL = #{email}
 	</select>
 
 	<select id="selectMasterLicenseListDetailList" resultType="ParamMap">
@@ -43,8 +40,8 @@
 			REF_OBID, 
 			TYPE, 
 			STATUS, 
-			OPEN_DATE, 
-			CLOSE_DATE, 
+			START_DATE, 
+			END_DATE, 
 			EXPRESSION, 
 			HOLD_TYPE, 
 			ATTATCH_OBID
@@ -86,10 +83,11 @@
 		(
 			OBID, 
 			REF_OBID, 
-			TYPE, 
+			TYPE,
+			TITLE,
 			STATUS, 
-			OPEN_DATE, 
-			CLOSE_DATE, 
+			START_DATE, 
+			END_DATE, 
 			EXPRESSION, 
 			HOLD_TYPE, 
 			ATTATCH_OBID
@@ -100,9 +98,10 @@
 			#{item.obid},
 			#{item.refObid}, 
 			#{item.type},
+			#{item.title},
 			#{item.status},
-			CONVERT(#{item.openDate}, DATETIME),
-			CONVERT(#{item.closeDate}, DATETIME),
+			CONVERT(#{item.startDate}, DATETIME),
+			CONVERT(#{item.endDate}, DATETIME),
 			#{item.expression},
 			#{item.holdType},
 			#{item.attatchObid}
@@ -125,8 +124,8 @@
 		UPDATE MASTER_LICENSE_LIST SET
 			TYPE = #{type},
 			STATUS = #{status},
-			OPEN_DATE = #{openDate},
-			CLOSE_DATE = #{closeDate},
+			START_DATE = #{startDate},
+			END_DATE = #{endDate},
 			EXPRESSION = #{expression},
 			HOLD_TYPE = #{holdType}
 		WHERE OBID = #{obid}

@@ -48,14 +48,12 @@ public class UserService {
     public void insertUser(Map<String, Object> map) throws Exception{
         String password = Util.objToStr(map.get("password"));
         String userType = Util.objToStr(map.get("userType"));
-        if(Util.isEmpty(userType)){
-            throw new RuntimeException("USER_TPYE 정보가 없습니다.");    
-        }
         String obid = UUID.randomUUID().toString();
         map.put("obid", obid);
         map.put("password", passwordEncoder.encode(password));
         map.put("userStatus", "0");
         if(!Util.isEmpty(map.get("businessType"))) map.put("businessType",Util.objToJson(map.get("businessType")));
+        validationUserCheck(map);
         int i = userType.equals("0") ? userDao.insertUser(map) : userType.equals("1") || userType.equals("2") ? userDao.insertUserCompany(map) : 0;
         if(i > 0) userDao.insertUserHistory(getHistMap(map,"I",map)); //이력 저장
         emailService.sendMail(map); //메일전송
@@ -134,5 +132,23 @@ public class UserService {
         if(!Util.isEmpty(detailMap)) histMap.put("detail", Util.objToJson(detailMap));
         return histMap;
     }
+
+    public void validationUserCheck(Map<String,Object> map){
+        if(Util.isEmpty(map.get("obid"))){
+            throw new RuntimeException("obid 정보가 없습니다.");
+        }
+        if(Util.isEmpty(map.get("email"))){
+            throw new RuntimeException("이메일 정보를 입력해 주세요.");
+        }
+        if(Util.isEmpty(map.get("password"))){
+            throw new RuntimeException("패스워드 정보를 입력해 주세요.");
+        }
+        if(Util.isEmpty(map.get("name"))){
+            throw new RuntimeException("닉네임 정보를 입력해 주세요.");
+        }
+        if(Util.isEmpty(map.get("userType"))){
+            throw new RuntimeException("유저상태 정보를 입력해 주세요.");
+        }
+    }  
 
 }

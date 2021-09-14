@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.Format;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -173,12 +175,24 @@ public class Util {
         return returnMap;
     }
 
-    public static String objToDate(Object param) throws Exception{
-        
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = inputFormat.parse(objToStr(param));
-        String formattedDate = outputFormat.format(date);
-        return formattedDate;
+    public static boolean dateCheck(Object date) {
+        String strDate = Util.objToStr(date);
+        boolean flag = false;
+        flag = Util.validationDate(strDate, "yyyy-MM-dd HH:mm:ss");
+        if(!flag){
+            flag = Util.validationDate(strDate, "yyyyMMddHHmmss");
+        }
+        return flag;
+    }
+
+    public static boolean validationDate(String date, String format){
+        SimpleDateFormat dateFormatParser = new SimpleDateFormat(format);
+        dateFormatParser.setLenient(false);
+        try {
+            dateFormatParser.parse(date);
+            return true;
+        } catch (Exception Ex) {
+            return false;
+        }
     }
 }
