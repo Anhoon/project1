@@ -40,13 +40,13 @@
 			REF_OBID, 
 			TYPE, 
 			STATUS, 
-			START_DATE, 
-			END_DATE, 
+			DATE_FORMAT(START_DATE,'%Y-%m-%d %T') AS START_DATE,
+			DATE_FORMAT(END_DATE,'%Y-%m-%d %T') AS END_DATE,
 			EXPRESSION, 
 			HOLD_TYPE, 
 			ATTATCH_OBID
 		FROM MASTER_LICENSE_LIST
-		WHERE REF_OBID = #{refObid}
+		WHERE REF_OBID = (SELECT OBID FROM MASTER_LICENSE WHERE EMAIL = #{email})
 	</select>
 
 	<insert id="insertMasterLicense" parameterType="java.util.HashMap">
