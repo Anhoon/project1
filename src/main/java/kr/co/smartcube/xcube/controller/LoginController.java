@@ -5,7 +5,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -36,9 +35,9 @@ public class LoginController {
 
         try {
             MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+            
             Map<String, Object> token = loginService.login(paramMap);
-		    headers.add("at-jwt-access-token", (String) token.get("accessToken"));
-            headers.add("at-jwt-refresh-token", (String) token.get("refreshToken"));
+            headers.add("Set-Cookie", "refreshToken="+(String) token.get("refreshToken"));
             
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(token), headers, HttpStatus.OK);  
         } catch (Exception e) {

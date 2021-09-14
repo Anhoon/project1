@@ -50,8 +50,13 @@ public class LoginService implements UserDetailsService {
         Map<String,Object> token = null;
         
         try {
+            Map<String, Object> login = loginDao.selectLoginInfo(paramMap);
+
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(new UsernamePasswordAuthenticationToken(paramMap.get("email"), paramMap.get("password")) );
+
             token = tokenProvider.generateToken(authentication);
+            token.put("userName", login.get("name"));
+            
             //updateToken(token);
         } catch (Exception e) {
            log.error(e.getMessage());
