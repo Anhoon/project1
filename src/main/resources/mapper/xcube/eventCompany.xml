@@ -31,10 +31,7 @@
 			HISTORY, 
 			ATTATCH_OBID
 		FROM MASTER_LICENSE
-		WHERE OBID = #{obid}
-		<if test="email != null and email != '' " >
-			AND EMAIL = #{email}
-		</if>
+		WHERE EMAIL = #{email}
 	</select>
 
 	<select id="selectMasterLicenseListDetailList" resultType="ParamMap">
