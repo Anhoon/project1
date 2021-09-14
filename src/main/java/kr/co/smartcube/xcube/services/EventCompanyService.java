@@ -36,6 +36,8 @@ public class EventCompanyService {
     public Map<String, Object> selectMasterLicense(Map<String, Object> map) {
         Map<String, Object> resultMap = eventCompanyDao.selectMasterLicense(map);
         if(Util.isEmpty(resultMap)) throw new RuntimeException("일치하는 정보가 없습니다."); 
+        List<Map<String, Object>> resultList = eventCompanyDao.selectMasterLicenseListDetailList(map);
+        resultMap.put("masterLicenseLists", resultList);
         return resultMap;
     }
     
@@ -46,7 +48,7 @@ public class EventCompanyService {
         Map<String,Object> masterLicense = new HashMap<String,Object>();
         Map<String,Object> masterLicenseFileMap = Util.objToMap(map.get("files"));
         masterLicense.putAll(map);
-        masterLicense.remove("masterList");
+        masterLicense.remove("masterLicenseLists");
         String obid = UUID.randomUUID().toString();
         masterLicense.put("obid", obid);
         if(!Util.isEmpty(masterLicenseFileMap)){
