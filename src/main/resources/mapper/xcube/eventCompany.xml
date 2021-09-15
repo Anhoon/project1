@@ -97,7 +97,6 @@
 		(
 			#{item.obid},
 			#{item.refObid}, 
-			#{item.title}, 
 			#{item.type},
 			#{item.title},
 			#{item.status},
