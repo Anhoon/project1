@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd">
+
+<mapper namespace="event">
+	
+	<select id="selectEventList" resultType="ParamMap">
+		SELECT 
+			REF_OBID,
+			CREATED_ON,
+			TITLE,
+			EN_TITLE,
+			ALIAS,
+			OBJECTS,
+			CONTENTS,
+			PRODUCTS,
+			ORGANIZER,
+			SUBJECTIVITY,
+			SUPPORT,
+			HOMPAGE,
+			ATTATCH_OBID
+		FROM EVENT_LIST
+	</select>
+
+	<select id="selectEvent" resultType="ParamMap">
+		SELECT 
+			REF_OBID,
+			CREATED_ON,
+			TITLE,
+			EN_TITLE,
+			ALIAS,
+			OBJECTS,
+			CONTENTS,
+			PRODUCTS,
+			ORGANIZER,
+			SUBJECTIVITY,
+			SUPPORT,
+			HOMPAGE,
+			ATTATCH_OBID,
+			(SELECT FILE_NAME FROM ATTACH_FILE WHERE OBID = ATTATCH_OBID) AS FILE_NAME
+		FROM EVENT_LIST
+		WHERE REF_OBID = #{refObid}
+	</select>
+
+	<select id="selectParticipate" resultType="ParamMap">
+		SELECT 
+			REF_OBID,
+			CREATED_ON,
+			OBJECT_FOR,
+			QUALIFY_APPLY_OBJECTS,
+			DATE_FORMAT(START_OBJECTS_DATE,'%Y-%m-%d %T') AS START_OBJECTS_DATE,
+			DATE_FORMAT(END_OBJECTS_DATE,'%Y-%m-%d %T') AS END_OBJECTS_DATE,
+			SUPPORT_CONTENT,
+			HELPER,
+			HELPER_COUNT,
+			QUALIFY_APPLY_HELPER,
+			DATE_FORMAT(START_HELPER_DATE,'%Y-%m-%d %T') AS START_HELPER_DATE,
+			DATE_FORMAT(END_HELPER_DATE,'%Y-%m-%d %T') AS END_HELPER_DATE,
+			ATTATCH_OBID,
+			(SELECT FILE_NAME FROM ATTACH_FILE WHERE OBID = ATTATCH_OBID) AS FILE_NAME
+		FROM PARTICIPATE_LIST
+		WHERE REF_OBID = #{refObid}
+	</select>
+
+	<insert id="insertEvent" parameterType="java.util.HashMap">
+		INSERT INTO EVENT_LIST
+		(
+			REF_OBID,
+			CREATED_ON,
+			TITLE,
+			EN_TITLE,
+			ALIAS,
+			OBJECTS,
+			CONTENTS,
+			PRODUCTS,
+			ORGANIZER,
+			SUBJECTIVITY,
+			SUPPORT,
+			HOMPAGE,
+			ATTATCH_OBID
+		)
+		VALUES 
+		(
+			#{refObid},
+			SYSDATE(),
+			#{title},
+			#{enTitle},
+			#{alias},
+			#{objects},
+			#{contents},
+			#{products},
+			#{organizer},
+			#{subjectivity},
+			#{support},
+			#{hompage},
+			#{attatchObid}
+		)
+	</insert>
+
+	<insert id="insertParticipate" parameterType="java.util.HashMap">
+		INSERT INTO PARTICIPATE_LIST
+		(
+			REF_OBID,
+			CREATED_ON,
+			OBJECT_FOR,
+			QUALIFY_APPLY_OBJECTS,
+			START_OBJECTS_DATE,
+			END_OBJECTS_DATE,
+			SUPPORT_CONTENT,
+			HELPER,
+			HELPER_COUNT,
+			QUALIFY_APPLY_HELPER,
+			START_HELPER_DATE,
+			END_HELPER_DATE,
+			ATTATCH_OBID
+		)
+		VALUES 
+		(
+			#{refObid},
+			SYSDATE(),
+			#{objectFor},
+			#{qualifyApplyObjects},
+			CONVERT(#{startObjectsDate}, DATETIME),
+			CONVERT(#{endObjectsDate}, DATETIME),
+			#{supportContent},
+			#{helper},
+			#{helperCount},
+			#{qualifyApplyHelper},
+			CONVERT(#{startHelperDate}, DATETIME),
+			CONVERT(#{endHelperDate}, DATETIME),
+			#{attatchObid}
+		)
+	</insert>
+
+	<update id="updateEvent" parameterType="java.util.HashMap">
+		UPDATE EVENT_LIST SET
+			TITLE = #{title},
+			EN_TITLE = #{enTitle},
+			ALIAS = #{alias},
+			OBJECTS = #{objects},
+			CONTENTS = #{contents},
+			PRODUCTS = #{products},
+			ORGANIZER = #{organizer},
+			SUBJECTIVITY = #{subjectivity},
+			SUPPORT = #{support},
+			HOMPAGE = #{hompage},
+			ATTATCH_OBID = #{attatchObid}
+		WHERE REF_OBID = #{refObid}
+	</update>
+
+	<update id="updateParticipate" parameterType="java.util.HashMap">
+		UPDATE PARTICIPATE_LIST SET
+			OBJECT_FOR = #{objectFor},
+			QUALIFY_APPLY_OBJECTS = #{qualifyApplyObjects},
+			START_OBJECTS_DATE = CONVERT(#{startObjectsDate}, DATETIME),
+			END_OBJECTS_DATE = CONVERT(#{endObjectsDate}, DATETIME),
+			SUPPORT_CONTENT = #{supportContent},
+			HELPER = #{helper},
+			HELPER_COUNT = #{helperCount},
+			QUALIFY_APPLY_HELPER = #{qualifyApplyHelper},
+			START_HELPER_DATE = CONVERT(#{startHelperDate}, DATETIME),
+			END_HELPER_DATE = CONVERT(#{endHelperDate}, DATETIME),
+			ATTATCH_OBID = #{attatchObid}
+		WHERE REF_OBID = #{refObid}
+	</update>
+</mapper>
