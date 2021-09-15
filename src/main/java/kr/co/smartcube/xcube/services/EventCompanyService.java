@@ -71,7 +71,7 @@ public class EventCompanyService {
             listMap.put("refObid", obid);
         }
         validationMasterLicenseCheck(masterLicense);
-        validationMasterLicenseListCheck(masterLicenseList);
+        validationMasterLicenseListsCheck(masterLicenseList);
         eventCompanyDao.insertMasterLicense(masterLicense);
         eventCompanyDao.insertMasterLicenseList(masterLicenseList);
         fileDao.insertFile(fileList);
@@ -116,7 +116,7 @@ public class EventCompanyService {
         }
     }   
 
-    public void validationMasterLicenseListCheck(List<Map<String,Object>> list){
+    public void validationMasterLicenseListsCheck(List<Map<String,Object>> list){
         int i = 1;
         for(Map<String,Object> map : list){
             if(Util.isEmpty(map.get("obid"))){
