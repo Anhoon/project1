@@ -86,6 +86,7 @@
 		(
 			OBID, 
 			REF_OBID, 
+			TITLE,
 			TYPE, 
 			STATUS, 
 			START_DATE, 
@@ -99,6 +100,7 @@
 		(
 			#{item.obid},
 			#{item.refObid}, 
+			#{item.title}, 
 			#{item.type},
 			#{item.status},
 			CONVERT(#{item.startDate}, DATETIME),
@@ -123,6 +125,7 @@
 
 	<update id="updateMasterLicenseList" parameterType="java.util.HashMap">
 		UPDATE MASTER_LICENSE_LIST SET
+			TITLE = #{title},
 			TYPE = #{type},
 			STATUS = #{status},
 			START_DATE = #{startDate},

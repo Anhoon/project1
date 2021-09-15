@@ -117,7 +117,11 @@ public class EventCompanyService {
     public void validationMasterLicenseListCheck(List<Map<String,Object>> list){
         for(Map<String,Object> map : list){
             if(Util.isEmpty(map.get("status"))){
-                throw new RuntimeException("라이선스리스트 상태 정보를 입력해 주세요.");
+                //throw new RuntimeException("라이선스리스트 상태 정보를 입력해 주세요.");
+                map.put("status", 0);
+            }
+            if(Util.isEmpty(map.get("title"))){
+                throw new RuntimeException("행사제목 입력해 주세요.");
             }
             if(Util.isEmpty(map.get("startDate"))){
                 throw new RuntimeException("라이선스리스트 시작개최기간 정보를 입력해 주세요.");
