@@ -45,10 +45,10 @@ public class EventCompanyController {
         }
     }
 
-    @GetMapping("/license/master/{obid}")
-    public ResponseEntity<CommonResult> selectMasterLicense(@PathVariable String obid) throws Exception {
+    @GetMapping("/license/master/{email}")
+    public ResponseEntity<CommonResult> selectMasterLicense(@PathVariable String email) throws Exception {
         Map<String,Object> paramMap = new HashMap<String,Object>();
-        paramMap.put("obid", obid);
+        paramMap.put("email", email);
         try {
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(eventCompanyService.selectMasterLicense(paramMap)), HttpStatus.OK);
         } catch (Exception e) {

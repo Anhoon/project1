@@ -1,11 +1,11 @@
 package kr.co.smartcube.xcube.controller;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import kr.co.smartcube.xcube.common.CommonResult;
 import kr.co.smartcube.xcube.common.ResponseService;
@@ -76,10 +75,14 @@ public class TestController {
   } 
  
   @PostMapping("/api/test/upload")
-  public ResponseEntity<CommonResult> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files, @RequestParam("email") String email) throws Exception{
+  public ResponseEntity<CommonResult> uploadMultipleFiles(
+      @RequestParam("files") MultipartFile[] files, 
+      @RequestParam(required = false) Map<String,Object> paramMap) throws Exception
+  {
       List<Map<String,Object>> fileList = new ArrayList<Map<String,Object>>();
+      System.out.println("paramMap : >>>>>>>>>>>>>>>>>>>>>>>>>>>"+paramMap);
       try {
-        fileList = fileService.storeFile(files);
+        fileList = fileService.storeFile(files, paramMap);
       } catch (FileUploadException e) {
         return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
       } catch (Exception e) {
@@ -89,28 +92,59 @@ public class TestController {
       return new ResponseEntity<CommonResult>(responseService.getListResult(fileList), HttpStatus.CREATED);
   }
   
-  @GetMapping("/api/test/download/{fileName:.+}")
-  public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) throws Exception{
-       // Load file as Resource
-      Resource resource = fileService.loadFileAsResource(fileName);
-
-      // Try to determine file's content type
+  @GetMapping(value = {"/api/test/download/{fileName:.+}", 
+              "/api/test/download/{fileGroup}/{fileName:.+}", 
+              "/api/test/download/{fileGroup}/{fileSubGroup}/{fileName:.+}"})
+  public ResponseEntity<Object> downloadFile(
+    @PathVariable(required = true) String fileName,   
+    @PathVariable(required = false) String fileGroup, 
+    @PathVariable(required = false) String fileSubGroup, 
+    HttpServletRequest request) throws Exception{
+      Map<String, Object> paramMap = new HashMap<String, Object>();
       String contentType = null;
-      try {
-          contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-      } catch (IOException ex) {
-          log.info("Could not determine file type.");
-      }
+      Resource resource = null;
+      
+      paramMap.put("fileGroup", fileGroup);
+      paramMap.put("fileSubGroup", fileSubGroup);
+      paramMap.put("fileName", fileName);
 
-      // Fallback to the default content type if type could not be determined
-      if(contentType == null) {
+      try {
+        // Load file as Resource
+        resource = fileService.loadFileAsResource(paramMap);
+
+        // Try to determine file's content type
+        contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+
+        // Fallback to the default content type if type could not be determined
+        if(contentType == null) {
           contentType = "application/octet-stream";
+        }
+      } catch (IOException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(responseService.getFailResult("Could not determine file type."));
+      } catch (RuntimeException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseService.getFailResult(e.getMessage()));
+      }catch (Exception e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseService.getFailResult());
       }
 
       return ResponseEntity.ok()
               .contentType(MediaType.parseMediaType(contentType))
-              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + URLDecoder.decode(resource.getFilename(), "UTF-8")  + "\"")
               .body(resource);
+  }
+
+  @PostMapping("/api/test/{board}")
+  public ResponseEntity<CommonResult> insertBoardInfo(
+      @PathVariable String board, @RequestBody Map<String, Object> paramMap) throws Exception{
+        paramMap.put("fileGroup", board);
+        
+        try {
+          testService.insertBoardInfo(paramMap);  
+        } catch (Exception e) {
+          return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        }
+        
+    return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
   }
 
 }

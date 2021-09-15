@@ -25,8 +25,8 @@ public class EventCompanyDao {
 	public Map<String, Object> selectMasterLicense(Map<String, Object> param) {
 		return sqlSession.selectOne(NAMESPACE + "selectMasterLicense",param);
     }
-	public List<Map<String, Object>> selectMasterLicenseListDetailList() {
-		return sqlSession.selectList(NAMESPACE + "selectMasterLicenseListDetailList");
+	public List<Map<String, Object>> selectMasterLicenseListDetailList(Map<String, Object> param) {
+		return sqlSession.selectList(NAMESPACE + "selectMasterLicenseListDetailList",param);
     }
 	public int insertMasterLicense(Map<String, Object> param){
 		return sqlSession.insert(NAMESPACE + "insertMasterLicense",param);

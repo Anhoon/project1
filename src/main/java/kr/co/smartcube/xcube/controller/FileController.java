@@ -1,7 +1,9 @@
 package kr.co.smartcube.xcube.controller;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,29 +54,46 @@ public class FileController {
       return new ResponseEntity<CommonResult>(responseService.getListResult(fileList), HttpStatus.CREATED);
   }
   
-  @GetMapping("/api/file/download/{fileName:.+}")
-  public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) throws Exception{
-       // Load file as Resource
-      Resource resource = fileService.loadFileAsResource(fileName);
+  @GetMapping(value = {"/api/file/download/{fileName:.+}", 
+              "/api/file/download/{fileGroup}/{fileName:.+}", 
+              "/api/file/download/{fileGroup}/{fileSubGroup}/{fileName:.+}"})
+  public ResponseEntity<Object> downloadFile( 
+    @PathVariable String fileName, 
+    @PathVariable(required = false) String fileGroup, 
+    @PathVariable(required = false) String fileSubGroup, 
+    HttpServletRequest request) throws Exception
+  {
+    Map<String, Object> paramMap = new HashMap<String, Object>();
+    String contentType = null;
+    Resource resource = null;
+    
+    paramMap.put("fileGroup", fileGroup);
+    paramMap.put("fileSubGroup", fileSubGroup);
+    paramMap.put("fileName", fileName);
+
+    try {
+      // Load file as Resource
+      resource = fileService.loadFileAsResource(paramMap);
 
       // Try to determine file's content type
-      String contentType = null;
-      try {
-          contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-      } catch (IOException ex) {
-          System.out.println("######");
-          log.info("Could not determine file type.");
-      }
+      contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
 
       // Fallback to the default content type if type could not be determined
       if(contentType == null) {
-          contentType = "application/octet-stream";
+        contentType = "application/octet-stream";
       }
+    } catch (IOException e) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).body(responseService.getFailResult("Could not determine file type."));
+    } catch (RuntimeException e){
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseService.getFailResult(e.getMessage()));
+    }catch (Exception e){
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseService.getFailResult());
+    }
 
-      return ResponseEntity.ok()
-              .contentType(MediaType.parseMediaType(contentType))
-              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-              .body(resource);
+    return ResponseEntity.ok()
+            .contentType(MediaType.parseMediaType(contentType))
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + URLDecoder.decode(resource.getFilename(), "UTF-8")  + "\"")
+            .body(resource);
   }
 
 }

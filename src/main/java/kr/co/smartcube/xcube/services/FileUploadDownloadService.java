@@ -32,7 +32,6 @@ public class FileUploadDownloadService {
     @Autowired
     public FileUploadDownloadService(FileUploadProperties prop) throws Exception{
         this.fileLocation = Paths.get(prop.getUploadDir()).toAbsolutePath().normalize();
-        System.out.println(fileLocation.toString());
         try {
             Files.createDirectories(this.fileLocation);
         }catch(Exception e) {
@@ -40,45 +39,54 @@ public class FileUploadDownloadService {
         }
     }
 
-    public List<Map<String, Object>> storeFile(MultipartFile[] files) throws Exception {
-        List<Map<String, Object>> fileList = new ArrayList<Map<String, Object>>();
-        Map<String, Object> paramMap = null;
+    public Map<String,Object> storeFile(MultipartFile file) throws Exception {
+        return storeFile(file, null);
+    }
 
+    public List<Map<String, Object>> storeFile(MultipartFile[] files) throws Exception {
+       return storeFile(files, null);
+    }
+
+    public List<Map<String, Object>> storeFile(MultipartFile[] files, Map<String, Object> fileInfo) throws Exception {
+        List<Map<String, Object>> fileList = new ArrayList<Map<String, Object>>();
         try {
             for(MultipartFile file : files){
-                paramMap = new HashMap<String,Object>();
-
-                storeFile(file);
-                paramMap = Util.fileToFileInfoMap(file);
-                fileList.add(paramMap);
+                storeFile(file, fileInfo);
+                fileList.add(Util.fileToFileInfoMap(file, fileInfo));
             }
         } catch (FileUploadException e) {
-            
+            throw new FileUploadException("파일 업로드에 실패하였습니다. 다시 시도하십시오.",e);
         } catch (Exception e) {
-            
+            throw new Exception("파일 업로드에 실패하였습니다. 다시 시도하십시오.", e);
         }
         return fileList;
     }
 
-    public Map<String,Object> storeFile(MultipartFile file) throws Exception {
+    public Map<String,Object> storeFile(MultipartFile file, Map<String, Object> fileInfo) throws Exception {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        
+        Path path = uploadPath(fileInfo);
+
         try {
             // 파일명에 부적합 문자가 있는지 확인한다.
             if(fileName.contains("..")){
                 throw new FileUploadException("파일명에 부적합 문자가 포함되어 있습니다. " + fileName);
             }
-            Path targetLocation = this.fileLocation.resolve(fileName);
+
+            Path targetLocation = path.resolve(fileName);
+
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            return Util.fileToFileInfoMap(file);
+            return Util.fileToFileInfoMap(file, fileInfo);
         }catch(Exception e) {
             throw new FileUploadException("["+fileName+"] 파일 업로드에 실패하였습니다. 다시 시도하십시오.",e);
         }
     }
 
-    public Resource loadFileAsResource(String fileName) throws Exception {
+    public Resource loadFileAsResource(Map<String,Object> paramMap) throws Exception {
+        Path path = uploadPath(paramMap);
+        String fileName =  (String) paramMap.get("fileName");
+        
         try {
-            Path filePath = this.fileLocation.resolve(fileName).normalize();
+            Path filePath = path.resolve(fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             
             if(resource.exists()) {
@@ -92,19 +100,26 @@ public class FileUploadDownloadService {
     }
 
     public Map<String, Object> fileUploadByte(String fileName, String fileBase64) throws Exception{
+        return fileUploadByte(fileName, fileBase64, null);
+    }
 
+    public Map<String, Object> fileUploadByte(String fileName, String fileBase64, Map<String, Object> fileGroupInfoMap) throws Exception{
         try {
+            Path path = uploadPath(fileGroupInfoMap);
             String regex = "^\\S+;(base64,)";
-            fileBase64 = fileBase64.replaceAll(regex, "");
-            if(Util.isEmpty(fileBase64)) {
 
+            fileBase64 = fileBase64.replaceAll(regex, "");
+
+            if(Util.isEmpty(fileBase64)) {
                 throw new RuntimeException(fileName + " 파일을 찾을 수 없습니다.");
             }
+
             // 파일명에 부적합 문자가 있는지 확인한다.
             if(fileName.contains("..")){
                 throw new FileUploadException("파일명에 부적합 문자가 포함되어 있습니다. " + fileName);
             }
-            Path targetLocation = this.fileLocation.resolve(fileName);
+            
+            Path targetLocation = path.resolve(fileName);
             File file = new File(targetLocation.toString());
             // BASE64를 일반 파일로 변환하고 저장합니다.
             
@@ -113,11 +128,27 @@ public class FileUploadDownloadService {
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             fileOutputStream.write(decodedBytes);
             fileOutputStream.close();
-            return Util.fileToFileInfoMap(file);
+            return Util.fileToFileInfoMap(file, fileGroupInfoMap);
         } catch(IOException e) {
             throw new IOException("["+fileName+"] 파일 업로드에 실패하였습니다. 다시 시도하십시오.",e);
         } catch(Exception e) {
             throw new FileUploadException("["+fileName+"] 파일 업로드에 실패하였습니다. 다시 시도하십시오.",e);
         }
+    }
+
+    private Path uploadPath(Map<String, Object> fileGroupInfoMap) throws Exception{
+        Path path = this.fileLocation;
+
+        if(!Util.isEmpty(fileGroupInfoMap) && !Util.isEmpty(fileGroupInfoMap.get("fileGroup"))){
+            path = Paths.get(path.toString()+"/"+fileGroupInfoMap.get("fileGroup")).toAbsolutePath().normalize();
+            
+            if(!Util.isEmpty(fileGroupInfoMap.get("fileSubGroup"))){
+                path = Paths.get(path.toString()+"/"+fileGroupInfoMap.get("fileSubGroup")).toAbsolutePath().normalize();
+            }
+
+            Files.createDirectories(path);
+        }
+
+        return path;
     }
 }
