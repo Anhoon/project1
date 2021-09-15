@@ -40,7 +40,4 @@ public class EventCompanyDao {
 	public int updateMasterLicenseList(Map<String, Object> param){
 		return sqlSession.update(NAMESPACE + "updateMasterLicenseList",param);
 	}
-	public int updateMasterLicenseStatus(Map<String, Object> param){
-		return sqlSession.update(NAMESPACE + "updateMasterLicenseStatus",param);
-	}	
 }
