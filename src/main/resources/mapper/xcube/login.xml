@@ -3,28 +3,30 @@
 
 <mapper namespace="login">
 	<select id="selectLoginInfo" resultType="ParamMap">
-		SELECT *
-        FROM users
-		WHERE email = #{email} 
+		SELECT EMAIL,
+			   PASSWORD
+        FROM USERS
+		WHERE EMAIL = #{email} 
 	</select>
 
-	<select id="getLoginInfo" resultType="ParamMap">
-		SELECT *
-        FROM users
-		WHERE email = #{email} 
+	<select id="getLoginInfo" resultType="loginVO">
+		SELECT 
+			OBID,
+			CREATED_ON,
+			EMAIL,
+			PASSWORD,
+			NAME,
+			USER_TYPE,
+			USER_STATUS,
+			MOBILE,
+			IDN,
+			COMPANY_NAME,
+			ADDR,
+			TEL,
+			BUSINESS_TYPE,
+			SALES,
+			EMPLOYEE_SIZE
+		FROM USERS
+		WHERE EMAIL = #{email}
 	</select>
-
-	<update id="updateToken">
-		update users
-		set	access_token = #{accessToken},
-		    refresh_token = #{refreshToken}
-		where email = #{email}
-	</update>
-
-	<update id="deleteToken">
-		update users
-		set	access_token = null,
-		    refresh_token = null
-		where email = #{email}
-	</update>
 </mapper>

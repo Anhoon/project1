@@ -1,27 +1,28 @@
 package kr.co.smartcube.xcube.services;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
+import kr.co.smartcube.xcube.common.security.jwt.LoginVO;
 import kr.co.smartcube.xcube.common.security.jwt.TokenProvider;
 import kr.co.smartcube.xcube.mybatis.dao.LoginDao;
-import kr.co.smartcube.xcube.util.Util;
+import kr.co.smartcube.xcube.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+
 @Service
 @RequiredArgsConstructor
 public class LoginService implements UserDetailsService {
@@ -33,71 +34,35 @@ public class LoginService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Map<String, Object> login = loginDao.selectLoginInfo(username);
-		if(login != null){
-			return new User((String)login.get("email"), (String)login.get("password"), Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
-		}else{
-			throw new UsernameNotFoundException("사용자 정보를 찾을 수 없습니다.");
+        Map<String, Object> paramMap = new HashMap<String,Object>();
+        paramMap.put("email", username);
+
+		LoginVO loginVO = loginDao.getLoginInfo(paramMap);
+
+		if(ObjectUtils.isEmpty(loginVO)){
+            throw new UsernameNotFoundException("사용자 정보를 찾을 수 없습니다.");
 		}
+        
+        loginVO.setRoles(Arrays.asList("ROLE_USER")); //추후 권한 정보 설정
+        
+        return loginVO;
 	}
 
-    public Map<String, Object> selectLoginInfo(Map<String, Object> paramMap) throws UsernameNotFoundException {
-		return loginDao.selectLoginInfo(paramMap);
-	}
-
-    @Transactional
-    public Map<String,Object> login(Map<String,Object> paramMap) throws Exception{
-        Map<String,Object> token = null;
-        
-        try {
-            Map<String, Object> login = loginDao.selectLoginInfo(paramMap);
-
-            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(new UsernamePasswordAuthenticationToken(paramMap.get("email"), paramMap.get("password")) );
-
-            token = tokenProvider.generateToken(authentication);
-            token.put("userName", login.get("name"));
-            
-            //updateToken(token);
-        } catch (Exception e) {
-           log.error(e.getMessage());
-        }
-        
-        return token;
+    public Map<String,Object> login(Map<String,Object> paramMap, HttpServletResponse response) throws Exception{
+        Authentication authentication = 
+            authenticationManagerBuilder
+                .getObject()
+                .authenticate(new UsernamePasswordAuthenticationToken(paramMap.get("email"), paramMap.get("password")) );
+        return SecurityUtil.setLoginHeader(tokenProvider.generateToken(authentication), response);
     }
 
-    @Transactional
-    public Map<String,Object> refreshToken(Map<String,Object> paramMap) throws Exception{
-        if(!tokenProvider.validateToken((String)paramMap.get("refreshToken"))){
+    public Map<String,Object> refreshToken(Map<String,Object> paramMap, HttpServletResponse response) throws Exception{
+        if(!tokenProvider.validateToken(paramMap.get("refreshToken").toString())){
             throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
         }
 
-        Authentication authentication = tokenProvider.getAuthentication((String)paramMap.get("accessToken"));
-        Map<String, Object> login = loginDao.selectLoginInfo((authentication.getName()));
-
-        if(Util.isEmpty(login)){
-            throw new RuntimeException("사용자 정보가 없습니다.");
-        }
-
-        /*
-        if (!login.get("refreshToken").equals((String)paramMap.get("refreshToken"))) {
-            throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
-        }
-        */
-
-        Map<String,Object> token = tokenProvider.generateToken(authentication);
-        //updateToken(token);
-        return token;
-    }
-
-    @Transactional    
-    public int updateToken(Map<String,Object> paramMap) throws Exception{
-        return loginDao.updateToken(paramMap);
-    }
-
-
-    @Transactional
-    public int logout(Map<String,Object> paramMap) throws Exception{
-        return loginDao.deleteToken(paramMap);
+        Authentication authentication = tokenProvider.getAuthentication(paramMap.get("accessToken").toString());
+        return SecurityUtil.setLoginHeader(tokenProvider.generateToken(authentication), response);
     }
     
 }

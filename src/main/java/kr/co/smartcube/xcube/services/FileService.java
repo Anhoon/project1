@@ -8,9 +8,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -19,18 +20,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.smartcube.xcube.common.FileUploadProperties;
+import kr.co.smartcube.xcube.mybatis.dao.FileDao;
 import kr.co.smartcube.xcube.util.Util;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
-public class FileUploadDownloadService {
+public class FileService {
     private final Path fileLocation;
+
+    @Autowired
+    private FileDao fileDao;
     
     @Autowired
-    public FileUploadDownloadService(FileUploadProperties prop) throws Exception{
+    public FileService(FileUploadProperties prop) throws Exception{
         this.fileLocation = Paths.get(prop.getUploadDir()).toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.fileLocation);
@@ -110,7 +118,7 @@ public class FileUploadDownloadService {
 
             fileBase64 = fileBase64.replaceAll(regex, "");
 
-            if(Util.isEmpty(fileBase64)) {
+            if(!StringUtils.hasLength(fileBase64)) {
                 throw new RuntimeException(fileName + " 파일을 찾을 수 없습니다.");
             }
 
@@ -118,11 +126,13 @@ public class FileUploadDownloadService {
             if(fileName.contains("..")){
                 throw new FileUploadException("파일명에 부적합 문자가 포함되어 있습니다. " + fileName);
             }
+
+            String now = new SimpleDateFormat("yyyyMMddHmsS").format(new Date());  //현재시간
             
-            Path targetLocation = path.resolve(fileName);
+            Path targetLocation = path.resolve(now+"_"+fileName);
             File file = new File(targetLocation.toString());
-            // BASE64를 일반 파일로 변환하고 저장합니다.
             
+            // BASE64를 일반 파일로 변환하고 저장합니다.
             Base64.Decoder decoder = Base64.getDecoder();
             byte[] decodedBytes = decoder.decode(fileBase64.getBytes());
             FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -139,10 +149,10 @@ public class FileUploadDownloadService {
     private Path uploadPath(Map<String, Object> fileGroupInfoMap) throws Exception{
         Path path = this.fileLocation;
 
-        if(!Util.isEmpty(fileGroupInfoMap) && !Util.isEmpty(fileGroupInfoMap.get("fileGroup"))){
+        if(!ObjectUtils.isEmpty(fileGroupInfoMap) && !ObjectUtils.isEmpty(fileGroupInfoMap.get("fileGroup"))){
             path = Paths.get(path.toString()+"/"+fileGroupInfoMap.get("fileGroup")).toAbsolutePath().normalize();
             
-            if(!Util.isEmpty(fileGroupInfoMap.get("fileSubGroup"))){
+            if(!ObjectUtils.isEmpty(fileGroupInfoMap.get("fileSubGroup"))){
                 path = Paths.get(path.toString()+"/"+fileGroupInfoMap.get("fileSubGroup")).toAbsolutePath().normalize();
             }
 
@@ -151,4 +161,66 @@ public class FileUploadDownloadService {
 
         return path;
     }
+
+    private int deleteRealFile(Map<String,Object> param){
+        int delFileCnt = 0;
+        
+        if(!ObjectUtils.isEmpty(param.get("filePath")) && !ObjectUtils.isEmpty(param.get("fileName"))){
+            String filePath = param.get("filePath").toString()
+                                            .replaceAll("http://localhost:8080/api/file/download/", "")
+                                            .replaceAll("http://localhost:8080/api/test/download/", "");
+
+            File file = new File(this.fileLocation.toString()+"\\"+filePath);
+
+            if(file.exists()){
+                if(file.delete()){
+                    log.info("파일삭제 성공");
+                    delFileCnt++;
+                }else{ 
+                    log.info("파일삭제 실패");
+                }
+            }else{ 
+                log.info("파일이 존재하지 않습니다.");
+            }
+        }
+        return delFileCnt;
+
+    }
+
+    public int deleteFileList(List<Map<String,Object>> param) throws Exception{
+        if(ObjectUtils.isEmpty(param)){
+            return 0;
+        }
+
+        for(Map<String,Object> map : param){
+            deleteRealFile(map);
+        }
+        return fileDao.deleteFileList(param);
+    }
+
+    public int deleteFile(Map<String,Object> param) throws Exception{
+        if(ObjectUtils.isEmpty(param)){
+            return 0;
+        }
+
+        deleteRealFile(param);
+        return fileDao.deleteFile(param);
+    }
+
+    public List<Map<String, Object>> selectFileList(Map<String, Object> param) {
+		return fileDao.selectFileList(param);
+    }
+
+	public Map<String, Object> selectFile(Map<String, Object> param) {
+		return fileDao.selectFile(param);
+    }
+
+	public int insertFile(List<Map<String, Object>> param){
+		return fileDao.insertFile(param);
+	}
+
+	public int insertFileList(List<Map<String, Object>> param){
+		return fileDao.insertFileList(param);
+	}
+
 }

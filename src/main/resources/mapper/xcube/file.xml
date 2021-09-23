@@ -4,24 +4,22 @@
 <mapper namespace="file">
 	
 	<select id="selectFileList" resultType="ParamMap">
-		SELECT 
-			OBID,
-			CREATED_ON,
-			FILE_NAME,
-			FILE_PATH,
-			FILE_SIZE
-		FROM ATTACH_FILE
+		SELECT OBID,
+			   CREATED_ON,
+			   FILE_NAME,
+			   FILE_PATH,
+			   FILE_SIZE
+		  FROM ATTACH_FILE
 	</select>
 
 	<select id="selectFile" resultType="ParamMap">
-		SELECT 
-			OBID,
-			CREATED_ON,
-			FILE_NAME,
-			FILE_PATH,
-			FILE_SIZE
-		FROM ATTACH_FILE
-		AND OBID = #{obid}
+		SELECT OBID,
+			   CREATED_ON,
+			   FILE_NAME,
+			   FILE_PATH,
+			   FILE_SIZE
+		  FROM ATTACH_FILE
+		 WHERE OBID = #{attachObid}
 	</select>
 
 	<insert id="insertFile" parameterType="java.util.HashMap">
@@ -43,9 +41,40 @@
 		)
 	</insert>
 
+	<insert id="insertFileList" parameterType="java.util.List">
+		INSERT INTO ATTACH_FILE 
+		(
+			OBID,
+			CREATED_ON,
+			FILE_NAME,
+			FILE_PATH,
+			FILE_SIZE
+		) 
+		VALUES 
+		<foreach collection="list" item="item" separator=",">
+		(
+			#{item.obid},
+			SYSDATE(),
+			#{item.fileName}, 
+			#{item.fileDownLoadUrl},
+			#{item.fileSize}
+		)
+		</foreach>
+	</insert>
+
 	<delete id="deleteFile" parameterType="java.util.HashMap">
-		DELETE FROM ATTACH_FILE
-		WHERE OBID = #{obid}
+		DELETE
+		  FROM ATTACH_FILE
+		 WHERE OBID = #{attatchObid}
+	</delete>
+
+	<delete id="deleteFileList" parameterType="java.util.List">
+		DELETE
+		  FROM ATTACH_FILE
+		 WHERE OBID IN
+		<foreach collection="list" item="item" separator="," open="(" close=")"> 
+			#{item.attatchObid}
+		</foreach>
 	</delete>
 
 </mapper>

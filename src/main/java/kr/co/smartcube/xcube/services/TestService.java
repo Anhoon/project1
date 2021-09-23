@@ -1,11 +1,9 @@
 package kr.co.smartcube.xcube.services;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -28,7 +26,7 @@ public class TestService {
     private SqlSession sqlSession;
 
     @Autowired
-    private FileUploadDownloadService fileService;
+    private FileService fileService;
 
     @Autowired
     private TestTableDao testTableDao;

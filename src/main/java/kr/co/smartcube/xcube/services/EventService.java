@@ -22,7 +22,7 @@ public class EventService {
     private EventDao eventDao;
 
     @Autowired
-    private FileUploadDownloadService fileService;
+    private FileService fileService;
 
     @Autowired
     private FileDao fileDao;

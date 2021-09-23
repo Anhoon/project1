@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd">
+
+<mapper namespace="manage">
+
+	<!--참가기업-->
+	<select id="selectJoinCompanyList" resultType="ParamMap">
+		SELECT *
+		  FROM TEST_TABLE1
+	</select>
+
+	<select id="selectJoinCompany" resultType="ParamMap">
+		SELECT *
+		  FROM TEST_TABLE1
+		 WHERE REF_OBID = #{refObid}
+	</select>
+
+	<insert id="insertJoinCompany" parameterType="java.util.HashMap">
+		INSERT INTO TEST_TABLE1
+		(
+			REF_OBID,
+			REF_OBID_COMPANY
+		)
+		VALUES 
+		(
+			#{refObid},
+			#{refObidCompany},
+		)
+	</insert>
+
+	<update id="updateJoinCompany" parameterType="java.util.HashMap">
+		UPDATE TEST_TABLE1
+		   SET REF_OBID = #{refObid},
+			   REF_OBID_COMPANY = #{refObidCompany},
+		 WHERE REF_OBID = #{refObid}
+	</update>
+
+	<delete id="deleteJoinCompany" parameterType="java.util.HashMap">
+		DELETE FROM TEST_TABLE1
+		 WHERE REF_OBID = #{refObid}
+	</delete>
+
+	<!--참여인력-->
+	<select id="selectJoinUserList" resultType="ParamMap">
+		SELECT *
+		  FROM TEST_TABLE1
+	</select>
+
+	<select id="selectJoinUser" resultType="ParamMap">
+		SELECT *
+		  FROM TEST_TABLE1
+		 WHERE REF_OBID = #{refObid}
+	</select>
+
+	<insert id="insertJoinUser" parameterType="java.util.HashMap">
+		INSERT INTO TEST_TABLE1
+		(
+			REF_OBID,
+			REF_OBID_USER
+		)
+		VALUES 
+		(
+			#{refObid},
+			#{refObidUser},
+		)
+	</insert>
+
+	<update id="updateJoinUser" parameterType="java.util.HashMap">
+		UPDATE TEST_TABLE1
+		   SET REF_OBID = #{refObid},
+			   REF_OBID_USER = #{refObidCompany},
+		 WHERE REF_OBID = #{refObid}
+	</update>
+
+	<delete id="deleteJoinUser" parameterType="java.util.HashMap">
+		DELETE FROM TEST_TABLE1
+		 WHERE REF_OBID = #{refObid}
+	</delete>
+
+</mapper>

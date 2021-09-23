@@ -20,13 +20,14 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.smartcube.xcube.common.CommonResult;
 import kr.co.smartcube.xcube.common.ResponseService;
-import kr.co.smartcube.xcube.services.FileUploadDownloadService;
+import kr.co.smartcube.xcube.services.FileService;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -38,20 +39,20 @@ public class FileController {
   private ResponseService responseService;
 
   @Autowired
-  private FileUploadDownloadService fileService;
+  private FileService fileService;
  
   @PostMapping("/api/file/upload")
   public ResponseEntity<CommonResult> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files, @RequestParam("email") String email) throws Exception{
       List<Map<String,Object>> fileList = new ArrayList<Map<String,Object>>();
       try {
         fileList = fileService.storeFile(files);
+        return new ResponseEntity<CommonResult>(responseService.getListResult(fileList), HttpStatus.CREATED);
       } catch (FileUploadException e) {
         return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
       } catch (Exception e) {
+        log.error(e.getMessage(), e.fillInStackTrace());
         return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
       }
-
-      return new ResponseEntity<CommonResult>(responseService.getListResult(fileList), HttpStatus.CREATED);
   }
   
   @GetMapping(value = {"/api/file/download/{fileName:.+}", 
@@ -61,6 +62,7 @@ public class FileController {
     @PathVariable String fileName, 
     @PathVariable(required = false) String fileGroup, 
     @PathVariable(required = false) String fileSubGroup, 
+    @RequestHeader("User-Agent") String agent,
     HttpServletRequest request) throws Exception
   {
     Map<String, Object> paramMap = new HashMap<String, Object>();
@@ -82,18 +84,28 @@ public class FileController {
       if(contentType == null) {
         contentType = "application/octet-stream";
       }
+
+      String savedFileName = URLDecoder.decode(resource.getFilename(), "UTF-8");
+      String originFileName = savedFileName.substring(savedFileName.lastIndexOf("_")+1);
+
+      if(agent.contains("Trident")) //Internet Explorer
+        originFileName = URLDecoder.decode(originFileName, "UTF-8").replaceAll("\\+", " ");
+      else if(agent.contains("Edge")) //Micro Edge
+        originFileName = URLDecoder.decode(originFileName, "UTF-8");
+      else 
+        originFileName = new String(originFileName.getBytes("UTF-8"), "ISO-8859-1");
+
+      return ResponseEntity.ok()
+        .contentType(MediaType.parseMediaType(contentType))
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + originFileName  + "\"")
+        .body(resource);
     } catch (IOException e) {
       return ResponseEntity.status(HttpStatus.CONFLICT).body(responseService.getFailResult("Could not determine file type."));
     } catch (RuntimeException e){
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseService.getFailResult(e.getMessage()));
     }catch (Exception e){
+      log.error(e.getMessage(), e.fillInStackTrace());
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseService.getFailResult());
     }
-
-    return ResponseEntity.ok()
-            .contentType(MediaType.parseMediaType(contentType))
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + URLDecoder.decode(resource.getFilename(), "UTF-8")  + "\"")
-            .body(resource);
   }
-
 }

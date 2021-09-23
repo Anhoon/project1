@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -106,16 +107,24 @@ public class Util {
         return returnParam;
     }
 
+    public static Map<String, Object> initPaginagtion(){
+        return initPaginagtion(null);
+    }
+    
     public static Map<String, Object> initPaginagtion(Map<String, Object> param){
-        if(param.get("pageNum") == null){
+        if(ObjectUtils.isEmpty(param)){
+            param = new HashMap<String, Object>();
+        }
+
+        if(ObjectUtils.isEmpty(param.get("pageNum"))){
             param.put("pageNum", 0);
         }
 
-        if(param.get("pageSize") == null){
-            param.put("pageSize", 2);
+        if(ObjectUtils.isEmpty(param.get("pageSize"))){
+            param.put("pageSize", 10);
         }
         
-        if(param.get("orderBy") == null){
+        if(ObjectUtils.isEmpty(param.get("orderBy"))){
             param.put("orderBy", "1 desc");
         }
 
@@ -132,7 +141,6 @@ public class Util {
 
         if(!isEmpty(paramMap) && !isEmpty(paramMap.get("fileGroup"))){
             path += paramMap.get("fileGroup")+"/";
-
             if(!isEmpty(paramMap.get("fileSubGroup"))){
                 path += paramMap.get("fileSubGroup")+"/";
             }
@@ -140,7 +148,7 @@ public class Util {
 
         if(!isEmpty(file)){
             map.put("obid", UUID.randomUUID().toString());
-            map.put("fileName", StringUtils.cleanPath(file.getOriginalFilename()));
+            map.put("fileName", StringUtils.cleanPath(file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("_")+1)));
             map.put("fileContentType", file.getContentType());
             map.put("fileSize", file.getSize());
             map.put("fileDownLoadUrl", ServletUriComponentsBuilder.fromCurrentContextPath().toUriString()+path+file.getOriginalFilename());
@@ -159,7 +167,6 @@ public class Util {
 
         if(!isEmpty(paramMap) && !isEmpty(paramMap.get("fileGroup"))){
             path += paramMap.get("fileGroup")+"/";
-
             if(!isEmpty(paramMap.get("fileSubGroup"))){
                 path += paramMap.get("fileSubGroup")+"/";
             }
@@ -167,7 +174,7 @@ public class Util {
 
         if(!isEmpty(file)){
             map.put("obid", UUID.randomUUID().toString());
-            map.put("fileName", StringUtils.cleanPath(file.getName()));
+            map.put("fileName", StringUtils.cleanPath(file.getName().substring(file.getName().lastIndexOf("_")+1)));
             map.put("fileContentType", file.getPath());
             map.put("fileSize", file.length());
             map.put("fileDownLoadUrl", ServletUriComponentsBuilder.fromCurrentContextPath().toUriString()+path+file.getName());

@@ -21,13 +21,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import ch.qos.logback.core.joran.conditional.ElseAction;
 import kr.co.smartcube.xcube.common.CommonResult;
 import kr.co.smartcube.xcube.common.ResponseService;
-import kr.co.smartcube.xcube.services.FileUploadDownloadService;
+import kr.co.smartcube.xcube.services.FileService;
 import kr.co.smartcube.xcube.services.TestService;
 import kr.co.smartcube.xcube.util.Util;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +46,7 @@ public class TestController {
   private ResponseService responseService;
 
   @Autowired
-  private FileUploadDownloadService fileService;
+  private FileService fileService;
 
 /*
   @GetMapping("/api/test")
@@ -80,7 +82,7 @@ public class TestController {
       @RequestParam(required = false) Map<String,Object> paramMap) throws Exception
   {
       List<Map<String,Object>> fileList = new ArrayList<Map<String,Object>>();
-      System.out.println("paramMap : >>>>>>>>>>>>>>>>>>>>>>>>>>>"+paramMap);
+      
       try {
         fileList = fileService.storeFile(files, paramMap);
       } catch (FileUploadException e) {
@@ -99,6 +101,7 @@ public class TestController {
     @PathVariable(required = true) String fileName,   
     @PathVariable(required = false) String fileGroup, 
     @PathVariable(required = false) String fileSubGroup, 
+    @RequestHeader("User-Agent") String agent,
     HttpServletRequest request) throws Exception{
       Map<String, Object> paramMap = new HashMap<String, Object>();
       String contentType = null;
@@ -127,9 +130,19 @@ public class TestController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseService.getFailResult());
       }
 
+      String savedFileName = URLDecoder.decode(resource.getFilename(), "UTF-8");
+      String originFileName = savedFileName.substring(savedFileName.lastIndexOf("_")+1);
+
+      if(agent.contains("Trident")) //Internet Explorer
+        originFileName = URLDecoder.decode(originFileName, "UTF-8").replaceAll("\\+", " ");
+      else if(agent.contains("Edge")) //Micro Edge
+        originFileName = URLDecoder.decode(originFileName, "UTF-8");
+      else 
+        originFileName = new String(originFileName.getBytes("UTF-8"), "ISO-8859-1");
+
       return ResponseEntity.ok()
               .contentType(MediaType.parseMediaType(contentType))
-              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + URLDecoder.decode(resource.getFilename(), "UTF-8")  + "\"")
+              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + originFileName  + "\"")
               .body(resource);
   }
 
