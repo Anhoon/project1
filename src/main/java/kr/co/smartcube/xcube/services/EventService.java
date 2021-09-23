@@ -35,10 +35,22 @@ public class EventService {
     public Map<String, Object> selectEvent(Map<String,Object> map) {
         Map<String,Object> resultMap = new HashMap<String,Object>();
         Map<String, Object> eventMap = eventDao.selectEvent(map);
-        if(Util.isEmpty(eventMap)) throw new RuntimeException("일치하는 정보가 없습니다."); 
+        if(Util.isEmpty(eventMap)) throw new RuntimeException("일치하는 정보가 없습니다.");
+        //파일이 있을경우 추가
+        Map<String,Object> fileParam = new HashMap<String,Object>();
+        Map<String,Object> fileMap = new HashMap<String,Object>();
+        fileParam.put("obid", eventMap.get("attatchObid"));
+        fileMap = fileDao.selectFile(fileParam);
+        if(!Util.isEmpty(fileMap)) eventMap.put("files", fileMap);
+        //파일이 있을경우 추가
         Map<String, Object> participateListMap = eventDao.selectParticipate(map);
+        fileParam.put("obid", participateListMap.get("attatchObid"));
+        fileMap = fileDao.selectFile(fileParam);
+        if(!Util.isEmpty(fileMap)) participateListMap.put("files", fileMap);
+
         resultMap.put("eventLists", eventMap);
         resultMap.put("participateLists", participateListMap);
+        
         return resultMap;
     }
     

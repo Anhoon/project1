@@ -6,7 +6,7 @@
 	<select id="selectMasterLicenseList" resultType="ParamMap">
 		SELECT 
 			OBID, 
-			CREATED_ON, 
+			DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
 			EMAIL, 
 			ORGANIZER, 
 			TEL, 
@@ -21,7 +21,7 @@
 	<select id="selectMasterLicense" resultType="ParamMap">
 		SELECT 
 			OBID, 
-			CREATED_ON, 
+			DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
 			EMAIL, 
 			ORGANIZER, 
 			TEL, 
