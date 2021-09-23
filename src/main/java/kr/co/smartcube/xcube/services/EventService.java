@@ -39,12 +39,12 @@ public class EventService {
         //파일이 있을경우 추가
         Map<String,Object> fileParam = new HashMap<String,Object>();
         Map<String,Object> fileMap = new HashMap<String,Object>();
-        fileParam.put("obid", eventMap.get("attatchObid"));
+        fileParam.put("attachObid", eventMap.get("attatchObid"));
         fileMap = fileDao.selectFile(fileParam);
         if(!Util.isEmpty(fileMap)) eventMap.put("files", fileMap);
         //파일이 있을경우 추가
         Map<String, Object> participateListMap = eventDao.selectParticipate(map);
-        fileParam.put("obid", participateListMap.get("attatchObid"));
+        fileParam.put("attachObid", participateListMap.get("attatchObid"));
         fileMap = fileDao.selectFile(fileParam);
         if(!Util.isEmpty(fileMap)) participateListMap.put("files", fileMap);
 

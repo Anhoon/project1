@@ -39,13 +39,13 @@ public class EventCompanyService {
 
         Map<String,Object> fileParam = new HashMap<String,Object>();
         Map<String,Object> fileMap = new HashMap<String,Object>();
-        fileParam.put("obid", resultMap.get("attatchObid"));
+        fileParam.put("attachObid", resultMap.get("attatchObid"));
         fileMap = fileDao.selectFile(fileParam);
         if(!Util.isEmpty(fileMap)) resultMap.put("files", fileMap);
 
         List<Map<String,Object>> resultList = eventCompanyDao.selectMasterLicenseListDetailList(map);
         for(Map<String,Object> licenseMap : resultList){
-            fileParam.put("obid", licenseMap.get("attatchObid"));
+            fileParam.put("attachObid", licenseMap.get("attatchObid"));
             fileMap = fileDao.selectFile(fileParam);
             if(!Util.isEmpty(fileMap)) licenseMap.put("files", fileMap);
         }

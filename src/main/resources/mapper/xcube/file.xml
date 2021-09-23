@@ -19,7 +19,7 @@
 			   FILE_PATH,
 			   FILE_SIZE
 		  FROM ATTACH_FILE
-		 WHERE OBID = #{attachObid}
+		 WHERE OBID = #{attachObid} 
 	</select>
 
 	<insert id="insertFile" parameterType="java.util.HashMap">
