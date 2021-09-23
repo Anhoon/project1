@@ -18,7 +18,7 @@ import kr.co.smartcube.xcube.util.Util;
 @Service
 public class EventService {
 
-    @Autowired
+    @Autowired 
     private EventDao eventDao;
 
     @Autowired
