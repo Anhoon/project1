@@ -6,7 +6,7 @@
 	<select id="selectFileList" resultType="ParamMap">
 		SELECT 
 			OBID,
-			CREATED_ON,
+			DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
 			FILE_NAME,
 			FILE_PATH,
 			FILE_SIZE
@@ -16,12 +16,12 @@
 	<select id="selectFile" resultType="ParamMap">
 		SELECT 
 			OBID,
-			CREATED_ON,
+			DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
 			FILE_NAME,
 			FILE_PATH,
 			FILE_SIZE
 		FROM ATTACH_FILE
-		AND OBID = #{obid}
+		WHERE OBID = #{obid}
 	</select>
 
 	<insert id="insertFile" parameterType="java.util.HashMap">
