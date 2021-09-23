@@ -10,6 +10,12 @@
 			   FILE_PATH,
 			   FILE_SIZE
 		  FROM ATTACH_FILE
+		<if test="attachObid != null and attachObid != ''">
+		 WHERE OBID IN
+			<foreach collection="attachObid" item="arr" separator="," open="(" close=")"> 
+				#{arr}
+			</foreach>
+		</if>
 	</select>
 
 	<select id="selectFile" resultType="ParamMap">

@@ -12,11 +12,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.JsonParseException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -208,7 +210,22 @@ public class FileService {
     }
 
     public List<Map<String, Object>> selectFileList(Map<String, Object> param) {
-		return fileDao.selectFileList(param);
+        if(ObjectUtils.isEmpty(param) || ObjectUtils.isEmpty(param.get("attachObid"))){
+            return null;
+        }
+
+        ArrayList<Object> fileObidList = new ArrayList<Object>();
+        Map<String,Object> fileInfo = new HashMap<String,Object>();
+
+        if(!param.get("attachObid").toString().contains(",")){
+            List<Map<String, Object>> returnList = new ArrayList<Map<String, Object>>();
+            returnList.add(selectFile(param));
+            return returnList;
+        }
+
+        fileObidList = Util.jsonToArray(param.get("attachObid").toString());
+        fileInfo.put("attachObid", fileObidList);
+        return fileDao.selectFileList(fileInfo);
     }
 
 	public Map<String, Object> selectFile(Map<String, Object> param) {

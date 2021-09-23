@@ -36,7 +36,19 @@ public class ManageService {
     }
 
     public Map<String, Object> selectJoinCompany(Map<String,Object> paramMap) throws Exception {
-        return manageDao.selectJoinCompany(paramMap);
+        Map<String,Object> returnMap = new HashMap<String,Object>();
+        List<Map<String,Object>> fileList = null;
+        Map<String,Object> joinCompanyMap = manageDao.selectJoinCompany(paramMap);
+
+        if(ObjectUtils.isEmpty(joinCompanyMap)) throw new RuntimeException("일치하는 정보가 없습니다.");
+        if(!ObjectUtils.isEmpty(joinCompanyMap.get("attachObid"))){
+            fileList = fileService.selectFileList(joinCompanyMap);
+            returnMap.put("file", fileList);
+        }
+
+        returnMap.put("company", joinCompanyMap);
+
+        return returnMap;
     }
 
     @Transactional
@@ -90,8 +102,9 @@ public class ManageService {
         Map<String,Object> joinCompanyMap = manageDao.selectJoinCompany(paramMap);
         if(ObjectUtils.isEmpty(joinCompanyMap)) throw new RuntimeException("일치하는 정보가 없습니다.");
         
-        Map<String,Object> fileMap = fileService.selectFile(paramMap);
-        fileService.deleteFile(fileMap);
+        Map<String,Object> fileMap = fileService.selectFile(joinCompanyMap);
+        if(!ObjectUtils.isEmpty(fileMap))fileService.deleteFile(fileMap);
+
         manageDao.deleteJoinCompany(joinCompanyMap);
     }
 
@@ -102,7 +115,19 @@ public class ManageService {
     }
 
     public Map<String, Object> selectJoinUser(Map<String,Object> paramMap) throws Exception {
-        return manageDao.selectJoinUser(paramMap);
+        Map<String,Object> returnMap = new HashMap<String,Object>();
+        List<Map<String,Object>> fileList = null;
+        Map<String,Object> joinUserMap = manageDao.selectJoinUser(paramMap);
+
+        if(ObjectUtils.isEmpty(joinUserMap)) throw new RuntimeException("일치하는 정보가 없습니다.");
+        if(!ObjectUtils.isEmpty(joinUserMap.get("attachObid"))){
+            fileList = fileService.selectFileList(joinUserMap);
+            returnMap.put("file", fileList);
+        }
+
+        returnMap.put("user", joinUserMap);
+
+        return returnMap;
     }
 
     @Transactional
@@ -156,9 +181,9 @@ public class ManageService {
         Map<String,Object> joinUserMap = manageDao.selectJoinUser(paramMap);
         if(ObjectUtils.isEmpty(joinUserMap)) throw new RuntimeException("일치하는 정보가 없습니다.");
 
-        Map<String,Object> fileMap = fileService.selectFile(paramMap);
-        if(!ObjectUtils.isEmpty(fileMap))fileService.deleteFile(fileMap);
+        Map<String,Object> fileMap = fileService.selectFile(joinUserMap);
+        if(!ObjectUtils.isEmpty(fileMap)) fileService.deleteFile(fileMap);
+
         manageDao.deleteJoinCompany(joinUserMap);
     }    
-
 }
