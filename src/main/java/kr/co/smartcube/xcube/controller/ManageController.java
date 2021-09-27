@@ -6,6 +6,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import kr.co.smartcube.xcube.common.CommonResult;
 import kr.co.smartcube.xcube.common.ResponseService;
+import kr.co.smartcube.xcube.common.security.jwt.LoginVO;
 import kr.co.smartcube.xcube.services.ManageService;
 import kr.co.smartcube.xcube.util.Util;
 import lombok.extern.slf4j.Slf4j;
@@ -35,32 +38,54 @@ public class ManageController {
     private ResponseService responseService;
 
     /*참가기업*/
-    @GetMapping("/company/")
-    public ResponseEntity<CommonResult> selectJoinCompanyList(){
+    @GetMapping("/company")
+    public ResponseEntity<CommonResult> selectJoinCompanyList(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @RequestBody(required = false) Map<String, Object> paramMap)
+    {
         try {
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinCompanyList(Util.initPaginagtion())), HttpStatus.OK);
+            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+        
+            paramMap.put("email", loginVO.getEmail());
+
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinCompanyList(Util.initPaginagtion(paramMap))), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
     }
 
-    @GetMapping("/company/{refObid}")
-    public ResponseEntity<CommonResult> selectJoinCompany(@PathVariable String refObid) throws Exception {
-        Map<String,Object> paramMap = new HashMap<String,Object>();
-        paramMap.put("refObid", refObid);
+    @GetMapping("/company/{refObidCompany}")
+    public ResponseEntity<CommonResult> selectJoinCompany(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @PathVariable String refObidCompany) throws Exception 
+    {
         try {
+            Map<String,Object> paramMap = new HashMap<String,Object>();
+
+            paramMap.put("refObidCompany", refObidCompany);
+            paramMap.put("email", loginVO.getEmail());
+
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinCompany(paramMap)), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
     }
 
-    @PostMapping("/company/")
-    public ResponseEntity<CommonResult> insertJoinCompany(@RequestBody Map<String, Object> map) throws Exception{
+    @PostMapping("/company/{refObid}")
+    public ResponseEntity<CommonResult> insertJoinCompany(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @PathVariable String refObid,
+        @RequestBody Map<String, Object> paramMap) throws Exception
+    {
         try {
-            manageService.insertJoinCompany(map);
+            paramMap.put("refObid", refObid);
+            paramMap.put("email", loginVO.getEmail());
+
+            manageService.insertJoinCompany(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
@@ -68,11 +93,17 @@ public class ManageController {
         }
     }
 
-    @PatchMapping("/company/{refObid}")
-    public ResponseEntity<CommonResult> updateJoinCompany(@PathVariable String refObid, @RequestBody Map<String, Object> map){
+    @PatchMapping("/company/{refObidCompany}")
+    public ResponseEntity<CommonResult> updateJoinCompany(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @PathVariable String refObidCompany, @RequestBody Map<String, Object> paramMap)
+    {
         try {
-            map.put("refObid", refObid);
-            manageService.updateJoinCompany(map);
+            paramMap.put("refObidCompany", refObidCompany);
+            paramMap.put("email", loginVO.getEmail());
+
+            manageService.updateJoinCompany(paramMap);
+
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
@@ -80,12 +111,19 @@ public class ManageController {
         }
     }
 
-    @DeleteMapping("/company/{refObid}")
-    public ResponseEntity<CommonResult> deleteJoinCompany(@PathVariable String refObid){
-        Map<String,Object> paramMap = new HashMap<String,Object>();
+    @DeleteMapping("/company/{refObidCompany}")
+    public ResponseEntity<CommonResult> deleteJoinCompany(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @PathVariable String refObidCompany)
+    {
         try {
-            paramMap.put("refObid", refObid);
+            Map<String,Object> paramMap = new HashMap<String,Object>();
+
+            paramMap.put("email", loginVO.getEmail());
+            paramMap.put("refObidCompany", refObidCompany);
+
             manageService.deleteJoinCompany(paramMap);
+
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
@@ -96,21 +134,30 @@ public class ManageController {
     }
 
     /*참여인력*/
-    @GetMapping("/user/")
-    public ResponseEntity<CommonResult> selectJoinUserList(){
+    @GetMapping("/user")
+    public ResponseEntity<CommonResult> selectJoinUserList(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @RequestBody(required = false) Map<String, Object> paramMap
+    ){
         try {
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinUserList(Util.initPaginagtion())), HttpStatus.OK);
+            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            paramMap.put("email", loginVO.getEmail());
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinUserList(Util.initPaginagtion(paramMap))), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
     }
 
-    @GetMapping("/user/{refObid}")
-    public ResponseEntity<CommonResult> selectJoinUser(@PathVariable String refObid) throws Exception {
-        Map<String,Object> paramMap = new HashMap<String,Object>();
-        paramMap.put("refObid", refObid);
+    @GetMapping("/user/{refUserObid}")
+    public ResponseEntity<CommonResult> selectJoinUser(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @PathVariable String refUserObid) throws Exception 
+    {
         try {
+            Map<String,Object> paramMap = new HashMap<String,Object>();
+            paramMap.put("refUserObid", refUserObid);
+            paramMap.put("email", loginVO.getEmail());
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinUser(paramMap)), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
@@ -118,10 +165,16 @@ public class ManageController {
         }
     }
 
-    @PostMapping("/user/")
-    public ResponseEntity<CommonResult> insertJoinUser(@RequestBody Map<String, Object> map) throws Exception{
+    @PostMapping("/user/{refObid}")
+    public ResponseEntity<CommonResult> insertJoinUser(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @PathVariable String refObid,
+        @RequestBody Map<String, Object> paramMap) throws Exception
+    {
         try {
-            manageService.insertJoinUser(map);
+            paramMap.put("refObid", refObid);
+            paramMap.put("email", loginVO.getEmail());
+            manageService.insertJoinUser(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
@@ -129,11 +182,16 @@ public class ManageController {
         }
     }
 
-    @PatchMapping("/user/{refObid}")
-    public ResponseEntity<CommonResult> updateJoinUser(@PathVariable String refObid, @RequestBody Map<String, Object> map){
+    @PatchMapping("/user/{refUserObid}")
+    public ResponseEntity<CommonResult> updateJoinUser(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @PathVariable String refUserObid, 
+        @RequestBody Map<String, Object> paramMap)
+    {
         try {
-            map.put("refObid", refObid);
-            manageService.updateJoinUser(map);
+            paramMap.put("refUserObid", refUserObid);
+            paramMap.put("email", loginVO.getEmail());
+            manageService.updateJoinUser(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
@@ -141,11 +199,15 @@ public class ManageController {
         }
     }
 
-    @DeleteMapping("/user/{refObid}")
-    public ResponseEntity<CommonResult> deleteJoinUser(@PathVariable String refObid){
+    @DeleteMapping("/user/{refUserObid}")
+    public ResponseEntity<CommonResult> deleteJoinUser(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @PathVariable String refUserObid)
+    {
         Map<String,Object> paramMap = new HashMap<String,Object>();
         try {
-            paramMap.put("refObid", refObid);
+            paramMap.put("refUserObid", refUserObid);
+            paramMap.put("email", loginVO.getEmail());
             manageService.deleteJoinUser(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
         } catch (RuntimeException e) {

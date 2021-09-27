@@ -88,34 +88,39 @@ public class BoardService {
         if(ObjectUtils.isEmpty(boardMap))
             throw new RuntimeException("일치하는 정보가 없습니다.");
 
-        List<Map<String,Object>> fileInsertList = new ArrayList<Map<String,Object>>();
-        Map<String,Object> fileGroupInfoMap = new HashMap<String,Object>();
-        List<Map<String,Object>> pfileList = Util.objToList(paramMap.get("file"));
+        List<Map<String,Object>> insertFileList = new ArrayList<Map<String,Object>>();
+        Map<String,Object> fileGroupMap = new HashMap<String,Object>();
+        List<Map<String,Object>> pFileList = Util.objToList(paramMap.get("file"));
         Map<String,Object> pboardMap = Util.objToMap(paramMap.get("board"));
         ArrayList<Object> attachFile = new ArrayList<Object>();
         
-        fileGroupInfoMap.put("fileGroup", paramMap.get("fileGroup"));
+        fileGroupMap.put("fileGroup", paramMap.get("fileGroup"));
 
-        if(!ObjectUtils.isEmpty(pfileList)){
-            for(Map<String,Object> pfileMap : pfileList){
-                if(!ObjectUtils.isEmpty(pfileMap.get("fileName")) && !ObjectUtils.isEmpty(pfileMap.get("filePath")) && !ObjectUtils.isEmpty(pfileMap.get("obid"))){
-                    attachFile = Util.jsonToArray(boardMap.get("attachObid").toString());
+        if(!ObjectUtils.isEmpty(boardMap.get("attachObid"))) attachFile = Util.jsonToArray(boardMap.get("attachObid").toString());
+        if(!ObjectUtils.isEmpty(pFileList)){
+            for(Map<String,Object> pfileMap : pFileList){
+                if(!ObjectUtils.isEmpty(attachFile) && 
+                    !ObjectUtils.isEmpty(pfileMap) && 
+                    !ObjectUtils.isEmpty(pfileMap.get("fileName")) && 
+                    !ObjectUtils.isEmpty(pfileMap.get("filePath")) && 
+                    !ObjectUtils.isEmpty(pfileMap.get("obid")))
+                {
                     attachFile.remove(pfileMap.get("obid"));
                     fileService.deleteFile(pfileMap);
                 }
                     
-                fileGroupInfoMap.put("fileSubGroup", pfileMap.get("fileSubGroup"));
+                fileGroupMap.put("fileSubGroup", pfileMap.get("fileSubGroup"));
                 if(!ObjectUtils.isEmpty(pfileMap.get("fileName")) && !ObjectUtils.isEmpty(pfileMap.get("fileContent")))
-                    fileInsertList.add(fileService.fileUploadByte(pfileMap.get("fileName").toString(), pfileMap.get("fileContent").toString(), fileGroupInfoMap));
+                insertFileList.add(fileService.fileUploadByte(pfileMap.get("fileName").toString(), pfileMap.get("fileContent").toString(), fileGroupMap));
             }
         }
 
-        pboardMap.put("attachObid", Util.getAttachObid(attachFile, fileInsertList));
+        pboardMap.put("attachObid", Util.getAttachObid(attachFile, insertFileList));
         pboardMap.put("obid", paramMap.get("obid"));
         pboardMap.put("boardType", paramMap.get("boardType"));
 
         boardDao.updateBoard(pboardMap);
-        fileService.insertFileList(fileInsertList);
+        fileService.insertFileList(insertFileList);
     }
 
     @Transactional

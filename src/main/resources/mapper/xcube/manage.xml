@@ -5,34 +5,66 @@
 
 	<!--참가기업-->
 	<select id="selectJoinCompanyList" resultType="ParamMap">
-		SELECT *
-		  FROM TEST_TABLE1
+		SELECT ROW_NUMBER() OVER() AS NUM,
+			   E.COMPANY_NAME,
+			   E.IDN,
+			   E.EMAIL,
+			   REPLACE(REPLACE(REPLACE(REPLACE(E.BUSINESS_TYPE, ']', ''), '[', ''), '"', ''), ' ', '') AS BUSINESS_TYPE,
+			   D.REF_OBID_COMPANY
+		  FROM MASTER_LICENSE A
+	INNER JOIN EVENT_LIST B ON A.OBID = B.REF_OBID
+	INNER JOIN PARTICIPATE_LIST C ON B.REF_OBID = C.REF_OBID
+	INNER JOIN TEST_TABLE1 D ON C.REF_OBID = D.REF_OBID
+	INNER JOIN USERS E ON D.REF_OBID_COMPANY = E.OBID
+		 WHERE A.EMAIL = #{email}
+		   AND C.OBJECT_FOR IN (0, 2)
+		   AND SYSDATE() BETWEEN C.START_OBJECTS_DATE AND END_OBJECTS_DATE
+		<if test="searchType == 'companyName'">
+		   AND E.COMPANY_NAME LIKE '%'|| #{searchText} || '%'
+		</if>
+		<if test="searchType == 'comapayType'">
+		   AND E.BUSINESS_TYPE LIKE '%' || #{searchText} || '%'
+		</if>
+		ORDER BY D.CREATED_ON DESC
 	</select>
 
 	<select id="selectJoinCompany" resultType="ParamMap">
 		SELECT *
 		  FROM TEST_TABLE1
-		 WHERE REF_OBID = #{refObid}
+		 WHERE REF_OBID_COMPANY = #{refObidCompany}
 	</select>
 
 	<insert id="insertJoinCompany" parameterType="java.util.HashMap">
 		INSERT INTO TEST_TABLE1
 		(
 			REF_OBID,
-			REF_OBID_COMPANY
+			REF_OBID_COMPANY,
+			TEST1,
+			TEST2,
+			TEST3,
+			ATTACH_OBID,
+			CREATED_ON
 		)
 		VALUES 
 		(
 			#{refObid},
 			#{refObidCompany},
+			#{test1},
+			#{test2},
+			#{test3},
+			#{attachObid},
+			SYSDATE()
 		)
 	</insert>
 
 	<update id="updateJoinCompany" parameterType="java.util.HashMap">
 		UPDATE TEST_TABLE1
 		   SET REF_OBID = #{refObid},
-			   REF_OBID_COMPANY = #{refObidCompany},
-		 WHERE REF_OBID = #{refObid}
+			   TEST1 = #{test1},
+			   TEST2 = #{test2},
+			   TEST3 = #{test3},
+			   ATTACH_OBID = #{attachObid}
+		 WHERE REF_OBID_COMPANY = #{refObidCompany}
 	</update>
 
 	<delete id="deleteJoinCompany" parameterType="java.util.HashMap">
@@ -42,39 +74,69 @@
 
 	<!--참여인력-->
 	<select id="selectJoinUserList" resultType="ParamMap">
-		SELECT *
-		  FROM TEST_TABLE1
+		SELECT ROW_NUMBER() OVER() AS NUM,
+			   E.EMAIL,
+			   E.NAME,
+			   'TEST' AS ROLL,
+			   D.REF_OBID_USER
+		  FROM MASTER_LICENSE A
+	INNER JOIN EVENT_LIST B ON A.OBID = B.REF_OBID
+	INNER JOIN PARTICIPATE_LIST C ON B.REF_OBID = C.REF_OBID
+	INNER JOIN TEST_TABLE1 D ON C.REF_OBID = D.REF_OBID
+	INNER JOIN USERS E ON D.REF_OBID_USER = E.OBID
+		 WHERE A.EMAIL = #{email}
+		   AND C.OBJECT_FOR IN (0, 1)
+		   AND SYSDATE() BETWEEN C.START_OBJECTS_DATE AND END_OBJECTS_DATE
+		<if test="searchType == 'id'">
+		   AND D.EMAIL LIKE '%'|| #{searchText} || '%'
+		</if>
+		<if test="searchType == 'nickName'">
+		   AND A.NAME LIKE '%' || #{searchText} || '%'
+		</if>
+		ORDER BY CREATED_ON DESC
 	</select>
 
 	<select id="selectJoinUser" resultType="ParamMap">
 		SELECT *
 		  FROM TEST_TABLE1
-		 WHERE REF_OBID = #{refObid}
+		 WHERE REF_OBID_USER = #{refUserObid}
 	</select>
 
 	<insert id="insertJoinUser" parameterType="java.util.HashMap">
 		INSERT INTO TEST_TABLE1
 		(
 			REF_OBID,
-			REF_OBID_USER
+			REF_OBID_USER,
+			TEST1,
+			TEST2,
+			TEST3,
+			ATTACH_OBID,
+			CREATED_ON
 		)
 		VALUES 
 		(
 			#{refObid},
 			#{refObidUser},
+			#{test1},
+			#{test2},
+			#{test3},
+			#{attachObid},
+			SYSDATE()
 		)
 	</insert>
 
 	<update id="updateJoinUser" parameterType="java.util.HashMap">
 		UPDATE TEST_TABLE1
 		   SET REF_OBID = #{refObid},
-			   REF_OBID_USER = #{refObidCompany},
-		 WHERE REF_OBID = #{refObid}
+			   TEST1 = #{test1},
+			   TEST2 = #{test2},
+			   TEST3 = #{test3},
+			   ATTACH_OBID = #{attachObid}
+		 WHERE REF_OBID_USER = #{refUserObid}
 	</update>
 
 	<delete id="deleteJoinUser" parameterType="java.util.HashMap">
 		DELETE FROM TEST_TABLE1
-		 WHERE REF_OBID = #{refObid}
+		 WHERE REF_OBID_USER = #{refUserObid}
 	</delete>
-
 </mapper>
