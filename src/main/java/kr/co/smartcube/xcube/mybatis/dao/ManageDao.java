@@ -39,6 +39,15 @@ public class ManageDao {
 		return sqlSession.update(NAMESPACE + "deleteJoinCompany", paramMap);
 	}
 
+	/*관심기업*/
+	public PageInfo<Map<String, Object>> selectInterestCompanyList(Map<String,Object> paramMap) throws Exception {
+		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "selectInterestCompanyList", paramMap));
+    }
+
+	public int insertInterestCompany(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.insert(NAMESPACE + "insertInterestCompany", paramMap);
+	}
+
 	/*참여인력*/
 	public PageInfo<Map<String, Object>> selectJoinUserList(Map<String,Object> paramMap) throws Exception {
 		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "selectJoinUserList", paramMap));

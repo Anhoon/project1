@@ -138,10 +138,31 @@ public class ManageService {
         manageDao.deleteJoinCompany(joinCompanyMap);
     }
 
+    /*관심기업*/
+    public PageInfo<Map<String, Object>> selectInterestCompanyList(Map<String,Object> paramMap) throws Exception {
+        PageHelper.startPage((int)paramMap.get("pageNum"), (int)paramMap.get("pageSize"), (String) paramMap.get("orderBy"));
+        return manageDao.selectInterestCompanyList(paramMap);
+    }
+
+    public void insertInterestCompany(Map<String,Object> paramMap) throws Exception {
+        manageDao.insertInterestCompany(paramMap);
+    }
+
     /*참여인력*/
     public PageInfo<Map<String, Object>> selectJoinUserList(Map<String,Object> paramMap) throws Exception {
+        List<Map<String,Object>> fileList = null;
         PageHelper.startPage((int)paramMap.get("pageNum"), (int)paramMap.get("pageSize"), (String) paramMap.get("orderBy"));
-        return manageDao.selectJoinUserList(paramMap);
+        PageInfo<Map<String, Object>> joinUserList = manageDao.selectJoinUserList(paramMap);
+
+        if(!ObjectUtils.isEmpty(joinUserList)){
+            for(Map<String, Object> joinUserMap:joinUserList.getList()){
+                if(!ObjectUtils.isEmpty(joinUserMap) && !ObjectUtils.isEmpty(joinUserMap.get("attachObid"))){
+                    fileList = fileService.selectFileList(joinUserMap);
+                    if(!ObjectUtils.isEmpty(fileList)) joinUserMap.put("file", fileList);
+                }
+            }
+        }
+        return joinUserList;
     }
 
     public Map<String, Object> selectJoinUser(Map<String,Object> paramMap) throws Exception {

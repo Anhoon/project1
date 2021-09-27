@@ -133,6 +133,40 @@ public class ManageController {
         }
     }
 
+    /*관심기업*/
+    @GetMapping("/company/interest")
+    public ResponseEntity<CommonResult> selectInterestingCompanyList(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @RequestBody(required = false) Map<String, Object> paramMap
+    ){
+        try {
+            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            paramMap.put("email", loginVO.getEmail());
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectInterestCompanyList(Util.initPaginagtion(paramMap))), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+
+    @PostMapping("/company/interest")
+    public ResponseEntity<CommonResult> insertInterestingCompany(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @RequestBody Map<String, Object> paramMap
+    ){
+        try {
+            if(ObjectUtils.isEmpty(paramMap) || ObjectUtils.isEmpty(paramMap.get("refObid")) || ObjectUtils.isEmpty(paramMap.get("refObidCompany"))) 
+                return new ResponseEntity<CommonResult>(responseService.getFailResult("행사정보, 기업정보를 확인하시기 바랍니다."), HttpStatus.CONFLICT);
+
+            paramMap.put("email", loginVO.getEmail());
+            manageService.insertInterestCompany(paramMap);
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+
     /*참여인력*/
     @GetMapping("/user")
     public ResponseEntity<CommonResult> selectJoinUserList(
