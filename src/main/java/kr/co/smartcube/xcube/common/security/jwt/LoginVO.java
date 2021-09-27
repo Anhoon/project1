@@ -192,4 +192,26 @@ public class LoginVO implements UserDetails {
     public void setRoles(List<String> roles) {
         this.roles = roles;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+            " obid='" + getObid() + "'" +
+            ", createdOn='" + getCreatedOn() + "'" +
+            ", email='" + getEmail() + "'" +
+            ", password='" + getPassword() + "'" +
+            ", name='" + getName() + "'" +
+            ", userType='" + getUserType() + "'" +
+            ", userStatus='" + getUserStatus() + "'" +
+            ", mobile='" + getMobile() + "'" +
+            ", idn='" + getIdn() + "'" +
+            ", companyName='" + getCompanyName() + "'" +
+            ", addr='" + getAddr() + "'" +
+            ", tel='" + getTel() + "'" +
+            ", businessYype='" + getBusinessYype() + "'" +
+            ", sales='" + getSales() + "'" +
+            ", employeeSize='" + getEmployeeSize() + "'" +
+            ", roles='" + getRoles() + "'" +
+            "}";
+    }
 }

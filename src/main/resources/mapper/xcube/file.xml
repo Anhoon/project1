@@ -12,8 +12,8 @@
 		  FROM ATTACH_FILE
 		<if test="attachObid != null and attachObid != ''">
 		 WHERE OBID IN
-			<foreach collection="attachObid" item="arr" separator="," open="(" close=")"> 
-				#{arr}
+			<foreach collection="attachObid" item="item" separator="," open="(" close=")"> 
+				#{item}
 			</foreach>
 		</if>
 	</select>
@@ -69,17 +69,15 @@
 	</insert>
 
 	<delete id="deleteFile" parameterType="java.util.HashMap">
-		DELETE
-		  FROM ATTACH_FILE
-		 WHERE OBID = #{attatchObid}
+		DELETE FROM ATTACH_FILE
+		 WHERE OBID = #{obid}
 	</delete>
 
 	<delete id="deleteFileList" parameterType="java.util.List">
-		DELETE
-		  FROM ATTACH_FILE
+		DELETE FROM ATTACH_FILE
 		 WHERE OBID IN
 		<foreach collection="list" item="item" separator="," open="(" close=")"> 
-			#{item.attatchObid}
+			#{item.obid}
 		</foreach>
 	</delete>
 

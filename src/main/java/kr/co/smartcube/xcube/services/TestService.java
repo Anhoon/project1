@@ -40,7 +40,7 @@ public class TestService {
         for (String s : test) log.info(s);
     }
 
-    public PageInfo<List<Map<String, Object>>> selectHistory1(Map<String,Object> paramMap) {
+    public PageInfo<Map<String, Object>> selectHistory1(Map<String,Object> paramMap) {
         PageHelper.startPage((int)paramMap.get("pageNum"), (int)paramMap.get("pageSize"), (String) paramMap.get("orderBy"));
         return testTableDao.selectHistory1(paramMap);
     }

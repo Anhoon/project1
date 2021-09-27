@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,11 +62,9 @@ public class TestController {
 
   @GetMapping("/api/test")
   public ResponseEntity<CommonResult> test(@RequestBody Map<String, Object> payload) throws Exception {
-    payload = Util.initPaginagtion(payload);
-
     try {
       return new ResponseEntity<CommonResult>(
-        responseService.getSingleResult(testService.selectHistory1(payload)), 
+        responseService.getSingleResult(testService.selectHistory1(Util.initPaginagtion(payload))), 
         HttpStatus.OK
       );
     } catch (Exception e) {
@@ -119,9 +118,22 @@ public class TestController {
         contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
 
         // Fallback to the default content type if type could not be determined
-        if(contentType == null) {
-          contentType = "application/octet-stream";
-        }
+        if(!StringUtils.hasText(contentType)) contentType = "application/octet-stream";
+      
+        String savedFileName = URLDecoder.decode(resource.getFilename(), "UTF-8");
+        String originFileName = savedFileName.substring(savedFileName.lastIndexOf("_")+1);
+
+        if(agent.contains("Trident")) //Internet Explorer
+          originFileName = URLDecoder.decode(originFileName, "UTF-8").replaceAll("\\+", " ");
+        else if(agent.contains("Edge")) //Micro Edge
+          originFileName = URLDecoder.decode(originFileName, "UTF-8");
+        else 
+          originFileName = new String(originFileName.getBytes("UTF-8"), "ISO-8859-1");
+        
+        return ResponseEntity.ok()
+          .contentType(MediaType.parseMediaType(contentType))
+          .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + originFileName  + "\"")
+          .body(resource);
       } catch (IOException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(responseService.getFailResult("Could not determine file type."));
       } catch (RuntimeException e){
@@ -129,21 +141,6 @@ public class TestController {
       }catch (Exception e){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseService.getFailResult());
       }
-
-      String savedFileName = URLDecoder.decode(resource.getFilename(), "UTF-8");
-      String originFileName = savedFileName.substring(savedFileName.lastIndexOf("_")+1);
-
-      if(agent.contains("Trident")) //Internet Explorer
-        originFileName = URLDecoder.decode(originFileName, "UTF-8").replaceAll("\\+", " ");
-      else if(agent.contains("Edge")) //Micro Edge
-        originFileName = URLDecoder.decode(originFileName, "UTF-8");
-      else 
-        originFileName = new String(originFileName.getBytes("UTF-8"), "ISO-8859-1");
-
-      return ResponseEntity.ok()
-              .contentType(MediaType.parseMediaType(contentType))
-              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + originFileName  + "\"")
-              .body(resource);
   }
 
   @PostMapping("/api/test/{board}")

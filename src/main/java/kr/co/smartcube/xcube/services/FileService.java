@@ -18,7 +18,6 @@ import java.util.Map;
 
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JsonParseException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -164,11 +163,11 @@ public class FileService {
         return path;
     }
 
-    private int deleteRealFile(Map<String,Object> param){
+    private int deleteRealFile(Map<String,Object> paramMap) throws Exception{
         int delFileCnt = 0;
         
-        if(!ObjectUtils.isEmpty(param.get("filePath")) && !ObjectUtils.isEmpty(param.get("fileName"))){
-            String filePath = param.get("filePath").toString()
+        if(!ObjectUtils.isEmpty(paramMap.get("filePath")) && !ObjectUtils.isEmpty(paramMap.get("fileName"))){
+            String filePath = paramMap.get("filePath").toString()
                                             .replaceAll("http://localhost:8080/api/file/download/", "")
                                             .replaceAll("http://localhost:8080/api/test/download/", "");
 
@@ -189,55 +188,55 @@ public class FileService {
 
     }
 
-    public int deleteFileList(List<Map<String,Object>> param) throws Exception{
-        if(ObjectUtils.isEmpty(param)){
+    public int deleteFileList(List<Map<String,Object>> paramList) throws Exception{
+        if(ObjectUtils.isEmpty(paramList)){
             return 0;
         }
 
-        for(Map<String,Object> map : param){
-            deleteRealFile(map);
+        for(Map<String,Object> map : paramList){
+            if(!ObjectUtils.isEmpty(map)) deleteRealFile(map);
         }
-        return fileDao.deleteFileList(param);
+        return fileDao.deleteFileList(paramList);
     }
 
-    public int deleteFile(Map<String,Object> param) throws Exception{
-        if(ObjectUtils.isEmpty(param)){
+    public int deleteFile(Map<String,Object> paramMap) throws Exception{
+        if(ObjectUtils.isEmpty(paramMap)){
             return 0;
         }
 
-        deleteRealFile(param);
-        return fileDao.deleteFile(param);
+        deleteRealFile(paramMap);
+        return fileDao.deleteFile(paramMap);
     }
 
-    public List<Map<String, Object>> selectFileList(Map<String, Object> param) {
-        if(ObjectUtils.isEmpty(param) || ObjectUtils.isEmpty(param.get("attachObid"))){
+    public List<Map<String, Object>> selectFileList(Map<String, Object> paramMap) throws Exception {
+        if(ObjectUtils.isEmpty(paramMap) || ObjectUtils.isEmpty(paramMap.get("attachObid"))){
             return null;
         }
 
         ArrayList<Object> fileObidList = new ArrayList<Object>();
         Map<String,Object> fileInfo = new HashMap<String,Object>();
 
-        if(!param.get("attachObid").toString().contains(",")){
+        if(!paramMap.get("attachObid").toString().contains(",")){
             List<Map<String, Object>> returnList = new ArrayList<Map<String, Object>>();
-            returnList.add(selectFile(param));
+            Map<String, Object> map = selectFile(paramMap);
+            if(!ObjectUtils.isEmpty(map)) returnList.add(map);
             return returnList;
         }
 
-        fileObidList = Util.jsonToArray(param.get("attachObid").toString());
+        fileObidList = Util.jsonToArray(paramMap.get("attachObid").toString());
         fileInfo.put("attachObid", fileObidList);
         return fileDao.selectFileList(fileInfo);
     }
 
-	public Map<String, Object> selectFile(Map<String, Object> param) {
-		return fileDao.selectFile(param);
+	public Map<String, Object> selectFile(Map<String, Object> paramMap)  throws Exception{
+		return fileDao.selectFile(paramMap);
     }
 
-	public int insertFile(List<Map<String, Object>> param){
-		return fileDao.insertFile(param);
+	public int insertFile(List<Map<String, Object>> paramList)  throws Exception{
+		return fileDao.insertFile(paramList);
 	}
 
-	public int insertFileList(List<Map<String, Object>> param){
-		return fileDao.insertFileList(param);
+	public int insertFileList(List<Map<String, Object>> paramList)  throws Exception{
+		return fileDao.insertFileList(paramList);
 	}
-
 }

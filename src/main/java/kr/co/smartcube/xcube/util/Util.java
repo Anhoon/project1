@@ -225,4 +225,18 @@ public class Util {
             return false;
         }
     }
+    public static String getAttachObid(List<Map<String,Object>> paramList){
+        return getAttachObid(null, paramList);
+    }
+
+    public static String getAttachObid(ArrayList<Object> attachFile, List<Map<String,Object>> paramList){
+        if(ObjectUtils.isEmpty(attachFile)) attachFile = new ArrayList<Object>();
+        if(!ObjectUtils.isEmpty(paramList)){
+            for(Map<String,Object> map : paramList){
+                if(!ObjectUtils.isEmpty(map.get("obid"))) attachFile.add(map.get("obid").toString());
+            }
+        }
+
+        return objToJson(attachFile);
+    }
 }

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd">
+
+<mapper namespace="board">
+	
+	<select id="selectBoardList" resultType="ParamMap">
+		SELECT *
+		  FROM TEST_TABLE1
+		<if test="boardType != null and boardType != ''">
+		 WHERE BOARD_TYPE = #{boardType}
+		</if>
+	</select>
+
+	<select id="selectBoard" resultType="ParamMap">
+		SELECT *
+		  FROM TEST_TABLE1
+		 WHERE OBID = #{obid} 
+	</select>
+
+	<insert id="insertBoard" parameterType="java.util.HashMap">
+		INSERT INTO TEST_TABLE1 
+		(
+			OBID,
+			BOARD_TYPE,
+			TEST1,
+			TEST2,
+			TEST3,
+			ATTACH_OBID
+		) 
+		VALUES 
+		(
+			#{obid},
+			#{boardType},
+			#{test1}, 
+			#{test2},
+			#{test3},
+			#{attachObid}
+		)
+	</insert>
+
+	<insert id="insertBoardList" parameterType="java.util.List">
+		INSERT INTO TEST_TABLE1 
+		(
+			OBID,
+			BOARD_TYPE,
+			TEST1,
+			TEST2,
+			TEST3,
+			ATTACH_OBID
+		) 
+		VALUES 
+		<foreach collection="list" item="item" separator=",">
+		(
+			#{item.obid},
+			#{item.boardType},
+			#{item.test1}, 
+			#{item.test2},
+			#{item.test3},
+			#{item.attachObid}
+		)
+		</foreach>
+	</insert>
+
+	<update id="updateBoard" parameterType="java.util.HashMap">
+		UPDATE 	TEST_TABLE1
+		   SET 	BOARD_TYPE = #{boardType},
+		   		TEST1 = #{test1},
+		   		TEST2 = #{test2},
+		   		TEST3 = #{test3},
+		   		ATTACH_OBID = #{attachObid}
+		 WHERE 	OBID = #{obid}
+	</update>
+
+	<delete id="deleteBoard" parameterType="java.util.HashMap">
+		DELETE
+		  FROM TEST_TABLE1
+		 WHERE OBID = #{obid}
+	</delete>
+
+	<delete id="deleteBoardList" parameterType="java.util.List">
+		DELETE
+		  FROM TEST_TABLE1
+		<if test="obid != null and obid != ''">
+		 WHERE OBID IN
+			<foreach collection="obid" item="item" separator="," open="(" close=")"> 
+				#{item}
+			</foreach>
+		</if>
+	</delete>
+
+</mapper>

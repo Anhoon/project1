@@ -1,6 +1,5 @@
 package kr.co.smartcube.xcube.mybatis.dao;
 
-import java.util.List;
 import java.util.Map;
 
 import com.github.pagehelper.PageInfo;
@@ -22,7 +21,7 @@ public class TestTableDao {
 		return sqlSession.selectOne(NAMESPACE + "selectHistory");
 	}
 
-	public PageInfo<List<Map<String, Object>>> selectHistory1(Map<String,Object> paraMap){
-		return new PageInfo<List<Map<String,Object>>> (sqlSession.selectList(NAMESPACE + "selectHistory1", paraMap));
+	public PageInfo<Map<String, Object>> selectHistory1(Map<String,Object> paraMap){
+		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "selectHistory1", paraMap));
 	}
 }

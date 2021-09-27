@@ -111,7 +111,7 @@ public class ManageController {
         Map<String,Object> paramMap = new HashMap<String,Object>();
         paramMap.put("refObid", refObid);
         try {
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinCompany(paramMap)), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinUser(paramMap)), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);

@@ -16,10 +16,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,7 +45,10 @@ public class FileController {
   private FileService fileService;
  
   @PostMapping("/api/file/upload")
-  public ResponseEntity<CommonResult> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files, @RequestParam("email") String email) throws Exception{
+  public ResponseEntity<CommonResult> uploadMultipleFiles(
+    @RequestParam("files") MultipartFile[] files, 
+    @RequestParam("email") String email) throws Exception
+  {
       List<Map<String,Object>> fileList = new ArrayList<Map<String,Object>>();
       try {
         fileList = fileService.storeFile(files);
@@ -81,9 +87,7 @@ public class FileController {
       contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
 
       // Fallback to the default content type if type could not be determined
-      if(contentType == null) {
-        contentType = "application/octet-stream";
-      }
+      if(!StringUtils.hasText(contentType)) contentType = "application/octet-stream";
 
       String savedFileName = URLDecoder.decode(resource.getFilename(), "UTF-8");
       String originFileName = savedFileName.substring(savedFileName.lastIndexOf("_")+1);

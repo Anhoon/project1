@@ -44,6 +44,20 @@ public class ResponseService {
         setSuccessResult(result);
         return result;
     }
+    // 단일건 결과를 처리하는 메소드
+    public <T> SingleResult<T> getSuccessResult(T data) {
+        SingleResult<T> result = new SingleResult<>();
+        result.setData(data);
+        setSuccessResult(result);
+        return result;
+    }
+    // 다중건 결과를 처리하는 메소드
+    public <T> ListResult<T> getSuccessResult(List<T> list) {
+        ListResult<T> result = new ListResult<>();
+        result.setList(list);
+        setSuccessResult(result);
+        return result;
+    }
     // 성공 결과만 처리하는 메소드
     public CommonResult getSuccessResult() {
         CommonResult result = new CommonResult();
