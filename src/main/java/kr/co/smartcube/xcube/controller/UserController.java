@@ -109,4 +109,14 @@ public class UserController {
         return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
     }
 
+    @GetMapping("/findPassword/{email}")
+    public ResponseEntity<CommonResult> findPassword(@PathVariable String email) throws Exception{
+        try {
+            userService.findPassword(email);
+        } catch (Exception e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
+    }
+
 }

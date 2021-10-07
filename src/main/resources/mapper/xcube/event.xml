@@ -12,12 +12,13 @@
 			ALIAS,
 			OBJECTS,
 			CONTENTS,
-			PRODUCTS,
+			SHOW_PRODUCTS,
 			ORGANIZER,
 			SUBJECTIVITY,
 			SUPPORT,
 			HOMPAGE,
-			ATTATCH_OBID
+			PROGRAM,
+			ATTATCH_REF_OBID
 		FROM EVENT_LIST
 	</select>
 
@@ -30,12 +31,13 @@
 			ALIAS,
 			OBJECTS,
 			CONTENTS,
-			PRODUCTS,
+			SHOW_PRODUCTS,
 			ORGANIZER,
 			SUBJECTIVITY,
 			SUPPORT,
 			HOMPAGE,
-			ATTATCH_OBID
+			PROGRAM,
+			ATTATCH_REF_OBID
 		FROM EVENT_LIST
 		WHERE REF_OBID = #{refObid}
 	</select>
@@ -45,16 +47,17 @@
 			REF_OBID,
 			DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
 			OBJECT_FOR,
+			SCALE,
 			QUALIFY_APPLY_OBJECTS,
-			DATE_FORMAT(START_OBJECTS_DATE,'%Y-%m-%d %T') AS START_OBJECTS_DATE,
-			DATE_FORMAT(END_OBJECTS_DATE,'%Y-%m-%d %T') AS END_OBJECTS_DATE,
+			DATE_FORMAT(START_APPLY_DATE,'%Y-%m-%d %T') AS START_OBJECTS_DATE,
+			DATE_FORMAT(END_APPLY_DATE,'%Y-%m-%d %T') AS END_OBJECTS_DATE,
 			SUPPORT_CONTENT,
-			HELPER,
-			HELPER_COUNT,
-			QUALIFY_APPLY_HELPER,
-			DATE_FORMAT(START_HELPER_DATE,'%Y-%m-%d %T') AS START_HELPER_DATE,
-			DATE_FORMAT(END_HELPER_DATE,'%Y-%m-%d %T') AS END_HELPER_DATE,
-			ATTATCH_OBID
+			APPLY_DOC,
+			APPLY_TYPE,
+			APPLY_COUNT,
+			APPLY_FEE,
+			APPLY_FOR_OBJECT,
+			ATTATCH_REF_OBID
 		FROM PARTICIPATE_LIST
 		WHERE REF_OBID = #{refObid}
 	</select>
@@ -69,12 +72,13 @@
 			ALIAS,
 			OBJECTS,
 			CONTENTS,
-			PRODUCTS,
+			SHOW_PRODUCTS,
 			ORGANIZER,
 			SUBJECTIVITY,
 			SUPPORT,
 			HOMPAGE,
-			ATTATCH_OBID
+			PROGRAM,
+			ATTATCH_REF_OBID
 		)
 		VALUES 
 		(
@@ -85,12 +89,13 @@
 			#{alias},
 			#{objects},
 			#{contents},
-			#{products},
+			#{showProducts},
 			#{organizer},
 			#{subjectivity},
 			#{support},
 			#{hompage},
-			#{attatchObid}
+			#{program},
+			#{attatchRefObid}
 		)
 	</insert>
 
@@ -100,32 +105,34 @@
 			REF_OBID,
 			CREATED_ON,
 			OBJECT_FOR,
+			SCALE,
 			QUALIFY_APPLY_OBJECTS,
-			START_OBJECTS_DATE,
-			END_OBJECTS_DATE,
+			START_APPLY_DATE,
+			END_APPLY_DATE,
 			SUPPORT_CONTENT,
-			HELPER,
-			HELPER_COUNT,
-			QUALIFY_APPLY_HELPER,
-			START_HELPER_DATE,
-			END_HELPER_DATE,
-			ATTATCH_OBID
+			APPLY_DOC,
+			APPLY_TYPE,
+			APPLY_COUNT,
+			APPLY_FEE,
+			APPLY_FOR_OBJECT,
+			ATTATCH_REF_OBID
 		)
 		VALUES 
 		(
 			#{refObid},
 			SYSDATE(),
 			#{objectFor},
+			#{scale},
 			#{qualifyApplyObjects},
-			CONVERT(#{startObjectsDate}, DATETIME),
-			CONVERT(#{endObjectsDate}, DATETIME),
+			CONVERT(#{startApplyDate}, DATETIME),
+			CONVERT(#{endApplyDate}, DATETIME),
 			#{supportContent},
-			#{helper},
-			#{helperCount},
-			#{qualifyApplyHelper},
-			CONVERT(#{startHelperDate}, DATETIME),
-			CONVERT(#{endHelperDate}, DATETIME),
-			#{attatchObid}
+			#{applyDoc},
+			#{applyType},
+			#{applyCount},
+			#{applyFee},
+			#{applyForObject},
+			#{attatchRefObid}
 		)
 	</insert>
 
@@ -136,12 +143,12 @@
 			ALIAS = #{alias},
 			OBJECTS = #{objects},
 			CONTENTS = #{contents},
-			PRODUCTS = #{products},
+			SHOW_PRODUCTS = #{showProducts},
 			ORGANIZER = #{organizer},
 			SUBJECTIVITY = #{subjectivity},
 			SUPPORT = #{support},
 			HOMPAGE = #{hompage},
-			ATTATCH_OBID = #{attatchObid}
+			PROGRAM = #{program}
 		WHERE REF_OBID = #{refObid}
 	</update>
 
@@ -149,15 +156,15 @@
 		UPDATE PARTICIPATE_LIST SET
 			OBJECT_FOR = #{objectFor},
 			QUALIFY_APPLY_OBJECTS = #{qualifyApplyObjects},
-			START_OBJECTS_DATE = CONVERT(#{startObjectsDate}, DATETIME),
-			END_OBJECTS_DATE = CONVERT(#{endObjectsDate}, DATETIME),
+			SCALE = #{scale},
+			START_APPLY_DATE = CONVERT(#{startApplyDate}, DATETIME),
+			END_APPLY_DATE = CONVERT(#{endOApplyDate}, DATETIME),
 			SUPPORT_CONTENT = #{supportContent},
-			HELPER = #{helper},
-			HELPER_COUNT = #{helperCount},
-			QUALIFY_APPLY_HELPER = #{qualifyApplyHelper},
-			START_HELPER_DATE = CONVERT(#{startHelperDate}, DATETIME),
-			END_HELPER_DATE = CONVERT(#{endHelperDate}, DATETIME),
-			ATTATCH_OBID = #{attatchObid}
+			APPLY_DOC = #{applyDoc},
+			APPLY_TYPE = #{applyType},
+			APPLY_COUNT = #{applyCount},
+			APPLY_FEE = #{applyFee},
+			APPLY_FOR_OBJECT = #{applyForObject}
 		WHERE REF_OBID = #{refObid}
 	</update>
 </mapper>

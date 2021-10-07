@@ -37,6 +37,9 @@ public class UserDao {
 	public int updateUserStatus(Map<String, Object> param){
 		return  sqlSession.update(NAMESPACE + "updateUserStatus",param);
 	}
+	public int updateUserPassword(Map<String, Object> param){
+		return  sqlSession.update(NAMESPACE + "updateUserPassword",param);
+	}
 	public void insertUserHistory(Map<String, Object> param){
 		sqlSession.insert(NAMESPACE + "insertUserHistory",param);
 	}

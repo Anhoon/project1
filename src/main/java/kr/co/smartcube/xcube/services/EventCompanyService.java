@@ -37,57 +37,63 @@ public class EventCompanyService {
         Map<String,Object> resultMap = eventCompanyDao.selectMasterLicense(map);
         if(Util.isEmpty(resultMap)) throw new RuntimeException("일치하는 정보가 없습니다.");
 
-        Map<String,Object> fileParam = new HashMap<String,Object>();
-        Map<String,Object> fileMap = new HashMap<String,Object>();
-        fileParam.put("attachObid", resultMap.get("attatchObid"));
-        fileMap = fileDao.selectFile(fileParam);
-        if(!Util.isEmpty(fileMap)) resultMap.put("files", fileMap);
+        //Map<String,Object> fileParam = new HashMap<String,Object>();
+        //Map<String,Object> fileMap = new HashMap<String,Object>();
+        //fileParam.put("attachObid", resultMap.get("attatchObid"));
+        //fileMap = fileDao.selectFile(fileParam);
+        //if(!Util.isEmpty(fileMap)) resultMap.put("files", fileMap);
 
         List<Map<String,Object>> resultList = eventCompanyDao.selectMasterLicenseListDetailList(map);
+        /*
         for(Map<String,Object> licenseMap : resultList){
             fileParam.put("attachObid", licenseMap.get("attatchObid"));
             fileMap = fileDao.selectFile(fileParam);
             if(!Util.isEmpty(fileMap)) licenseMap.put("files", fileMap);
         }
-        
+        */
         resultMap.put("masterLicenseLists", resultList);
         return resultMap;
     }
     
     @Transactional
     public void insertMasterLicense(Map<String, Object> map) throws Exception{
-        Map<String,Object> fileMap = new HashMap<String,Object>();
-        List<Map<String,Object>> fileList = new ArrayList<Map<String,Object>>();
+        //Map<String,Object> fileMap = new HashMap<String,Object>();
+        //List<Map<String,Object>> fileList = new ArrayList<Map<String,Object>>();
         Map<String,Object> masterLicense = new HashMap<String,Object>();
-        Map<String,Object> masterLicenseFileMap = Util.objToMap(map.get("files"));
+        //Map<String,Object> masterLicenseFileMap = Util.objToMap(map.get("files"));
         masterLicense.putAll(map);
-        masterLicense.remove("masterLicenseLists");
+        //masterLicense.remove("masterLicenseLists");
         String obid = UUID.randomUUID().toString();
         masterLicense.put("obid", obid);
+        /*
         if(!Util.isEmpty(masterLicenseFileMap)){
             fileMap = fileService.fileUploadByte(Util.objToStr(masterLicenseFileMap.get("fileName")), Util.objToStr(masterLicenseFileMap.get("fileContent")));
             masterLicense.put("attatchObid", fileMap.get("obid"));
             fileList.add(fileMap);
         }
+        */
         List<Map<String,Object>> masterLicenseList = Util.objToList(map.get("masterLicenseLists"));
-        Map<String,Object> masterLicenseListFileMap = new HashMap<String,Object>();
+        //Map<String,Object> masterLicenseListFileMap = new HashMap<String,Object>();
+        
         for(int i=0; i<masterLicenseList.size(); i++){
             Map<String,Object> listMap = masterLicenseList.get(i);
-            
+            /*
             masterLicenseListFileMap = Util.objToMap(listMap.get("files"));
             if(!Util.isEmpty(masterLicenseListFileMap)){
                 fileMap = fileService.fileUploadByte(Util.objToStr(masterLicenseListFileMap.get("fileName")), Util.objToStr(masterLicenseListFileMap.get("fileContent")));
                 listMap.put("attatchObid", fileMap.get("obid"));
                 fileList.add(fileMap);
-            }            
+            } 
+            */           
             listMap.put("obid", UUID.randomUUID().toString());
             listMap.put("refObid", obid);
         }
+        
         validationMasterLicenseCheck(masterLicense);
         validationMasterLicenseListCheck(masterLicenseList);
         eventCompanyDao.insertMasterLicense(masterLicense);
         eventCompanyDao.insertMasterLicenseList(masterLicenseList);
-        fileDao.insertFile(fileList);
+        //fileDao.insertFile(fileList);
     }
 
     @Transactional
@@ -109,6 +115,9 @@ public class EventCompanyService {
         if(Util.isEmpty(map.get("email"))){
             throw new RuntimeException("이메일 정보를 입력해 주세요.");
         }
+        if(Util.isEmpty(map.get("title"))){
+            throw new RuntimeException("행사타이틀 정보를 입력해 주세요.");
+        }
         if(Util.isEmpty(map.get("organizer"))){
             throw new RuntimeException("주최사 정보를 입력해 주세요.");
         }
@@ -117,15 +126,6 @@ public class EventCompanyService {
         }
         if(Util.isEmpty(map.get("manager"))){
             throw new RuntimeException("주최담당자 정보를 입력해 주세요.");
-        }
-        if(Util.isEmpty(map.get("jobPosition"))){
-            throw new RuntimeException("직위 정보를 입력해 주세요.");
-        }
-        if(Util.isEmpty(map.get("homepage"))){
-            throw new RuntimeException("홈페이지 정보를 입력해 주세요.");
-        }
-        if(Util.isEmpty(map.get("history"))){
-            throw new RuntimeException("행사이력 정보를 입력해 주세요.");
         }
     }   
 

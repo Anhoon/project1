@@ -28,8 +28,7 @@
 			MANAGER, 
 			JOB_POSITION, 
 			HOMEPAGE, 
-			HISTORY, 
-			ATTATCH_OBID
+			HISTORY
 		FROM MASTER_LICENSE
 		WHERE EMAIL = #{email}
 	</select>
@@ -43,8 +42,7 @@
 			DATE_FORMAT(START_DATE,'%Y-%m-%d %T') AS START_DATE,
 			DATE_FORMAT(END_DATE,'%Y-%m-%d %T') AS END_DATE,
 			EXPRESSION, 
-			HOLD_TYPE, 
-			ATTATCH_OBID
+			HOLD_TYPE
 		FROM MASTER_LICENSE_LIST
 		WHERE REF_OBID = (SELECT OBID FROM MASTER_LICENSE WHERE EMAIL = #{email})
 	</select>
@@ -60,8 +58,7 @@
 			MANAGER, 
 			JOB_POSITION, 
 			HOMEPAGE, 
-			HISTORY, 
-			ATTATCH_OBID
+			TITLE
 		) 
 		VALUES 
 		(
@@ -73,8 +70,7 @@
 			#{manager},
 			#{jobPosition},
 			#{homepage},
-			#{history},
-			#{attatchObid}
+			#{title}
 		)
 	</insert>
 
@@ -89,8 +85,7 @@
 			START_DATE, 
 			END_DATE, 
 			EXPRESSION, 
-			HOLD_TYPE, 
-			ATTATCH_OBID
+			HOLD_TYPE
 		) 
 		VALUES
 		<foreach collection="list" item="item" separator=",">
@@ -103,8 +98,7 @@
 			CONVERT(#{item.startDate}, DATETIME),
 			CONVERT(#{item.endDate}, DATETIME),
 			#{item.expression},
-			#{item.holdType},
-			#{item.attatchObid}
+			#{item.holdType}
 		)
 		</foreach>
 	</insert>

@@ -141,6 +141,12 @@
 		AND EMAIL = #{email}
 	</update>
 
+	<update id="updateUserPassword" parameterType="java.util.HashMap">
+		UPDATE USERS SET 
+			PASSWORD = #{password}
+		WHERE EMAIL = #{email}
+	</update>
+
 	<insert id="insertUserHistory" parameterType="java.util.HashMap">
 		INSERT INTO USERS_HISTORY 
 		(

@@ -8,14 +8,10 @@
 			   CREATED_ON,
 			   FILE_NAME,
 			   FILE_PATH,
-			   FILE_SIZE
+			   FILE_SIZE,
+			   REF_OBID
 		  FROM ATTACH_FILE
-		<if test="attachObid != null and attachObid != ''">
-		 WHERE OBID IN
-			<foreach collection="attachObid" item="item" separator="," open="(" close=")"> 
-				#{item}
-			</foreach>
-		</if>
+		 WHERE REF_OBID = #{refObid}
 	</select>
 
 	<select id="selectFile" resultType="ParamMap">
@@ -23,7 +19,8 @@
 			   CREATED_ON,
 			   FILE_NAME,
 			   FILE_PATH,
-			   FILE_SIZE
+			   FILE_SIZE,
+			   REF_OBID
 		  FROM ATTACH_FILE
 		 WHERE OBID = #{attachObid} 
 	</select>
@@ -32,6 +29,7 @@
 		INSERT INTO ATTACH_FILE 
 		(
 			OBID,
+			REF_OBID,
 			CREATED_ON,
 			FILE_NAME,
 			FILE_PATH,
@@ -40,6 +38,7 @@
 		VALUES 
 		(
 			#{obid},
+			#{refObid},
 			SYSDATE(),
 			#{fileName}, 
 			#{fileDownLoadUrl},
@@ -51,6 +50,7 @@
 		INSERT INTO ATTACH_FILE 
 		(
 			OBID,
+			REF_OBID,
 			CREATED_ON,
 			FILE_NAME,
 			FILE_PATH,
@@ -60,6 +60,7 @@
 		<foreach collection="list" item="item" separator=",">
 		(
 			#{item.obid},
+			#{item.refObid},
 			SYSDATE(),
 			#{item.fileName}, 
 			#{item.fileDownLoadUrl},
@@ -75,10 +76,7 @@
 
 	<delete id="deleteFileList" parameterType="java.util.List">
 		DELETE FROM ATTACH_FILE
-		 WHERE OBID IN
-		<foreach collection="list" item="item" separator="," open="(" close=")"> 
-			#{item.obid}
-		</foreach>
+		 WHERE REF_OBID = #{refObid}
 	</delete>
 
 </mapper>

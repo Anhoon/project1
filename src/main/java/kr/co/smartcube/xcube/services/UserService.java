@@ -33,11 +33,10 @@ public class UserService {
     }
 
     public Map<String, Object> selectUser(Map<String, Object> map) throws Exception{
-        Map<String, Object> resultMap = new HashMap<String,Object>();
-        resultMap.putAll(userDao.selectUser(map));
+        Map<String, Object> resultMap = userDao.selectUser(map);
         if(!Util.isEmpty(resultMap)){
             if(!Util.isEmpty(resultMap.get("businessType"))){
-                resultMap.put("businessType", Util.jsonToArray(Util.objToStr(resultMap.get("businessType"))));
+                resultMap.put("business_type", Util.jsonToArray(Util.objToStr(resultMap.get("businessType"))));
             }
         }else{
             throw new RuntimeException("일치하는 정보가 없습니다.");
@@ -109,6 +108,17 @@ public class UserService {
         }else{
             throw new RuntimeException("일치하는 정보가 없습니다.");
         }
+    }
+
+    @Transactional
+    public void findPassword(String email) throws Exception{
+        Map<String,Object> map = new HashMap<String,Object>();
+        String password = UUID.randomUUID().toString();
+        map.put("email", email);
+        map.put("password", password);
+        emailService.sendPassWordMail(map); //메일전송
+        map.put("password", passwordEncoder.encode(password));
+        userDao.updateUserPassword(map);
     }
 
     @Transactional
