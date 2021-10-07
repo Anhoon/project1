@@ -45,9 +45,7 @@ public class ManageController {
     {
         try {
             if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
-        
             paramMap.put("email", loginVO.getEmail());
-
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinCompanyList(Util.initPaginagtion(paramMap))), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
@@ -58,14 +56,12 @@ public class ManageController {
     @GetMapping("/company/{refObidCompany}")
     public ResponseEntity<CommonResult> selectJoinCompany(
         @AuthenticationPrincipal LoginVO loginVO,
-        @PathVariable String refObidCompany) throws Exception 
+        @PathVariable String refObidCompany,
+        @RequestBody Map<String, Object> paramMap) throws Exception 
     {
         try {
-            Map<String,Object> paramMap = new HashMap<String,Object>();
-
             paramMap.put("refObidCompany", refObidCompany);
             paramMap.put("email", loginVO.getEmail());
-
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinCompany(paramMap)), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
@@ -75,55 +71,48 @@ public class ManageController {
         }
     }
 
-    @PostMapping("/company/{refObid}")
+    @PostMapping("/company")
     public ResponseEntity<CommonResult> insertJoinCompany(
         @AuthenticationPrincipal LoginVO loginVO,
-        @PathVariable String refObid,
         @RequestBody Map<String, Object> paramMap) throws Exception
     {
         try {
-            paramMap.put("refObid", refObid);
             paramMap.put("email", loginVO.getEmail());
-
             manageService.insertJoinCompany(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
     }
 
-    @PatchMapping("/company/{refObidCompany}")
+    @PatchMapping("/company")
     public ResponseEntity<CommonResult> updateJoinCompany(
         @AuthenticationPrincipal LoginVO loginVO,
-        @PathVariable String refObidCompany, @RequestBody Map<String, Object> paramMap)
+        @RequestBody Map<String, Object> paramMap)
     {
         try {
-            paramMap.put("refObidCompany", refObidCompany);
             paramMap.put("email", loginVO.getEmail());
-
             manageService.updateJoinCompany(paramMap);
-
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
     }
 
-    @DeleteMapping("/company/{refObidCompany}")
+    @DeleteMapping("/company")
     public ResponseEntity<CommonResult> deleteJoinCompany(
         @AuthenticationPrincipal LoginVO loginVO,
-        @PathVariable String refObidCompany)
+        @RequestBody Map<String, Object> paramMap)
     {
         try {
-            Map<String,Object> paramMap = new HashMap<String,Object>();
-
             paramMap.put("email", loginVO.getEmail());
-            paramMap.put("refObidCompany", refObidCompany);
-
             manageService.deleteJoinCompany(paramMap);
-
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
@@ -143,6 +132,8 @@ public class ManageController {
             if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
             paramMap.put("email", loginVO.getEmail());
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectInterestCompanyList(Util.initPaginagtion(paramMap))), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
@@ -161,6 +152,25 @@ public class ManageController {
             paramMap.put("email", loginVO.getEmail());
             manageService.insertInterestCompany(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+
+    @DeleteMapping("/company/interest")
+    public ResponseEntity<CommonResult> deleteInterestingCompany(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @RequestBody Map<String, Object> paramMap
+    ){
+        try {
+            paramMap.put("email", loginVO.getEmail());
+            manageService.deleteInterestCompany(paramMap);
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
@@ -171,76 +181,78 @@ public class ManageController {
     @GetMapping("/user")
     public ResponseEntity<CommonResult> selectJoinUserList(
         @AuthenticationPrincipal LoginVO loginVO,
-        @RequestBody(required = false) Map<String, Object> paramMap
-    ){
+        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception 
+    {
         try {
             if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
             paramMap.put("email", loginVO.getEmail());
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinUserList(Util.initPaginagtion(paramMap))), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
     }
 
-    @GetMapping("/user/{refUserObid}")
+    @GetMapping("/user/{refObidUser}")
     public ResponseEntity<CommonResult> selectJoinUser(
         @AuthenticationPrincipal LoginVO loginVO,
-        @PathVariable String refUserObid) throws Exception 
+        @PathVariable String refObidUser,
+        @RequestBody Map<String, Object> paramMap) throws Exception 
     {
         try {
-            Map<String,Object> paramMap = new HashMap<String,Object>();
-            paramMap.put("refUserObid", refUserObid);
+            paramMap.put("refObidUser", refObidUser);
             paramMap.put("email", loginVO.getEmail());
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinUser(paramMap)), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
     }
 
-    @PostMapping("/user/{refObid}")
+    @PostMapping("/user")
     public ResponseEntity<CommonResult> insertJoinUser(
         @AuthenticationPrincipal LoginVO loginVO,
-        @PathVariable String refObid,
         @RequestBody Map<String, Object> paramMap) throws Exception
     {
         try {
-            paramMap.put("refObid", refObid);
             paramMap.put("email", loginVO.getEmail());
             manageService.insertJoinUser(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
     }
 
-    @PatchMapping("/user/{refUserObid}")
+    @PatchMapping("/user")
     public ResponseEntity<CommonResult> updateJoinUser(
         @AuthenticationPrincipal LoginVO loginVO,
-        @PathVariable String refUserObid, 
         @RequestBody Map<String, Object> paramMap)
     {
         try {
-            paramMap.put("refUserObid", refUserObid);
             paramMap.put("email", loginVO.getEmail());
             manageService.updateJoinUser(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
     }
 
-    @DeleteMapping("/user/{refUserObid}")
+    @DeleteMapping("/user")
     public ResponseEntity<CommonResult> deleteJoinUser(
         @AuthenticationPrincipal LoginVO loginVO,
-        @PathVariable String refUserObid)
+        @RequestBody Map<String, Object> paramMap)
     {
-        Map<String,Object> paramMap = new HashMap<String,Object>();
         try {
-            paramMap.put("refUserObid", refUserObid);
             paramMap.put("email", loginVO.getEmail());
             manageService.deleteJoinUser(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);

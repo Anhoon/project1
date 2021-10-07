@@ -44,8 +44,16 @@ public class ManageDao {
 		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "selectInterestCompanyList", paramMap));
     }
 
+	public Map<String, Object> selectInterestCompany(Map<String,Object> paramMap) throws Exception {
+		return sqlSession.selectOne(NAMESPACE + "selectInterestCompany", paramMap);
+    }
+
 	public int insertInterestCompany(Map<String, Object> paramMap) throws Exception {
 		return sqlSession.insert(NAMESPACE + "insertInterestCompany", paramMap);
+	}
+
+	public int deleteInterestCompany(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.delete(NAMESPACE + "deleteInterestCompany", paramMap);
 	}
 
 	/*참여인력*/
