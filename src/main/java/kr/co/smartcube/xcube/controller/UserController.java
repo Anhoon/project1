@@ -113,6 +113,7 @@ public class UserController {
     public ResponseEntity<CommonResult> findPassword(@PathVariable String email) throws Exception{
         try {
             userService.findPassword(email);
+            
         } catch (Exception e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         }
