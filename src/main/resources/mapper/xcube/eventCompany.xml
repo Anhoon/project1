@@ -12,9 +12,7 @@
 			TEL, 
 			MANAGER, 
 			JOB_POSITION, 
-			HOMEPAGE, 
-			HISTORY, 
-			ATTATCH_OBID
+			HOMEPAGE
 		FROM MASTER_LICENSE
 	</select>
 
@@ -27,8 +25,7 @@
 			TEL, 
 			MANAGER, 
 			JOB_POSITION, 
-			HOMEPAGE, 
-			HISTORY
+			HOMEPAGE 
 		FROM MASTER_LICENSE
 		WHERE EMAIL = #{email}
 	</select>
