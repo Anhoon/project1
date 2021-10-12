@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import kr.co.smartcube.xcube.mybatis.dao.UserDao;
 import kr.co.smartcube.xcube.util.Util;
@@ -34,8 +35,8 @@ public class UserService {
 
     public Map<String, Object> selectUser(Map<String, Object> map) throws Exception{
         Map<String, Object> resultMap = userDao.selectUser(map);
-        if(!Util.isEmpty(resultMap)){
-            if(!Util.isEmpty(resultMap.get("businessType"))){
+        if(!ObjectUtils.isEmpty(resultMap)){
+            if(!ObjectUtils.isEmpty(resultMap.get("businessType"))){
                 resultMap.put("business_type", Util.jsonToArray(Util.objToStr(resultMap.get("businessType"))));
             }
         }else{
@@ -53,7 +54,7 @@ public class UserService {
         map.put("obid", obid);
         map.put("password", passwordEncoder.encode(password));
         map.put("userStatus", "0");
-        if(!Util.isEmpty(map.get("businessType"))) map.put("businessType",Util.objToJson(map.get("businessType")));
+        if(!ObjectUtils.isEmpty(map.get("businessType"))) map.put("businessType",Util.objToJson(map.get("businessType")));
         validationUserCheck(map);
         int i = userType.equals("0") ? userDao.insertUser(map) : userType.equals("1") || userType.equals("2") ? userDao.insertUserCompany(map) : 0;
         if(i > 0) userDao.insertUserHistory(getHistMap(map,"I",map)); //이력 저장
@@ -64,7 +65,7 @@ public class UserService {
     public void updateUser(Map<String, Object> map) throws Exception{  
         Map<String, Object> resultMap = userDao.selectUser(map); //현재 등록된 
         Map<String, Object> detailMap = new HashMap<String,Object>(); //이력 Detail컬럼 Map
-        if(!Util.isEmpty(resultMap)){
+        if(!ObjectUtils.isEmpty(resultMap)){
             String password = Util.objToStr(map.get("password"));
             String userType = Util.objToStr(resultMap.get("userType"));
             boolean pwdChk = passwordEncoder.matches(password, Util.objToStr(resultMap.get("password")));
@@ -74,7 +75,7 @@ public class UserService {
             }else{
                 map.put("password", resultMap.get("password"));
             }
-            if(!Util.isEmpty(map.get("businessType"))) map.put("businessType",Util.objToJson(map.get("businessType")));
+            if(!ObjectUtils.isEmpty(map.get("businessType"))) map.put("businessType",Util.objToJson(map.get("businessType")));
             int i = userType.equals("0") ? userDao.updateUser(map) : userType.equals("1") || userType.equals("2") ? userDao.updateUserCompany(map) : 0;
             if(i > 0) {
                 for(String key : map.keySet()){
@@ -94,7 +95,7 @@ public class UserService {
     @Transactional
     public void userCertified(Map<String, Object> map) throws Exception{
         Map<String,Object> userMap = userDao.selectUser(map);
-        if(!Util.isEmpty(userMap)) {
+        if(!ObjectUtils.isEmpty(userMap)) {
             if(!Util.objToStr(userMap.get("userStatus")).equals("0")) throw new RuntimeException("이미 인증된 회원입니다.");
             map.put("userStatus", "1"); //정상가입
             int i = userDao.updateUserStatus(map);
@@ -141,24 +142,24 @@ public class UserService {
         histMap.put("refObid", (String) map.get("obid"));
         histMap.put("obid", hisObid);
         histMap.put("reqType", type);
-        if(!Util.isEmpty(detailMap)) histMap.put("detail", Util.objToJson(detailMap));
+        if(!ObjectUtils.isEmpty(detailMap)) histMap.put("detail", Util.objToJson(detailMap));
         return histMap;
     }
 
     public void validationUserCheck(Map<String,Object> map){
-        if(Util.isEmpty(map.get("obid"))){
+        if(ObjectUtils.isEmpty(map.get("obid"))){
             throw new RuntimeException("obid 정보가 없습니다.");
         }
-        if(Util.isEmpty(map.get("email"))){
+        if(ObjectUtils.isEmpty(map.get("email"))){
             throw new RuntimeException("이메일 정보를 입력해 주세요.");
         }
-        if(Util.isEmpty(map.get("password"))){
+        if(ObjectUtils.isEmpty(map.get("password"))){
             throw new RuntimeException("패스워드 정보를 입력해 주세요.");
         }
-        if(Util.isEmpty(map.get("name"))){
+        if(ObjectUtils.isEmpty(map.get("name"))){
             throw new RuntimeException("닉네임 정보를 입력해 주세요.");
         }
-        if(Util.isEmpty(map.get("userType"))){
+        if(ObjectUtils.isEmpty(map.get("userType"))){
             throw new RuntimeException("유저상태 정보를 입력해 주세요.");
         }
     }  

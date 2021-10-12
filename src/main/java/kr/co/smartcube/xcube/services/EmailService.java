@@ -11,6 +11,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import kr.co.smartcube.xcube.util.Util;
+
 @Service
 public class EmailService {
 
@@ -21,8 +23,8 @@ public class EmailService {
     private String userName;
     
     public void sendMail(Map<String, Object> map) throws MessagingException {
-        String email = (String) map.get("email");
-        String obid = (String) map.get("obid");
+        String email =  Util.objToStr(map.get("email"));
+        String obid = Util.objToStr(map.get("obid"));
 		StringBuffer emailcontent = new StringBuffer();
 		emailcontent.append("<!DOCTYPE html>");
 		emailcontent.append("<html>");
@@ -62,8 +64,8 @@ public class EmailService {
 	}
 
 	public void sendPassWordMail(Map<String, Object> map) throws MessagingException {
-        String email = (String) map.get("email");
-        String password = (String) map.get("password");
+        String email = Util.objToStr(map.get("email"));
+        String password = Util.objToStr(map.get("password"));
 		StringBuffer emailcontent = new StringBuffer();
 		emailcontent.append("<!DOCTYPE html>");
 		emailcontent.append("<html>");

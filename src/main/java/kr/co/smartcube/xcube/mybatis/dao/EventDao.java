@@ -17,7 +17,7 @@ public class EventDao {
 	private SqlSession sqlSession;
 
 	public List<Map<String, Object>> selectEventList(Map<String,Object> param) {
-		return sqlSession.selectList(NAMESPACE + "selectEventList");
+		return sqlSession.selectList(NAMESPACE + "selectEventList",param);
     }
 	public Map<String, Object> selectEvent(Map<String, Object> param) {
 		return sqlSession.selectOne(NAMESPACE + "selectEvent",param);
@@ -36,5 +36,11 @@ public class EventDao {
 	}
 	public int updateParticipate(Map<String, Object> param){
 		return sqlSession.update(NAMESPACE + "updateParticipate",param);
+	}
+	public int deleteEvent(Map<String, Object> param){
+		return sqlSession.update(NAMESPACE + "deleteEvent",param);
+	}
+	public int deleteParticipate(Map<String, Object> param){
+		return sqlSession.update(NAMESPACE + "deleteParticipate",param);
 	}
 }

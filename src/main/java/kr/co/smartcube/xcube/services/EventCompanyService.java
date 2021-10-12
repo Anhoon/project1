@@ -1,6 +1,5 @@
 package kr.co.smartcube.xcube.services;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +10,7 @@ import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import kr.co.smartcube.xcube.mybatis.dao.EventCompanyDao;
 import kr.co.smartcube.xcube.mybatis.dao.FileDao;
@@ -35,20 +35,20 @@ public class EventCompanyService {
 
     public Map<String, Object> selectMasterLicense(Map<String, Object> map) {
         Map<String,Object> resultMap = eventCompanyDao.selectMasterLicense(map);
-        if(Util.isEmpty(resultMap)) throw new RuntimeException("일치하는 정보가 없습니다.");
+        if(ObjectUtils.isEmpty(resultMap)) throw new RuntimeException("일치하는 정보가 없습니다.");
 
         //Map<String,Object> fileParam = new HashMap<String,Object>();
         //Map<String,Object> fileMap = new HashMap<String,Object>();
         //fileParam.put("attachObid", resultMap.get("attatchObid"));
         //fileMap = fileDao.selectFile(fileParam);
-        //if(!Util.isEmpty(fileMap)) resultMap.put("files", fileMap);
+        //if(!ObjectUtils.isEmpty(fileMap)) resultMap.put("files", fileMap);
 
         List<Map<String,Object>> resultList = eventCompanyDao.selectMasterLicenseListDetailList(map);
         /*
         for(Map<String,Object> licenseMap : resultList){
             fileParam.put("attachObid", licenseMap.get("attatchObid"));
             fileMap = fileDao.selectFile(fileParam);
-            if(!Util.isEmpty(fileMap)) licenseMap.put("files", fileMap);
+            if(!ObjectUtils.isEmpty(fileMap)) licenseMap.put("files", fileMap);
         }
         */
         resultMap.put("masterLicenseLists", resultList);
@@ -66,7 +66,7 @@ public class EventCompanyService {
         String obid = UUID.randomUUID().toString();
         masterLicense.put("obid", obid);
         /*
-        if(!Util.isEmpty(masterLicenseFileMap)){
+        if(!ObjectUtils.isEmpty(masterLicenseFileMap)){
             fileMap = fileService.fileUploadByte(Util.objToStr(masterLicenseFileMap.get("fileName")), Util.objToStr(masterLicenseFileMap.get("fileContent")));
             masterLicense.put("attatchObid", fileMap.get("obid"));
             fileList.add(fileMap);
@@ -79,7 +79,7 @@ public class EventCompanyService {
             Map<String,Object> listMap = masterLicenseList.get(i);
             /*
             masterLicenseListFileMap = Util.objToMap(listMap.get("files"));
-            if(!Util.isEmpty(masterLicenseListFileMap)){
+            if(!ObjectUtils.isEmpty(masterLicenseListFileMap)){
                 fileMap = fileService.fileUploadByte(Util.objToStr(masterLicenseListFileMap.get("fileName")), Util.objToStr(masterLicenseListFileMap.get("fileContent")));
                 listMap.put("attatchObid", fileMap.get("obid"));
                 fileList.add(fileMap);
@@ -109,22 +109,22 @@ public class EventCompanyService {
 	}
 
     public void validationMasterLicenseCheck(Map<String,Object> map){
-        if(Util.isEmpty(map.get("obid"))){
+        if(ObjectUtils.isEmpty(map.get("obid"))){
             throw new RuntimeException("obid 정보가 없습니다.");
         }
-        if(Util.isEmpty(map.get("email"))){
+        if(ObjectUtils.isEmpty(map.get("email"))){
             throw new RuntimeException("이메일 정보를 입력해 주세요.");
         }
-        if(Util.isEmpty(map.get("title"))){
+        if(ObjectUtils.isEmpty(map.get("title"))){
             throw new RuntimeException("행사타이틀 정보를 입력해 주세요.");
         }
-        if(Util.isEmpty(map.get("organizer"))){
+        if(ObjectUtils.isEmpty(map.get("organizer"))){
             throw new RuntimeException("주최사 정보를 입력해 주세요.");
         }
-        if(Util.isEmpty(map.get("tel"))){
+        if(ObjectUtils.isEmpty(map.get("tel"))){
             throw new RuntimeException("전화번호 정보를 입력해 주세요.");
         }
-        if(Util.isEmpty(map.get("manager"))){
+        if(ObjectUtils.isEmpty(map.get("manager"))){
             throw new RuntimeException("주최담당자 정보를 입력해 주세요.");
         }
     }   
@@ -132,31 +132,31 @@ public class EventCompanyService {
     public void validationMasterLicenseListCheck(List<Map<String,Object>> list){
         int i = 1;
         for(Map<String,Object> map : list){
-            if(Util.isEmpty(map.get("obid"))){
+            if(ObjectUtils.isEmpty(map.get("obid"))){
                 throw new RuntimeException(i+"번째 obid 정보가 없습니다.");
             }
-            if(Util.isEmpty(map.get("refObid"))){
+            if(ObjectUtils.isEmpty(map.get("refObid"))){
                 throw new RuntimeException(i+"번째 refObid 정보가 없습니다.");
             }
-            if(Util.isEmpty(map.get("type"))){
+            if(ObjectUtils.isEmpty(map.get("type"))){
                 throw new RuntimeException(i+"번째 라이선스리스트 라이선스종류 정보를 입력해 주세요.");
             }
-            if(Util.isEmpty(map.get("status"))){
+            if(ObjectUtils.isEmpty(map.get("status"))){
                 throw new RuntimeException(i+"번째 라이선스리스트 상태 정보를 입력해 주세요.");
             }
-            if(Util.isEmpty(map.get("title"))){
+            if(ObjectUtils.isEmpty(map.get("title"))){
                 throw new RuntimeException(i+"번째 라이선스리스트 행사타이틀 정보를 입력해 주세요.");
             }
-            if(Util.isEmpty(map.get("startDate"))){
+            if(ObjectUtils.isEmpty(map.get("startDate"))){
                 throw new RuntimeException(i+"번째 라이선스리스트 시작개최기간 정보를 입력해 주세요.");
             }
-            if(Util.isEmpty(map.get("endDate"))){
+            if(ObjectUtils.isEmpty(map.get("endDate"))){
                 throw new RuntimeException(i+"번째 라이선스리스트 종료개최기간 정보를 입력해 주세요.");
             }
-            if(Util.isEmpty(map.get("expression"))){
+            if(ObjectUtils.isEmpty(map.get("expression"))){
                 throw new RuntimeException(i+"번째 라이선스리스트 행사내용 정보를 입력해 주세요.");
             }
-            if(Util.isEmpty(map.get("holdType"))){
+            if(ObjectUtils.isEmpty(map.get("holdType"))){
                 throw new RuntimeException(i+"번째 라이선스리스트 개최타입 정보를 입력해 주세요.");
             }
             if(!Util.dateCheck(map.get("startDate"))){

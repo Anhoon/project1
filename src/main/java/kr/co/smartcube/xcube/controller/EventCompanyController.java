@@ -19,7 +19,9 @@ import kr.co.smartcube.xcube.common.CommonResult;
 import kr.co.smartcube.xcube.common.ResponseService;
 import kr.co.smartcube.xcube.services.EventCompanyService;
 import kr.co.smartcube.xcube.util.Util;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @CrossOrigin(origins="*")
 @RequestMapping("/api/event/company")
@@ -31,7 +33,7 @@ public class EventCompanyController {
     @Autowired
     private ResponseService responseService;
 
-    @GetMapping("/license/master/")
+    @GetMapping("/license/master")
     public ResponseEntity<CommonResult> selectMasterLicenseList(){
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("pageNum", 0);
@@ -40,8 +42,11 @@ public class EventCompanyController {
         map = Util.initPaginagtion(map);
         try {
             return new ResponseEntity<CommonResult>(responseService.getListResult(eventCompanyService.selectMasterLicenseList(map)), HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
     }
 
@@ -51,38 +56,50 @@ public class EventCompanyController {
         paramMap.put("email", email);
         try {
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(eventCompanyService.selectMasterLicense(paramMap)), HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
     }
 
-    @PostMapping("/license/master/")
+    @PostMapping("/license/master")
     public ResponseEntity<CommonResult> insertMasterLicense(@RequestBody Map<String, Object> map) throws Exception{
         try {
             eventCompanyService.insertMasterLicense(map);
-        } catch (Exception e) {
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
+        } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/license/master/")
+    @PatchMapping("/license/master")
     public ResponseEntity<CommonResult> updateMasterLicense(@RequestBody Map<String, Object> map){
         try {
             eventCompanyService.updateMasterLicense(map);
-        } catch (Exception e) {
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
+        } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
     }
 
     @PatchMapping("/license/master/list")
     public ResponseEntity<CommonResult> updateMasterLicenseList(@RequestBody Map<String, Object> map){
         try {
             eventCompanyService.updateMasterLicenseList(map);
-        } catch (Exception e) {
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
+        } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
     }
 }

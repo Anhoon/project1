@@ -1,11 +1,9 @@
 package kr.co.smartcube.xcube.controller;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,7 +21,9 @@ import kr.co.smartcube.xcube.common.CommonResult;
 import kr.co.smartcube.xcube.common.ResponseService;
 import kr.co.smartcube.xcube.services.UserService;
 import kr.co.smartcube.xcube.util.Util;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @CrossOrigin(origins="*")
 @RequestMapping("/api/user")
@@ -35,7 +35,7 @@ public class UserController {
     @Autowired
     private ResponseService responseService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<CommonResult> selectUserList() throws Exception{
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("pageNum", 0);
@@ -44,7 +44,10 @@ public class UserController {
         map = Util.initPaginagtion(map);
         try {
             return new ResponseEntity<CommonResult>(responseService.getListResult(userService.selectUserList(map)), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
     }
@@ -55,39 +58,51 @@ public class UserController {
         paramMap.put("email", email);
         try {
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(userService.selectUser(paramMap)), HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<CommonResult> insertData(@RequestBody Map<String, Object> map) throws Exception{
         try {
             userService.insertUser(map);
-        } catch (Exception e) {
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
+        } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/")
+    @PatchMapping("")
     public ResponseEntity<CommonResult> updateData(@RequestBody Map<String, Object> map) throws Exception{
         try {
             userService.updateUser(map);
-        } catch (Exception e) {
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
+        } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/")
+    @DeleteMapping("")
     public ResponseEntity<CommonResult> deleteData(@RequestBody Map<String, Object> map) throws Exception{
         try {
             userService.deleteUserStatus(map);
-        } catch (Exception e) {
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
+        } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/certified")
@@ -97,8 +112,12 @@ public class UserController {
         map.put("email", email);
         try {
             userService.userCertified(map);
-        } catch (Exception e) {
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
+        } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
         /*
         URI redirectUri = new URI("http://www.naver.com");
@@ -106,18 +125,18 @@ public class UserController {
         httpHeaders.setLocation(redirectUri);
         return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
         */
-        return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
     }
 
     @GetMapping("/findPassword/{email}")
     public ResponseEntity<CommonResult> findPassword(@PathVariable String email) throws Exception{
         try {
             userService.findPassword(email);
-            
-        } catch (Exception e) {
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
+        } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
     }
-
 }

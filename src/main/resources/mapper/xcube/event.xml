@@ -4,22 +4,48 @@
 <mapper namespace="event">
 	
 	<select id="selectEventList" resultType="ParamMap">
-		SELECT 
-			REF_OBID,
-			CREATED_ON,
-			TITLE,
-			EN_TITLE,
-			ALIAS,
-			OBJECTS,
-			CONTENTS,
-			SHOW_PRODUCTS,
-			ORGANIZER,
-			SUBJECTIVITY,
-			SUPPORT,
-			HOMPAGE,
-			PROGRAM,
-			ATTATCH_REF_OBID
-		FROM EVENT_LIST
+		SELECT A.* FROM (
+			SELECT 
+				A.REF_OBID,
+				A.CREATED_ON,
+				A.TITLE,
+				A.EN_TITLE,
+				A.ALIAS,
+				A.OBJECTS,
+				A.CONTENTS,
+				A.SHOW_PRODUCTS,
+				A.ORGANIZER,
+				A.SUBJECTIVITY,
+				A.SUPPORT,
+				A.HOMPAGE,
+				A.PROGRAM,
+				A.ATTATCH_REF_OBID,
+				(SELECT TYPE FROM MASTER_LICENSE_LIST WHERE OBID = A.REF_OBID) AS TYPE,
+				(
+				SELECT 
+					(CASE TYPE WHEN 'C' THEN '컨벤션' 
+							WHEN 'E' THEN '전시회' 
+							WHEN 'F' THEN '컨퍼런스' 
+							WHEN 'S' THEN '공연' 
+							ELSE '미등록코드' END
+					) AS TYPE  
+				FROM MASTER_LICENSE_LIST WHERE OBID = A.REF_OBID
+				) AS TYPE_NM,
+				B.OBJECT_FOR,
+				(CASE B.OBJECT_FOR WHEN '0' THEN '전체' WHEN '1' THEN '일반' WHEN '2' THEN '기업' END) OBJECT_FOR_NM
+			FROM EVENT_LIST A, PARTICIPATE_LIST B
+			WHERE A.REF_OBID = B.REF_OBID
+		) A
+		WHERE 1=1
+		<if test="type != null and type != '' " >
+			AND TYPE = #{type}
+		</if>
+		<if test="searchKey != null and searchKey != '' " >
+			AND TYPE = #{searchKey}
+		</if>
+		<if test="searchKeyWord != null and searchKeyWord != '' " >
+			AND TYPE = #{searchKeyWord}
+		</if>
 	</select>
 
 	<select id="selectEvent" resultType="ParamMap">
@@ -167,4 +193,14 @@
 			APPLY_FOR_OBJECT = #{applyForObject}
 		WHERE REF_OBID = #{refObid}
 	</update>
+
+	<delete id="deleteEvent" parameterType="java.util.HashMap">
+		DELETE FROM EVENT_LIST
+		WHERE REF_OBID = #{refObid}
+	</delete>
+
+	<delete id="deleteParticipate" parameterType="java.util.HashMap">
+		DELETE FROM PARTICIPATE_LIST
+		WHERE REF_OBID = #{refObid}
+	</delete>
 </mapper>
