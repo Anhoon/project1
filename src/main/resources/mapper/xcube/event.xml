@@ -6,35 +6,38 @@
 	<select id="selectEventList" resultType="ParamMap">
 		SELECT A.* FROM (
 			SELECT 
-				A.REF_OBID,
-				A.CREATED_ON,
-				A.TITLE,
-				A.EN_TITLE,
-				A.ALIAS,
-				A.OBJECTS,
-				A.CONTENTS,
-				A.SHOW_PRODUCTS,
-				A.ORGANIZER,
-				A.SUBJECTIVITY,
-				A.SUPPORT,
-				A.HOMPAGE,
-				A.PROGRAM,
-				A.ATTATCH_REF_OBID,
-				(SELECT TYPE FROM MASTER_LICENSE_LIST WHERE OBID = A.REF_OBID) AS TYPE,
-				(
-				SELECT 
-					(CASE TYPE WHEN 'C' THEN '컨벤션' 
-							WHEN 'E' THEN '전시회' 
-							WHEN 'F' THEN '컨퍼런스' 
-							WHEN 'S' THEN '공연' 
-							ELSE '미등록코드' END
-					) AS TYPE  
-				FROM MASTER_LICENSE_LIST WHERE OBID = A.REF_OBID
+				E.*,
+				B.TYPE,
+				(CASE TYPE WHEN 'C' THEN '컨벤션' 
+									WHEN 'E' THEN '전시회' 
+									WHEN 'F' THEN '컨퍼런스' 
+									WHEN 'S' THEN '공연' 
+									ELSE '미등록코드' END
 				) AS TYPE_NM,
-				B.OBJECT_FOR,
-				(CASE B.OBJECT_FOR WHEN '0' THEN '전체' WHEN '1' THEN '일반' WHEN '2' THEN '기업' END) OBJECT_FOR_NM
-			FROM EVENT_LIST A, PARTICIPATE_LIST B
-			WHERE A.REF_OBID = B.REF_OBID
+				(SELECT TITLE FROM MASTER_LICENSE WHERE OBID = B.MASTER_LICENSE_OBID) AS MASTER_TITLE
+				FROM (
+					SELECT 
+						A.MASTER_LICENSE_LIST_OBID,
+						A.CREATED_ON,
+						A.TITLE,
+						A.EN_TITLE,
+						A.ALIAS,
+						A.OBJECTS,
+						A.CONTENTS,
+						A.SHOW_PRODUCTS,
+						A.ORGANIZER,
+						A.SUBJECTIVITY,
+						A.SUPPORT,
+						A.HOMPAGE,
+						A.PROGRAM,
+						A.ATTATCH_FILE_OBID,
+						B.OBJECT_FOR,
+						(CASE B.OBJECT_FOR WHEN '0' THEN '전체' WHEN '1' THEN '일반' WHEN '2' THEN '기업' END) OBJECT_FOR_NM,
+						(CASE WHEN DATE_FORMAT(SYSDATE(),'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(B.END_APPLY_DATE,'%Y-%m-%d') THEN CONCAT('D-',DATEDIFF(B.end_apply_date, B.start_apply_date)) ELSE '모집 완료' END) AS EVENT_DAY
+					FROM EVENT_LIST A, PARTICIPATE_LIST B
+					WHERE A.MASTER_LICENSE_LIST_OBID = B.MASTER_LICENSE_LIST_OBID
+			) E, MASTER_LICENSE_LIST B
+			WHERE E.MASTER_LICENSE_LIST_OBID = B.OBID
 		) A
 		WHERE 1=1
 		<if test="type != null and type != '' " >
@@ -50,7 +53,7 @@
 
 	<select id="selectEvent" resultType="ParamMap">
 		SELECT 
-			REF_OBID,
+			MASTER_LICENSE_LIST_OBID,
 			DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
 			TITLE,
 			EN_TITLE,
@@ -63,14 +66,14 @@
 			SUPPORT,
 			HOMPAGE,
 			PROGRAM,
-			ATTATCH_REF_OBID
+			ATTATCH_FILE_OBID
 		FROM EVENT_LIST
-		WHERE REF_OBID = #{refObid}
+		WHERE MASTER_LICENSE_LIST_OBID = #{masterLicenseListObid}
 	</select>
 
 	<select id="selectParticipate" resultType="ParamMap">
 		SELECT 
-			REF_OBID,
+			MASTER_LICENSE_LIST_OBID,
 			DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
 			OBJECT_FOR,
 			SCALE,
@@ -83,15 +86,15 @@
 			APPLY_COUNT,
 			APPLY_FEE,
 			APPLY_FOR_OBJECT,
-			ATTATCH_REF_OBID
+			ATTATCH_FILE_OBID
 		FROM PARTICIPATE_LIST
-		WHERE REF_OBID = #{refObid}
+		WHERE MASTER_LICENSE_LIST_OBID = #{masterLicenseListObid}
 	</select>
 
 	<insert id="insertEvent" parameterType="java.util.HashMap">
 		INSERT INTO EVENT_LIST
 		(
-			REF_OBID,
+			MASTER_LICENSE_LIST_OBID,
 			CREATED_ON,
 			TITLE,
 			EN_TITLE,
@@ -104,11 +107,11 @@
 			SUPPORT,
 			HOMPAGE,
 			PROGRAM,
-			ATTATCH_REF_OBID
+			ATTATCH_FILE_OBID
 		)
 		VALUES 
 		(
-			#{refObid},
+			#{masterLicenseListObid},
 			SYSDATE(),
 			#{title},
 			#{enTitle},
@@ -121,14 +124,14 @@
 			#{support},
 			#{hompage},
 			#{program},
-			#{attatchRefObid}
+			#{attatchFileObid}
 		)
 	</insert>
 
 	<insert id="insertParticipate" parameterType="java.util.HashMap">
 		INSERT INTO PARTICIPATE_LIST
 		(
-			REF_OBID,
+			MASTER_LICENSE_LIST_OBID,
 			CREATED_ON,
 			OBJECT_FOR,
 			SCALE,
@@ -141,11 +144,11 @@
 			APPLY_COUNT,
 			APPLY_FEE,
 			APPLY_FOR_OBJECT,
-			ATTATCH_REF_OBID
+			ATTATCH_FILE_OBID
 		)
 		VALUES 
 		(
-			#{refObid},
+			#{masterLicenseListObid},
 			SYSDATE(),
 			#{objectFor},
 			#{scale},
@@ -158,7 +161,7 @@
 			#{applyCount},
 			#{applyFee},
 			#{applyForObject},
-			#{attatchRefObid}
+			#{attatchFileObid}
 		)
 	</insert>
 
@@ -174,8 +177,9 @@
 			SUBJECTIVITY = #{subjectivity},
 			SUPPORT = #{support},
 			HOMPAGE = #{hompage},
-			PROGRAM = #{program}
-		WHERE REF_OBID = #{refObid}
+			PROGRAM = #{program},
+			ATTATCH_FILE_OBID = #{attatchFileObid}
+		WHERE MASTER_LICENSE_LIST_OBID = #{masterLicenseListObid}
 	</update>
 
 	<update id="updateParticipate" parameterType="java.util.HashMap">
@@ -190,17 +194,67 @@
 			APPLY_TYPE = #{applyType},
 			APPLY_COUNT = #{applyCount},
 			APPLY_FEE = #{applyFee},
-			APPLY_FOR_OBJECT = #{applyForObject}
-		WHERE REF_OBID = #{refObid}
+			APPLY_FOR_OBJECT = #{applyForObject},
+			ATTATCH_FILE_OBID = #{attatchFileObid}
+		WHERE MASTER_LICENSE_LIST_OBID = #{masterLicenseListObid}
 	</update>
 
 	<delete id="deleteEvent" parameterType="java.util.HashMap">
 		DELETE FROM EVENT_LIST
-		WHERE REF_OBID = #{refObid}
+		WHERE MASTER_LICENSE_LIST_OBID = #{masterLicenseListObid}
 	</delete>
 
 	<delete id="deleteParticipate" parameterType="java.util.HashMap">
 		DELETE FROM PARTICIPATE_LIST
-		WHERE REF_OBID = #{refObid}
+		WHERE MASTER_LICENSE_LIST_OBID = #{masterLicenseListObid}
 	</delete>
+
+	<select id="selectMyEventList" resultType="ParamMap">
+		SELECT A.* FROM (
+			SELECT 
+				E.*,
+				B.TYPE,
+				(CASE TYPE WHEN 'C' THEN '컨벤션' 
+									WHEN 'E' THEN '전시회' 
+									WHEN 'F' THEN '컨퍼런스' 
+									WHEN 'S' THEN '공연' 
+									ELSE '미등록코드' END
+				) AS TYPE_NM,
+				(SELECT TITLE FROM MASTER_LICENSE WHERE OBID = B.MASTER_LICENSE_OBID) AS MASTER_TITLE
+				FROM (
+					SELECT 
+						A.MASTER_LICENSE_LIST_OBID,
+						A.CREATED_ON,
+						A.TITLE,
+						A.EN_TITLE,
+						A.ALIAS,
+						A.OBJECTS,
+						A.CONTENTS,
+						A.SHOW_PRODUCTS,
+						A.ORGANIZER,
+						A.SUBJECTIVITY,
+						A.SUPPORT,
+						A.HOMPAGE,
+						A.PROGRAM,
+						A.ATTATCH_FILE_OBID,
+						B.OBJECT_FOR,
+						B.START_APPLY_DATE,
+						B.END_APPLY_DATE,
+						(CASE B.OBJECT_FOR WHEN '0' THEN '전체' WHEN '1' THEN '일반' WHEN '2' THEN '기업' END) OBJECT_FOR_NM
+					FROM EVENT_LIST A, PARTICIPATE_LIST B
+					WHERE A.MASTER_LICENSE_LIST_OBID = B.MASTER_LICENSE_LIST_OBID
+			) E, MASTER_LICENSE_LIST B
+			WHERE E.MASTER_LICENSE_LIST_OBID = B.OBID
+			AND B.MASTER_LICENSE_OBID = (SELECT OBID FROM MASTER_LICENSE WHERE EMAIL = 'shine_foryou@hanmail.net')
+		) A
+		WHERE 1=1
+		<if test="type != null and type != '' " >
+			<if test="type == 'pre' " >
+			AND SYSDATE() BETWEEN SYSDATE() <![CDATA[ < ]]> A.END_APPLY_DATE
+			</if>
+			<if test="type == 'ing' " >
+			AND SYSDATE() BETWEEN A.START_APPLY_DATE AND A.END_APPLY_DATE
+			</if>
+		</if>
+	</select>
 </mapper>

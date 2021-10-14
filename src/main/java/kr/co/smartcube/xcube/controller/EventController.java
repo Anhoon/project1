@@ -60,10 +60,10 @@ public class EventController {
         }
     }
 
-    @GetMapping("/{refObid}")
-    public ResponseEntity<CommonResult> selectEvent(@PathVariable String refObid) throws Exception {
+    @GetMapping("/{masterLicenseListObid}")
+    public ResponseEntity<CommonResult> selectEvent(@PathVariable String masterLicenseListObid) throws Exception {
         Map<String,Object> paramMap = new HashMap<String,Object>();
-        paramMap.put("refObid", refObid);
+        paramMap.put("masterLicenseListObid", masterLicenseListObid);
         try {
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(eventService.selectEvent(paramMap)), HttpStatus.OK);
         } catch (RuntimeException e) {

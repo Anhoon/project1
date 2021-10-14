@@ -12,8 +12,10 @@
 			TEL, 
 			MANAGER, 
 			JOB_POSITION, 
-			HOMEPAGE
+			HOMEPAGE,
+			TITLE
 		FROM MASTER_LICENSE
+		WHERE EMAIL = #{email}
 	</select>
 
 	<select id="selectMasterLicense" resultType="ParamMap">
@@ -25,15 +27,17 @@
 			TEL, 
 			MANAGER, 
 			JOB_POSITION, 
-			HOMEPAGE 
+			HOMEPAGE,
+			TITLE
 		FROM MASTER_LICENSE
-		WHERE EMAIL = #{email}
+		WHERE OBID = #{obid}
 	</select>
 
 	<select id="selectMasterLicenseListDetailList" resultType="ParamMap">
 		SELECT 
 			OBID, 
-			REF_OBID, 
+			MASTER_LICENSE_OBID, 
+			TITLE,
 			TYPE, 
 			STATUS, 
 			DATE_FORMAT(START_DATE,'%Y-%m-%d %T') AS START_DATE,
@@ -41,7 +45,7 @@
 			EXPRESSION, 
 			HOLD_TYPE
 		FROM MASTER_LICENSE_LIST
-		WHERE REF_OBID = (SELECT OBID FROM MASTER_LICENSE WHERE EMAIL = #{email})
+		WHERE MASTER_LICENSE_OBID = #{masterLicenseObid}
 	</select>
 
 	<insert id="insertMasterLicense" parameterType="java.util.HashMap">
@@ -75,7 +79,7 @@
 		INSERT INTO MASTER_LICENSE_LIST 
 		(
 			OBID, 
-			REF_OBID, 
+			MASTER_LICENSE_OBID, 
 			TYPE,
 			TITLE,
 			STATUS, 
@@ -88,7 +92,7 @@
 		<foreach collection="list" item="item" separator=",">
 		(
 			#{item.obid},
-			#{item.refObid}, 
+			#{item.masterLicenseObid}, 
 			#{item.type},
 			#{item.title},
 			#{item.status},
@@ -120,7 +124,7 @@
 			END_DATE = #{endDate},
 			EXPRESSION = #{expression},
 			HOLD_TYPE = #{holdType}
-		WHERE OBID = #{obid}
+		WHERE MASTER_LICENSE_OBID = #{masterLicenseObid}
 	</update>
 
 	<update id="updateMasterLicenseStatus" parameterType="java.util.HashMap">

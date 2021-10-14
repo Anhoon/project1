@@ -41,14 +41,14 @@ public class EventService {
         //파일이 있을경우 추가
         Map<String,Object> fileParam = new HashMap<String,Object>();
         List<Map<String,Object>> fileList = new ArrayList<Map<String,Object>>();
-        fileParam.put("refObid", eventMap.get("attatchRefObid"));
+        fileParam.put("refObid", eventMap.get("attatchFileObid"));
         fileList = fileDao.selectFileList(fileParam);
         if(!ObjectUtils.isEmpty(fileList)) eventMap.put("files", fileList);
         //파일이 있을경우 추가
         
         Map<String, Object> participateListMap = eventDao.selectParticipate(map);
         if(ObjectUtils.isEmpty(participateListMap)) throw new RuntimeException("참가모집 정보가 없습니다.");
-        fileParam.put("refObid", participateListMap.get("attatchRefObid"));
+        fileParam.put("refObid", participateListMap.get("attatchFileObid"));
         fileList = fileDao.selectFileList(fileParam);
         if(!ObjectUtils.isEmpty(fileList)) participateListMap.put("files", fileList);
         resultMap.put("eventLists", eventMap);
@@ -78,7 +78,7 @@ public class EventService {
     }
     @Transactional
     public void deleteEventList(Map<String, Object> map) throws Exception{
-        if(ObjectUtils.isEmpty(map.get("refObid"))) throw new RuntimeException("REF_OBID 정보가 없습니다."); 
+        if(ObjectUtils.isEmpty(map.get("masterLicenseListObid"))) throw new RuntimeException("MASTER_LICENSE_LIST_OBID 정보가 없습니다."); 
         int i = eventDao.deleteEvent(map); //행사등록 정보
         i = i + eventDao.deleteParticipate(map); //참가모집 정보
         if(i == 0) throw new RuntimeException("일치하는 정보가 없습니다."); 
@@ -90,7 +90,7 @@ public class EventService {
         List<Map<String,Object>> fileList = new ArrayList<Map<String,Object>>();
         Map<String,Object> eventFileMap = Util.objToMap(map.get("files"));
         String attatchObid = UUID.randomUUID().toString();
-        map.put("attatchRefObid", attatchObid);
+        map.put("attatchFileObid", attatchObid);
         if(!ObjectUtils.isEmpty(eventFileMap)){
             fileMap = fileService.fileUploadByte(Util.objToStr(eventFileMap.get("fileName")), Util.objToStr(eventFileMap.get("fileContent")));
             fileMap.put("refObid", attatchObid);
@@ -106,7 +106,7 @@ public class EventService {
         List<Map<String,Object>> fileList = new ArrayList<Map<String,Object>>();
         Map<String,Object> eventFileMap = Util.objToMap(map.get("files"));
         String attatchObid = UUID.randomUUID().toString();
-        map.put("attatchRefObid", attatchObid);
+        map.put("attatchFileObid", attatchObid);
         if(!ObjectUtils.isEmpty(eventFileMap)){
             fileMap = fileService.fileUploadByte(Util.objToStr(eventFileMap.get("fileName")), Util.objToStr(eventFileMap.get("fileContent")));
             fileMap.put("refObid", attatchObid);
@@ -125,11 +125,13 @@ public class EventService {
         if(ObjectUtils.isEmpty(orgEvent)) throw new RuntimeException("일치하는 정보가 없습니다."); 
         if(!ObjectUtils.isEmpty(eventFileMap)){
             if(!Util.objToStr(orgEvent.get("fileName")).equals(Util.objToStr(eventFileMap.get("fileName")))){
+                String attatchObid = UUID.randomUUID().toString();
+                map.put("attatchFileObid", attatchObid);
                 fileMap = fileService.fileUploadByte(Util.objToStr(eventFileMap.get("fileName")), Util.objToStr(eventFileMap.get("fileContent")));
-                map.put("attatchObid", fileMap.get("obid"));
+                fileMap.put("refObid", attatchObid);
                 fileList.add(fileMap);
             }else{
-                map.put("attatchObid", orgEvent.get("attatchObid"));
+                map.put("attatchFileObid", orgEvent.get("attatchFileObid"));
             }
         }
         validationEventCheck(map);
@@ -145,11 +147,13 @@ public class EventService {
         Map<String,Object> eventFileMap = Util.objToMap(map.get("files"));
         if(!ObjectUtils.isEmpty(eventFileMap)){
             if(!Util.objToStr(orgEvent.get("fileName")).equals(Util.objToStr(eventFileMap.get("fileName")))){
+                String attatchObid = UUID.randomUUID().toString();
+                map.put("attatchFileObid", attatchObid);
                 fileMap = fileService.fileUploadByte(Util.objToStr(eventFileMap.get("fileName")), Util.objToStr(eventFileMap.get("fileContent")));
-                map.put("attatchObid", fileMap.get("obid"));
+                fileMap.put("refObid", attatchObid);
                 fileList.add(fileMap);
             }else{
-                map.put("attatchObid", orgEvent.get("attatchObid"));
+                map.put("attatchFileObid", orgEvent.get("attatchFileObid"));
             }
         }
         validationParticipateCheck(map);
@@ -157,11 +161,10 @@ public class EventService {
         fileDao.insertFile(fileList);
         return i;
     }
-
     public void validationEventCheck(Map<String,Object> map){
         String name = "행사등록";
-        if(ObjectUtils.isEmpty(map.get("refObid"))){
-            throw new RuntimeException(name +" refObid 정보가 없습니다.");
+        if(ObjectUtils.isEmpty(map.get("masterLicenseListObid"))){
+            throw new RuntimeException(name +" masterLicenseListObid 정보가 없습니다.");
         }
         if(ObjectUtils.isEmpty(map.get("title"))){
             throw new RuntimeException(name +" 행사타이틀 정보를 입력해 주세요.");
@@ -199,8 +202,8 @@ public class EventService {
 
     public void validationParticipateCheck(Map<String,Object> map){
         String name = "참가모집";
-        if(ObjectUtils.isEmpty(map.get("refObid"))){
-            throw new RuntimeException(name +" refObid 정보가 없습니다.");
+        if(ObjectUtils.isEmpty(map.get("masterLicenseListObid"))){
+            throw new RuntimeException(name +" masterLicenseListObid 정보가 없습니다.");
         }
         if(ObjectUtils.isEmpty(map.get("scale"))){
             throw new RuntimeException(name +" 참가규모 정보를 입력해 주세요.");

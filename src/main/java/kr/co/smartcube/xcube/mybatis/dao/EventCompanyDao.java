@@ -20,7 +20,7 @@ public class EventCompanyDao {
 	private SqlSession sqlSession;
 
 	public List<Map<String, Object>> selectMasterLicenseList(Map<String,Object> param) {
-		return sqlSession.selectList(NAMESPACE + "selectMasterLicenseList");
+		return sqlSession.selectList(NAMESPACE + "selectMasterLicenseList",param);
     }
 	public Map<String, Object> selectMasterLicense(Map<String, Object> param) {
 		return sqlSession.selectOne(NAMESPACE + "selectMasterLicense",param);

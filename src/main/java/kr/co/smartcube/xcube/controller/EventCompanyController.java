@@ -33,12 +33,13 @@ public class EventCompanyController {
     @Autowired
     private ResponseService responseService;
 
-    @GetMapping("/license/master")
-    public ResponseEntity<CommonResult> selectMasterLicenseList(){
+    @GetMapping("/license/master/{email}")
+    public ResponseEntity<CommonResult> selectMasterLicenseList(@PathVariable String email){
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("pageNum", 0);
         map.put("pageSize", 2);
         map.put("orderBy", "1 desc");
+        map.put("email", email);
         map = Util.initPaginagtion(map);
         try {
             return new ResponseEntity<CommonResult>(responseService.getListResult(eventCompanyService.selectMasterLicenseList(map)), HttpStatus.OK);
@@ -50,12 +51,12 @@ public class EventCompanyController {
         }
     }
 
-    @GetMapping("/license/master/{email}")
-    public ResponseEntity<CommonResult> selectMasterLicense(@PathVariable String email) throws Exception {
+    @GetMapping("/license/master/list/{obid}")
+    public ResponseEntity<CommonResult> selectMasterLicenseListDetailList(@PathVariable String obid) throws Exception {
         Map<String,Object> paramMap = new HashMap<String,Object>();
-        paramMap.put("email", email);
+        paramMap.put("masterLicenseObid", obid);
         try {
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(eventCompanyService.selectMasterLicense(paramMap)), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(eventCompanyService.selectMasterLicenseListDetailList(paramMap)), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {

@@ -29,20 +29,19 @@ public class EventCompanyService {
     private FileDao fileDao;
 
     public List<Map<String, Object>> selectMasterLicenseList(Map<String,Object> map) {
-        PageHelper.startPage((int)map.get("pageNum"), (int)map.get("pageSize"), (String) map.get("orderBy"));
         return eventCompanyDao.selectMasterLicenseList(map);
     }
 
-    public Map<String, Object> selectMasterLicense(Map<String, Object> map) {
-        Map<String,Object> resultMap = eventCompanyDao.selectMasterLicense(map);
-        if(ObjectUtils.isEmpty(resultMap)) throw new RuntimeException("일치하는 정보가 없습니다.");
-
+    public Map<String, Object> selectMasterLicenseListDetailList(Map<String, Object> map) {
+        //Map<String,Object> resultMap = eventCompanyDao.selectMasterLicense(map);
+        //if(ObjectUtils.isEmpty(resultMap)) throw new RuntimeException("일치하는 정보가 없습니다.");
+        //map.put("masterLicenseObid", map.get("obid"));
         //Map<String,Object> fileParam = new HashMap<String,Object>();
         //Map<String,Object> fileMap = new HashMap<String,Object>();
         //fileParam.put("attachObid", resultMap.get("attatchObid"));
         //fileMap = fileDao.selectFile(fileParam);
         //if(!ObjectUtils.isEmpty(fileMap)) resultMap.put("files", fileMap);
-
+        Map<String,Object> resultMap = new HashMap<String,Object>();
         List<Map<String,Object>> resultList = eventCompanyDao.selectMasterLicenseListDetailList(map);
         /*
         for(Map<String,Object> licenseMap : resultList){
@@ -86,9 +85,9 @@ public class EventCompanyService {
             } 
             */           
             listMap.put("obid", UUID.randomUUID().toString());
-            listMap.put("refObid", obid);
+            listMap.put("masterLicenseObid", obid);
         }
-        
+        System.out.println(masterLicenseList);
         validationMasterLicenseCheck(masterLicense);
         validationMasterLicenseListCheck(masterLicenseList);
         eventCompanyDao.insertMasterLicense(masterLicense);
@@ -135,8 +134,8 @@ public class EventCompanyService {
             if(ObjectUtils.isEmpty(map.get("obid"))){
                 throw new RuntimeException(i+"번째 obid 정보가 없습니다.");
             }
-            if(ObjectUtils.isEmpty(map.get("refObid"))){
-                throw new RuntimeException(i+"번째 refObid 정보가 없습니다.");
+            if(ObjectUtils.isEmpty(map.get("masterLicenseObid"))){
+                throw new RuntimeException(i+"번째 masterLicenseObid 정보가 없습니다.");
             }
             if(ObjectUtils.isEmpty(map.get("type"))){
                 throw new RuntimeException(i+"번째 라이선스리스트 라이선스종류 정보를 입력해 주세요.");

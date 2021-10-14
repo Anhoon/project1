@@ -112,17 +112,6 @@ public class UserService {
     }
 
     @Transactional
-    public void findPassword(String email) throws Exception{
-        Map<String,Object> map = new HashMap<String,Object>();
-        String password = UUID.randomUUID().toString();
-        map.put("email", email);
-        map.put("password", password);
-        emailService.sendPassWordMail(map); //메일전송
-        map.put("password", passwordEncoder.encode(password));
-        userDao.updateUserPassword(map);
-    }
-
-    @Transactional
     public void deleteUserStatus(Map<String, Object> map) throws Exception{
         map.put("userStatus", "-1"); //탈퇴회원
         int i = userDao.updateUserStatus(map);
@@ -134,6 +123,17 @@ public class UserService {
             throw new RuntimeException("일치하는 정보가 없습니다.");
         }
 	}
+
+    @Transactional
+    public void findPassword(String email) throws Exception{
+        Map<String,Object> map = new HashMap<String,Object>();
+        String password = UUID.randomUUID().toString();
+        map.put("email", email);
+        map.put("password", password);
+        emailService.sendPassWordMail(map); //메일전송
+        map.put("password", passwordEncoder.encode(password));
+        userDao.updateUserPassword(map);
+    }
 
     //이력 저장 맵 생성
     public Map<String,Object> getHistMap(Map<String,Object> map,String type, Map<String, Object> detailMap){

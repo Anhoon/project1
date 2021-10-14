@@ -7,80 +7,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import kr.co.smartcube.xcube.common.CommonResult;
 import kr.co.smartcube.xcube.common.ResponseService;
+import kr.co.smartcube.xcube.services.EventCompanyService;
+import kr.co.smartcube.xcube.services.MyPageService;
 import kr.co.smartcube.xcube.services.UserService;
-import kr.co.smartcube.xcube.util.Util;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
 @CrossOrigin(origins="*")
-@RequestMapping("/api/user")
-public class UserController {
+@RequestMapping("/api/myPage")
+public class MyPageController {
 
+    @Autowired
+    private MyPageService myPageService;
+    
     @Autowired
     private UserService userService;
 
     @Autowired
+    private EventCompanyService eventCompanyService;
+
+    @Autowired
     private ResponseService responseService;
 
-    @GetMapping("")
-    public ResponseEntity<CommonResult> selectUserList() throws Exception{
-        Map<String,Object> map = new HashMap<String,Object>();
-        map.put("pageNum", 0);
-        map.put("pageSize", 2);
-        map.put("orderBy", "1 desc");
-        map = Util.initPaginagtion(map);
-        try {
-            return new ResponseEntity<CommonResult>(responseService.getListResult(userService.selectUserList(map)), HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e.fillInStackTrace());
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
-        }
-    }
-
-    @GetMapping("/{email}")
-    public ResponseEntity<CommonResult> selectUser(@PathVariable String email) throws Exception {
-        Map<String,Object> paramMap = new HashMap<String,Object>();
-        paramMap.put("email", email);
-        try {
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(userService.selectUser(paramMap)), HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e.fillInStackTrace());
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
-        }
-    }
-
-    @PostMapping("")
-    public ResponseEntity<CommonResult> insertData(@RequestBody Map<String, Object> map) throws Exception{
-        try {
-            userService.insertUser(map);
-            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e.fillInStackTrace());
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
-        }
-    }
-
-    @PatchMapping("")
-    public ResponseEntity<CommonResult> updateData(@RequestBody Map<String, Object> map) throws Exception{
+    @PatchMapping("/updateUserInfo")
+    public ResponseEntity<CommonResult> updateUserInfo(@RequestBody Map<String, Object> map) throws Exception{
         try {
             userService.updateUser(map);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
@@ -92,11 +53,13 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("")
-    public ResponseEntity<CommonResult> deleteData(@RequestBody Map<String, Object> map) throws Exception{
+    @GetMapping("/myEventInfo/{email}")
+    public ResponseEntity<CommonResult> selectMyEventInfoCompany(@PathVariable String email) throws Exception 
+    {
         try {
-            userService.deleteUserStatus(map);
-            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
+            Map<String,Object> paramMap = new HashMap<String,Object>();
+            paramMap.put("email", email);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.selectMyEvent(paramMap)), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
@@ -105,34 +68,12 @@ public class UserController {
         }
     }
 
-    @GetMapping(value = "/certified")
-    public ResponseEntity<CommonResult> mailCheck(@RequestParam(value = "obid") String obid, @RequestParam(value = "email") String email) throws Exception{
-        Map<String,Object> map = new HashMap<String,Object>();
-        map.put("obid", obid);
-        map.put("email", email);
-        try {
-            userService.userCertified(map);
-            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e.fillInStackTrace());
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
-        }
-        /*
-        URI redirectUri = new URI("http://www.naver.com");
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(redirectUri);
-        return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
-        */
-    }
-
-    @GetMapping("/findUser/{name}")
-    public ResponseEntity<CommonResult> findUser(@PathVariable String name) throws Exception {
+    @GetMapping("/myEventDetailInfo/{obid}")
+    public ResponseEntity<CommonResult> selectMasterLicenseListDetailList(@PathVariable String obid) throws Exception {
         Map<String,Object> paramMap = new HashMap<String,Object>();
-        paramMap.put("name", name);
+        paramMap.put("masterLicenseObid", obid);
         try {
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(userService.selectUser(paramMap)), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(eventCompanyService.selectMasterLicenseListDetailList(paramMap)), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
@@ -141,11 +82,56 @@ public class UserController {
         }
     }
 
-    @GetMapping("/findPassword/{email}")
-    public ResponseEntity<CommonResult> findPassword(@PathVariable String email) throws Exception{
+    @GetMapping("/participateCompanyHist/{email}")
+    public ResponseEntity<CommonResult> selectParticipateCompanyHist(@PathVariable String email) throws Exception 
+    {
         try {
-            userService.findPassword(email);
-            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
+            Map<String,Object> paramMap = new HashMap<String,Object>();
+            paramMap.put("email", email);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.selectMyEvent(paramMap)), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+
+    @GetMapping("/participateUserHist/{email}")
+    public ResponseEntity<CommonResult> selectParticipateUserHist(@PathVariable String email) throws Exception 
+    {
+        try {
+            Map<String,Object> paramMap = new HashMap<String,Object>();
+            paramMap.put("email", email);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.selectMyEvent(paramMap)), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    } 
+    
+    @PostMapping("/participateUserInsert/{email}")
+    public ResponseEntity<CommonResult> participateUserInsert(@RequestBody Map<String, Object> map) throws Exception
+    {
+        try {
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.selectMyEvent(map)), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+
+    @GetMapping("/userLicenseSearch/{email}")
+    public ResponseEntity<CommonResult> userLicenseSearch(@PathVariable String email) throws Exception 
+    {
+        try {
+            Map<String,Object> paramMap = new HashMap<String,Object>();
+            paramMap.put("email", email);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.userLicenseSearch(paramMap)), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
