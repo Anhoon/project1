@@ -153,4 +153,18 @@ public class UserController {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
     }
+
+    @GetMapping("/userCheck/{email}")
+    public ResponseEntity<CommonResult> userCheck(@PathVariable String email) throws Exception {
+        Map<String,Object> paramMap = new HashMap<String,Object>();
+        paramMap.put("email", email);
+        try {
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(userService.selectUser(paramMap)), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
 }

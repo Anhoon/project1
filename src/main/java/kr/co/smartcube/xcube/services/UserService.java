@@ -139,7 +139,7 @@ public class UserService {
     public Map<String,Object> getHistMap(Map<String,Object> map,String type, Map<String, Object> detailMap){
         String hisObid = UUID.randomUUID().toString();
         Map<String,Object> histMap = new HashMap<String,Object>();
-        histMap.put("refObid", (String) map.get("obid"));
+        histMap.put("usersObid", Util.objToStr(map.get("obid")));
         histMap.put("obid", hisObid);
         histMap.put("reqType", type);
         if(!ObjectUtils.isEmpty(detailMap)) histMap.put("detail", Util.objToJson(detailMap));

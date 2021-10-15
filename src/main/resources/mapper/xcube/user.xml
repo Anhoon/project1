@@ -155,7 +155,7 @@
 			CREATED_ON,
 			REQ_TYPE,
 			DETAIL,
-			REF_OBID
+			USERS_OBID
 		) 
 		VALUES 
 		(
@@ -163,7 +163,7 @@
 			SYSDATE(),
 			#{reqType}, 
 			#{detail},
-			#{refObid}
+			#{usersObid}
 		)
 	</insert>
 
