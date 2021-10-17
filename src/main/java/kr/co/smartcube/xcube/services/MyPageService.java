@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import kr.co.smartcube.xcube.mybatis.dao.EventCompanyDao;
+import kr.co.smartcube.xcube.mybatis.dao.EventDao;
 import kr.co.smartcube.xcube.mybatis.dao.MyPageDao;
 import kr.co.smartcube.xcube.mybatis.dao.UserDao;
 
@@ -29,20 +30,23 @@ public class MyPageService {
     @Transactional
     public Map<String, Object> selectMyEvent(Map<String,Object> map) {
         Map<String, Object> resultMap = new HashMap<String,Object>();
-        map.put("type", "pre");
-        List<Map<String,Object>> preEventList = myPageDao.selectMyEventList(map);
-        map.put("type", "ing");
-        List<Map<String,Object>> ingEventList = myPageDao.selectMyEventList(map);
-        resultMap.put("preEventList",preEventList);
-        resultMap.put("ingEventList",ingEventList);
-        //if(!ObjectUtils.isEmpty(preEventList)) resultMap.put("preEventList",preEventList);
-        //if(!ObjectUtils.isEmpty(ingEventList)) resultMap.put("ingEventList",ingEventList);
+
+        Map<String, Object> userMap = userDao.selectUser(map);
+        if(!ObjectUtils.isEmpty(userMap)){
+            map.put("eventType", "pre");
+            List<Map<String,Object>> preEventList = myPageDao.selectMyEventList(map);
+            map.put("eventType", "ing");
+            List<Map<String,Object>> ingEventList = myPageDao.selectMyEventList(map);
+            resultMap.put("preEventList",preEventList);
+            resultMap.put("ingEventList",ingEventList);
+            //if(!ObjectUtils.isEmpty(preEventList)) resultMap.put("preEventList",preEventList);
+            //if(!ObjectUtils.isEmpty(ingEventList)) resultMap.put("ingEventList",ingEventList);
+        }else{
+            throw new RuntimeException("일치하는 정보가 없습니다.");
+        }
         return resultMap;
     }
 
-    public List<Map<String, Object>> selectMasterLicenseList(Map<String,Object> map) {
-        return eventCompanyDao.selectMasterLicenseList(map);
-    }
     @Transactional
     public List<Map<String, Object>> userLicenseSearch(Map<String,Object> map) {
         List<Map<String,Object>> resultList = new ArrayList<Map<String,Object>>();
@@ -54,5 +58,39 @@ public class MyPageService {
         }
         return resultList;
     }
-    
+
+    @Transactional
+    public List<Map<String, Object>> participateCompanyHist(Map<String,Object> map) {
+        List<Map<String,Object>> resultList = new ArrayList<Map<String,Object>>();
+        Map<String, Object> userMap = userDao.selectUser(map);
+        if(!ObjectUtils.isEmpty(userMap)){
+            resultList = myPageDao.participateCompanyHist(map);
+        }else{
+            throw new RuntimeException("일치하는 정보가 없습니다.");
+        }
+        return resultList;
+    }
+
+    @Transactional
+    public List<Map<String, Object>> participateUserHist(Map<String,Object> map) {
+        List<Map<String,Object>> resultList = new ArrayList<Map<String,Object>>();
+        Map<String, Object> userMap = userDao.selectUser(map);
+        if(!ObjectUtils.isEmpty(userMap)){
+            resultList = myPageDao.participateUserHist(map);
+        }else{
+            throw new RuntimeException("일치하는 정보가 없습니다.");
+        }
+        return resultList;
+    }
+
+    @Transactional
+    public void insertParticipateUser(Map<String, Object> map) throws Exception{
+        Map<String, Object> userMap = userDao.selectUser(map);
+        System.out.println(map);
+        if(!ObjectUtils.isEmpty(userMap)){
+            myPageDao.insertParticipateUser(map);
+        }else{
+            throw new RuntimeException("일치하는 정보가 없습니다.");
+        }
+    }
 }

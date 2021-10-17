@@ -39,6 +39,7 @@ public class EventController {
     @GetMapping("")
     public ResponseEntity<CommonResult> selectEventList(
             @RequestParam(required = false) String type,
+            @RequestParam(required = false) String eventType,
             @RequestParam(required = false) String searchKey,
             @RequestParam(required = false) String searchKeyWord
             ){
@@ -47,8 +48,9 @@ public class EventController {
         map.put("pageSize", 2);
         map.put("orderBy", "1 desc");
         if(!ObjectUtils.isEmpty(type)) map.put("type", type);
-        if(!ObjectUtils.isEmpty(type)) map.put("searchKey", searchKey);
-        if(!ObjectUtils.isEmpty(type)) map.put("searchKeyWord", searchKeyWord);
+        if(!ObjectUtils.isEmpty(eventType)) map.put("eventType", eventType);
+        if(!ObjectUtils.isEmpty(searchKey)) map.put("searchKey", searchKey);
+        if(!ObjectUtils.isEmpty(searchKeyWord)) map.put("searchKeyWord", searchKeyWord);
         map = Util.initPaginagtion(map);
         try {
             return new ResponseEntity<CommonResult>(responseService.getListResult(eventService.selectEventList(map)), HttpStatus.OK);

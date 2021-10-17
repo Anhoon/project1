@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import kr.co.smartcube.xcube.common.CommonResult;
 import kr.co.smartcube.xcube.common.ResponseService;
-import kr.co.smartcube.xcube.services.EventCompanyService;
+import kr.co.smartcube.xcube.services.EventService;
 import kr.co.smartcube.xcube.services.MyPageService;
 import kr.co.smartcube.xcube.services.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class MyPageController {
     private UserService userService;
 
     @Autowired
-    private EventCompanyService eventCompanyService;
+    private EventService eventService;
 
     @Autowired
     private ResponseService responseService;
@@ -68,12 +68,12 @@ public class MyPageController {
         }
     }
 
-    @GetMapping("/myEventDetailInfo/{obid}")
-    public ResponseEntity<CommonResult> selectMasterLicenseListDetailList(@PathVariable String obid) throws Exception {
+    @GetMapping("/myEventDetailInfo/{masterLicenseListObid}")
+    public ResponseEntity<CommonResult> selectMasterLicenseListDetailList(@PathVariable String masterLicenseListObid) throws Exception {
         Map<String,Object> paramMap = new HashMap<String,Object>();
-        paramMap.put("masterLicenseObid", obid);
+        paramMap.put("masterLicenseListObid", masterLicenseListObid);
         try {
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(eventCompanyService.selectMasterLicenseListDetailList(paramMap)), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(eventService.selectEvent(paramMap)), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
@@ -88,7 +88,7 @@ public class MyPageController {
         try {
             Map<String,Object> paramMap = new HashMap<String,Object>();
             paramMap.put("email", email);
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.selectMyEvent(paramMap)), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.participateCompanyHist(paramMap)), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
@@ -103,7 +103,7 @@ public class MyPageController {
         try {
             Map<String,Object> paramMap = new HashMap<String,Object>();
             paramMap.put("email", email);
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.selectMyEvent(paramMap)), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.participateUserHist(paramMap)), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
@@ -112,11 +112,13 @@ public class MyPageController {
         }
     } 
     
-    @PostMapping("/participateUserInsert/{email}")
-    public ResponseEntity<CommonResult> participateUserInsert(@RequestBody Map<String, Object> map) throws Exception
+    @PostMapping("/insertParticipateUser/{email}")
+    public ResponseEntity<CommonResult> participateUserInsert(@PathVariable String email,@RequestBody Map<String, Object> map) throws Exception
     {
         try {
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.selectMyEvent(map)), HttpStatus.OK);
+            map.put("email", email);
+            myPageService.insertParticipateUser(map);
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {

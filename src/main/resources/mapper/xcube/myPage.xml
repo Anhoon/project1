@@ -7,30 +7,105 @@
 		SELECT
 			A.OBID,
 			A.EMAIL,
-			B.OBID AS LISTOBID,
+			B.OBID AS MASTER_LICENSE_LIST_OBID,
 			B.MASTER_LICENSE_OBID,
 			A.TITLE,
-			(CASE B.TYPE WHEN 'C' THEN '컨벤션' 
-												WHEN 'E' THEN '전시회' 
-												WHEN 'F' THEN '컨퍼런스' 
-												WHEN 'S' THEN '공연' 
-												ELSE '미등록코드' END
-							) AS TYPE_NM,
-							B.START_DATE,
-							B.END_DATE,
-			CONCAT(DATE_FORMAT(B.START_DATE,'%Y-%m-%d'),' ~ ',DATE_FORMAT(B.END_DATE,'%Y-%m-%d')) AS event_day,
-			CASE WHEN DATE_FORMAT(SYSDATE(),'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(B.END_DATE,'%Y-%m-%d') THEN CONCAT('D-',DATEDIFF(B.END_DATE, B.START_DATE)) 
-				 ELSE '' END AS ING_DAY
+			(CASE B.TYPE 
+					WHEN 'C' THEN '컨벤션' 
+					WHEN 'E' THEN '전시회' 
+					WHEN 'F' THEN '컨퍼런스' 
+					WHEN 'S' THEN '공연' 
+					ELSE '미등록코드' END
+			) AS TYPE_NM,
+			B.START_DATE,
+			B.END_DATE,
+			CONCAT(DATE_FORMAT(B.START_DATE,'%Y-%m-%d'),'~',DATE_FORMAT(B.END_DATE,'%Y-%m-%d')) AS LICENSE_DAY,
+			CASE WHEN DATE_FORMAT(SYSDATE(),'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(B.END_DATE,'%Y-%m-%d') THEN CONCAT('D-',DATEDIFF(B.END_DATE, B.START_DATE)) ELSE '' END AS ING_DAY
 		FROM MASTER_LICENSE A, MASTER_LICENSE_LIST B
 		WHERE A.OBID = B.MASTER_LICENSE_OBID
-		AND A.EMAIL = 'shine_foryou@hanmail.net'
-		<if test="type != null and type != '' " >
-			<if test="type == 'pre' " >
-			AND DATE_FORMAT(SYSDATE(),'%Y-%m-%d') <![CDATA[ < ]]> DATE_FORMAT(B.END_DATE,'%Y-%m-%d')
+		AND A.EMAIL = #{email}
+		<if test="eventType != null and eventType != '' " >
+			<if test="eventType == 'pre' " >
+			AND DATE_FORMAT(B.END_DATE,'%Y-%m-%d') <![CDATA[ < ]]> DATE_FORMAT(SYSDATE(),'%Y-%m-%d') 
 			</if>
-			<if test="type == 'ing' " >
+			<if test="eventType == 'ing' " >
 			AND DATE_FORMAT(SYSDATE(),'%Y-%m-%d') BETWEEN DATE_FORMAT(B.START_DATE,'%Y-%m-%d') AND DATE_FORMAT(B.END_DATE,'%Y-%m-%d')
 			</if>
 		</if>
 	</select>
+
+	<select id="participateCompanyHist" resultType="ParamMap">
+		SELECT
+			A.OBID,
+			A.EMAIL,
+			B.OBID AS LISTOBID,
+			B.MASTER_LICENSE_OBID,
+			A.TITLE,
+			(CASE B.TYPE 
+					WHEN 'C' THEN '컨벤션' 
+					WHEN 'E' THEN '전시회' 
+					WHEN 'F' THEN '컨퍼런스' 
+					WHEN 'S' THEN '공연' 
+					ELSE '미등록코드' END
+			) AS TYPE_NM,
+			C.APPROVAL_CODE,
+			(CASE C.APPROVAL_CODE 
+					WHEN '0' THEN '대기' 
+					WHEN '1' THEN '승인' 
+					WHEN '-1' THEN '불가' 
+					END
+			) AS TYPE_NM
+		FROM MASTER_LICENSE A, MASTER_LICENSE_LIST B, PARTICIPATE_COMPANY_LIST C
+		WHERE A.OBID = B.MASTER_LICENSE_OBID
+		AND B.OBID = C.MASTER_LICENSE_LIST_OBID
+		AND A.EMAIL = #{email}
+	</select>
+
+	<select id="participateUserHist" resultType="ParamMap">
+		SELECT
+			A.OBID,
+			A.EMAIL,
+			B.OBID AS LISTOBID,
+			B.MASTER_LICENSE_OBID,
+			A.TITLE,
+			(CASE B.TYPE 
+					WHEN 'C' THEN '컨벤션' 
+					WHEN 'E' THEN '전시회' 
+					WHEN 'F' THEN '컨퍼런스' 
+					WHEN 'S' THEN '공연' 
+					ELSE '미등록코드' END
+			) AS TYPE_NM,
+			C.REQ_GRADE,
+			(CASE 
+				WHEN C.REQ_GRADE = C.GRADE THEN '승인' 
+				WHEN C.REQ_GRADE != C.GRADE THEN '대기'					
+				END
+			) AS GRADE_NM
+		FROM MASTER_LICENSE A, MASTER_LICENSE_LIST B, PARTICIPATE_USER_LIST C
+		WHERE A.OBID = B.MASTER_LICENSE_OBID
+		AND B.OBID = C.MASTER_LICENSE_LIST_OBID
+		AND A.EMAIL = #{email}
+	</select>
+
+	<insert id="insertParticipateUser" parameterType="java.util.HashMap">
+		INSERT INTO PARTICIPATE_USER_LIST
+		(
+			MASTER_LICENSE_LIST_OBID,
+			CREATED_ON,
+			EMAIL,
+			NAME,
+			REQ_GRADE,
+			GRADE
+		)
+		VALUES 
+		(
+			#{masterLicenseListObid},
+			SYSDATE(),
+			#{email},
+			#{name},
+			#{reqGrade},
+			#{grade}
+		)
+	</insert>
+
 </mapper>

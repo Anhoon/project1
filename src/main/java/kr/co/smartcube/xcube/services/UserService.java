@@ -96,7 +96,7 @@ public class UserService {
     public void userCertified(Map<String, Object> map) throws Exception{
         Map<String,Object> userMap = userDao.selectUser(map);
         if(!ObjectUtils.isEmpty(userMap)) {
-            if(!Util.objToStr(userMap.get("userStatus")).equals("0")) throw new RuntimeException("이미 인증된 회원입니다.");
+            //if(!Util.objToStr(userMap.get("userStatus")).equals("0")) throw new RuntimeException("이미 인증된 회원입니다.");
             map.put("userStatus", "1"); //정상가입
             int i = userDao.updateUserStatus(map);
             if(i > 0) {
@@ -104,10 +104,10 @@ public class UserService {
                 detailMap.put("userStatus", "1");
                 userDao.insertUserHistory(getHistMap(map,"U",detailMap)); //이력 저장
             }else{
-                throw new RuntimeException("일치하는 정보가 없습니다.");    
+                //throw new RuntimeException("일치하는 정보가 없습니다.");    
             }
         }else{
-            throw new RuntimeException("일치하는 정보가 없습니다.");
+            //throw new RuntimeException("일치하는 정보가 없습니다.");
         }
     }
 

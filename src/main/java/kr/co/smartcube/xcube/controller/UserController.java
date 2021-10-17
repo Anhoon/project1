@@ -1,9 +1,14 @@
 package kr.co.smartcube.xcube.controller;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -106,25 +111,24 @@ public class UserController {
     }
 
     @GetMapping(value = "/certified")
-    public ResponseEntity<CommonResult> mailCheck(@RequestParam(value = "obid") String obid, @RequestParam(value = "email") String email) throws Exception{
+    public ResponseEntity<CommonResult> mailCheck(@RequestParam(value = "obid") String obid, @RequestParam(value = "email") String email
+    ,HttpServletResponse respon) throws Exception{
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("obid", obid);
         map.put("email", email);
         try {
             userService.userCertified(map);
-            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
+            String newURL = respon.encodeRedirectURL("http://localhost:3000/");
+            respon.sendRedirect(newURL);
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(),HttpStatus.CREATED);
+
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
-        /*
-        URI redirectUri = new URI("http://www.naver.com");
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(redirectUri);
-        return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
-        */
+        
     }
 
     @GetMapping("/findUser/{name}")

@@ -19,4 +19,16 @@ public class MyPageDao {
 	public List<Map<String, Object>> selectMyEventList(Map<String,Object> param) {
 		return sqlSession.selectList(NAMESPACE + "selectMyEventList",param);
     }
+
+	public List<Map<String, Object>> participateCompanyHist(Map<String,Object> param) {
+		return sqlSession.selectList(NAMESPACE + "participateCompanyHist",param);
+    }
+
+	public List<Map<String, Object>> participateUserHist(Map<String,Object> param) {
+		return sqlSession.selectList(NAMESPACE + "participateUserHist",param);
+    }
+
+	public int insertParticipateUser(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.insert(NAMESPACE + "insertParticipateUser", paramMap);
+	}
 }
