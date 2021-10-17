@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import kr.co.smartcube.xcube.common.CommonResult;
@@ -42,11 +43,20 @@ public class ManageController {
     @GetMapping("/participate/list")
     public ResponseEntity<CommonResult> selectParticipateManageList(
         @AuthenticationPrincipal LoginVO loginVO,
-        @RequestBody(required = false) Map<String, Object> paramMap)
+        @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+        @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+        @RequestParam(required = false) String orderBy,
+        @RequestParam(required = false) String searchKey,
+        @RequestParam(required = false) String searchKeyWord) throws Exception 
     {
         try {
-            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            Map<String,Object> paramMap = new HashMap<String,Object>();
             paramMap.put("email", loginVO.getEmail());
+            paramMap.put("pageNum", pageNum);
+            paramMap.put("pageSize", pageSize);
+            paramMap.put("orderBy", orderBy);
+            paramMap.put("searchKey", searchKey);
+            paramMap.put("searchKeyWord", searchKeyWord);
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectParticipateManageList(Util.initPaginagtion(paramMap))), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
@@ -59,11 +69,10 @@ public class ManageController {
     public ResponseEntity<CommonResult> selectParticipateManage(
         @AuthenticationPrincipal LoginVO loginVO,
         @PathVariable String masterLicenseListObid,
-        @PathVariable String email,
-        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception 
+        @PathVariable String email) throws Exception 
     {
         try {
-            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            Map<String,Object> paramMap = new HashMap<String,Object>();
             paramMap.put("masterLicenseListObid", masterLicenseListObid);
             paramMap.put("email", email);
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectParticipateManage(paramMap)), HttpStatus.OK);
@@ -189,11 +198,20 @@ public class ManageController {
     @GetMapping("/auth/list")
     public ResponseEntity<CommonResult> selectAuthManageList(
         @AuthenticationPrincipal LoginVO loginVO,
-        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception 
+        @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+        @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+        @RequestParam(required = false) String orderBy,
+        @RequestParam(required = false) String searchKey,
+        @RequestParam(required = false) String searchKeyWord) throws Exception 
     {
         try {
-            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            Map<String, Object> paramMap = new HashMap<String,Object>();
             paramMap.put("email", loginVO.getEmail());
+            paramMap.put("pageNum", pageNum);
+            paramMap.put("pageSize", pageSize);
+            paramMap.put("orderBy", orderBy);
+            paramMap.put("searchKey", searchKey);
+            paramMap.put("searchKeyWord", searchKeyWord);
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectAuthManageList(Util.initPaginagtion(paramMap))), HttpStatus.OK);
         } catch (RuntimeException e) {
             log.error(e.getMessage(), e.fillInStackTrace());
@@ -209,11 +227,10 @@ public class ManageController {
     public ResponseEntity<CommonResult> selectAuthManage(
         @AuthenticationPrincipal LoginVO loginVO,
         @PathVariable String masterLicenseListObid,
-        @PathVariable String email,
-        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception 
+        @PathVariable String email) throws Exception 
     {
         try {
-            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            Map<String, Object> paramMap = new HashMap<String,Object>();
             paramMap.put("masterLicenseListObid", masterLicenseListObid);
             paramMap.put("email", email);
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectAuthManage(paramMap)), HttpStatus.OK);
@@ -328,11 +345,20 @@ public class ManageController {
     @GetMapping("/3D/list")
     public ResponseEntity<CommonResult> select3DManageList(
         @AuthenticationPrincipal LoginVO loginVO,
-        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception 
+        @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+        @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+        @RequestParam(required = false) String orderBy,
+        @RequestParam(required = false) String searchKey,
+        @RequestParam(required = false) String searchKeyWord) throws Exception 
     {
         try {
-            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            Map<String, Object> paramMap = new HashMap<String,Object>();
             paramMap.put("email", loginVO.getEmail());
+            paramMap.put("pageNum", pageNum);
+            paramMap.put("pageSize", pageSize);
+            paramMap.put("orderBy", orderBy);
+            paramMap.put("searchKey", searchKey);
+            paramMap.put("searchKeyWord", searchKeyWord);
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.select3DManageList(Util.initPaginagtion(paramMap))), HttpStatus.OK);
         } catch (RuntimeException e) {
             log.error(e.getMessage(), e.fillInStackTrace());
@@ -347,11 +373,10 @@ public class ManageController {
     @GetMapping("/3D/{obid}")
     public ResponseEntity<CommonResult> select3DManage(
         @AuthenticationPrincipal LoginVO loginVO,
-        @PathVariable String obid,
-        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception 
+        @PathVariable String obid) throws Exception 
     {
         try {
-            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            Map<String, Object> paramMap = new HashMap<String,Object>();
             paramMap.put("obid", obid);
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.select3DManage(paramMap)), HttpStatus.OK);
         } catch (RuntimeException e) {
@@ -372,7 +397,6 @@ public class ManageController {
         @RequestBody Map<String, Object> paramMap) throws Exception
     {
         try {
-            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
             paramMap.put("masterLicenseListObid", masterLicenseListObid);
             paramMap.put("email", email);
             manageService.insert3DManage(paramMap);
@@ -408,11 +432,10 @@ public class ManageController {
     /*3D제작요청관리 삭제 단건*/
     @DeleteMapping("/3D/{obid}")
     public ResponseEntity<CommonResult> delete3DManage(
-        @PathVariable String obid,
-        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception
+        @PathVariable String obid) throws Exception
     {
         try {
-            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            Map<String, Object> paramMap = new HashMap<String,Object>();
             paramMap.put("obid", obid);
             manageService.delete3DManage(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);

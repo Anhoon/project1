@@ -127,7 +127,7 @@ public class BoardService {
     public void deleteBoard(Map<String, Object> paramMap) throws Exception{
         Map<String, Object> boardMap = boardDao.selectBoard(paramMap);
         if(ObjectUtils.isEmpty(boardMap)) throw new RuntimeException("일치하는 정보가 없습니다.");
-        if(!ObjectUtils.isEmpty(boardMap.get("attachObid"))) fileService.deleteFileList(fileService.selectFileList(boardMap));
+        //if(!ObjectUtils.isEmpty(boardMap.get("attachObid"))) fileService.deleteFileList(fileService.selectFileList(boardMap));
         boardDao.deleteBoard(paramMap);
     }
 
@@ -142,7 +142,7 @@ public class BoardService {
                 map.put("obid", obid);
                 boardMap = boardDao.selectBoard(map);
                 if(!ObjectUtils.isEmpty(boardMap) && !ObjectUtils.isEmpty(boardMap.get("attachObid"))){
-                    fileService.deleteFileList(fileService.selectFileList(boardMap));
+                    //fileService.deleteFileList(fileService.selectFileList(boardMap));
                 }
             }
         }

@@ -35,14 +35,14 @@
 		<if test="masterLicenseListObid != null and masterLicenseListObid !=''">
 			   AND B.MASTER_LICENSE_OBID = #{masterLicenseListObid}
 		</if>
-		<if test="searchType == 'eventName'">
-			   AND A.TITLE LIKE CONCAT('%',#{searchText},'%')
+		<if test="searchKey == 'eventName'">
+			   AND A.TITLE LIKE CONCAT('%',#{searchKeyWord},'%')
 		</if>
-		<if test="searchType == 'companyName'">
-			   AND E.COMPANY_NAME LIKE CONCAT('%',#{searchText},'%')
+		<if test="searchKey == 'companyName'">
+			   AND E.COMPANY_NAME LIKE CONCAT('%',#{searchKeyWord},'%')
 		</if>
-		<if test="searchType == 'approvalCode'">
-			   AND E.APPROVAL_CODE = #{searchText}
+		<if test="searchKey == 'approvalCode'">
+			   AND E.APPROVAL_CODE = #{searchKeyWord}
 		</if>
 		<![CDATA[
 				ORDER BY D.CREATED_ON DESC
@@ -191,11 +191,11 @@
 		<if test="email != null and email != ''">
 		    AND A.EMAIL = #{email}
 		</if>
-		<if test="searchType == 'id'">
-		    AND D.EMAIL LIKE CONCAT('%',#{searchText},'%')
+		<if test="searchKey == 'id'">
+		    AND D.EMAIL LIKE CONCAT('%',#{searchKeyWord},'%')
 		</if>
-		<if test="searchType == 'name'">
-		    AND A.NAME LIKE CONCAT('%',#{searchText},'%')
+		<if test="searchKey == 'name'">
+		    AND A.NAME LIKE CONCAT('%',#{searchKeyWord},'%')
 		</if>
 		<![CDATA[
 					ORDER BY E.CREATED_ON DESC
@@ -282,11 +282,11 @@
 		<if test="email != null and email != ''">
 		    AND A.EMAIL = #{email}
 		</if>
-		<if test="searchType == 'title'">
-		    AND A.TITLE LIKE CONCAT('%',#{searchText},'%')
+		<if test="searchKey == 'title'">
+		    AND A.TITLE LIKE CONCAT('%',#{searchKeyWord},'%')
 		</if>
-		<if test="searchType == 'fileType'">
-		    AND C.FILE_TYPE LIKE CONCAT('%',#{searchText},'%')
+		<if test="searchKey == 'fileType'">
+		    AND C.FILE_TYPE LIKE CONCAT('%',#{searchKeyWord},'%')
 		</if>
 		<![CDATA[
 				ORDER BY C.CREATED_ON DESC
