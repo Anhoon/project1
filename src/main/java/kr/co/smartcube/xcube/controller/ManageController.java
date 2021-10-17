@@ -37,32 +37,36 @@ public class ManageController {
     @Autowired
     private ResponseService responseService;
 
-    /*참가기업*/
-    @GetMapping("/company")
-    public ResponseEntity<CommonResult> selectJoinCompanyList(
+    /*참가신청관리*/
+    /*참가신청관리 목록*/
+    @GetMapping("/participate/list")
+    public ResponseEntity<CommonResult> selectParticipateManageList(
         @AuthenticationPrincipal LoginVO loginVO,
         @RequestBody(required = false) Map<String, Object> paramMap)
     {
         try {
             if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
             paramMap.put("email", loginVO.getEmail());
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinCompanyList(Util.initPaginagtion(paramMap))), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectParticipateManageList(Util.initPaginagtion(paramMap))), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
     }
 
-    @GetMapping("/company/{refObidCompany}")
-    public ResponseEntity<CommonResult> selectJoinCompany(
+    /*참가신청관리 상세정보*/
+    @GetMapping("/participate/{masterLicenseListObid}/{email}")
+    public ResponseEntity<CommonResult> selectParticipateManage(
         @AuthenticationPrincipal LoginVO loginVO,
-        @PathVariable String refObidCompany,
-        @RequestBody Map<String, Object> paramMap) throws Exception 
+        @PathVariable String masterLicenseListObid,
+        @PathVariable String email,
+        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception 
     {
         try {
-            paramMap.put("refObidCompany", refObidCompany);
-            paramMap.put("email", loginVO.getEmail());
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinCompany(paramMap)), HttpStatus.OK);
+            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            paramMap.put("masterLicenseListObid", masterLicenseListObid);
+            paramMap.put("email", email);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectParticipateManage(paramMap)), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
@@ -71,14 +75,18 @@ public class ManageController {
         }
     }
 
-    @PostMapping("/company")
-    public ResponseEntity<CommonResult> insertJoinCompany(
+    /*참가신청관리 등록*/
+    @PostMapping("/participate/{masterLicenseListObid}/{email}")
+    public ResponseEntity<CommonResult> insertParticipateManage(
         @AuthenticationPrincipal LoginVO loginVO,
+        @PathVariable String masterLicenseListObid,
+        @PathVariable String email,
         @RequestBody Map<String, Object> paramMap) throws Exception
     {
         try {
-            paramMap.put("email", loginVO.getEmail());
-            manageService.insertJoinCompany(paramMap);
+            paramMap.put("masterLicenseListObid", masterLicenseListObid);
+            paramMap.put("email", email);
+            manageService.insertParticipateManage(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
@@ -88,14 +96,18 @@ public class ManageController {
         }
     }
 
-    @PatchMapping("/company")
-    public ResponseEntity<CommonResult> updateJoinCompany(
+    /*참가신청관리 변경*/
+    @PatchMapping("/participate/{masterLicenseListObid}/{email}")
+    public ResponseEntity<CommonResult> updateParticipateManage(
         @AuthenticationPrincipal LoginVO loginVO,
-        @RequestBody Map<String, Object> paramMap)
+        @PathVariable String masterLicenseListObid,
+        @PathVariable String email,
+        @RequestBody Map<String, Object> paramMap) throws Exception
     {
         try {
-            paramMap.put("email", loginVO.getEmail());
-            manageService.updateJoinCompany(paramMap);
+            paramMap.put("masterLicenseListObid", masterLicenseListObid);
+            paramMap.put("email", email);
+            manageService.updateParticipateManage(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
@@ -105,16 +117,19 @@ public class ManageController {
         }
     }
 
-    @DeleteMapping("/company")
-    public ResponseEntity<CommonResult> deleteJoinCompany(
+    /*참가신청관리 승인/불가 다건*/
+    @PatchMapping("/participate/list/{approval}")
+    public ResponseEntity<CommonResult> updateParticipateManageListApproval(
         @AuthenticationPrincipal LoginVO loginVO,
-        @RequestBody Map<String, Object> paramMap)
+        @PathVariable String approval,
+        @RequestBody Map<String, Object> paramMap) throws Exception
     {
         try {
-            paramMap.put("email", loginVO.getEmail());
-            manageService.deleteJoinCompany(paramMap);
+            paramMap.put("approvalCode", approval);
+            manageService.updateParticipateManageApprovalList(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
         } catch (RuntimeException e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
@@ -122,17 +137,24 @@ public class ManageController {
         }
     }
 
-    /*관심기업*/
-    @GetMapping("/company/interest")
-    public ResponseEntity<CommonResult> selectInterestingCompanyList(
+    /*참가신청관리 승인/불가 단건*/
+    @PatchMapping("/participate/{masterLicenseListObid}/{email}/{approval}")
+    public ResponseEntity<CommonResult> updateParticipateManageApproval(
         @AuthenticationPrincipal LoginVO loginVO,
-        @RequestBody(required = false) Map<String, Object> paramMap
-    ){
+        @PathVariable String masterLicenseListObid,
+        @PathVariable String email,
+        @PathVariable String approval,
+        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception
+    {
         try {
             if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
-            paramMap.put("email", loginVO.getEmail());
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectInterestCompanyList(Util.initPaginagtion(paramMap))), HttpStatus.OK);
+            paramMap.put("masterLicenseListObid", masterLicenseListObid);
+            paramMap.put("email", email);
+            paramMap.put("approvalCode", approval);
+            manageService.updateParticipateManageApproval(paramMap);
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
         } catch (RuntimeException e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
@@ -140,17 +162,19 @@ public class ManageController {
         }
     }
 
-    @PostMapping("/company/interest")
-    public ResponseEntity<CommonResult> insertInterestingCompany(
+    /*참가신청관리 삭제 단건*/
+    @DeleteMapping("/participate/{masterLicenseListObid}/{email}")
+    public ResponseEntity<CommonResult> deleteParticipateManage(
         @AuthenticationPrincipal LoginVO loginVO,
-        @RequestBody Map<String, Object> paramMap
-    ){
+        @PathVariable String masterLicenseListObid,
+        @PathVariable String email,
+        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception
+    {
         try {
-            if(ObjectUtils.isEmpty(paramMap) || ObjectUtils.isEmpty(paramMap.get("refObid")) || ObjectUtils.isEmpty(paramMap.get("refObidCompany"))) 
-                return new ResponseEntity<CommonResult>(responseService.getFailResult("행사정보, 기업정보를 확인하시기 바랍니다."), HttpStatus.CONFLICT);
-
-            paramMap.put("email", loginVO.getEmail());
-            manageService.insertInterestCompany(paramMap);
+            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            paramMap.put("masterLicenseListObid", masterLicenseListObid);
+            paramMap.put("email", email);
+            manageService.deleteParticipateManage(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
@@ -160,33 +184,39 @@ public class ManageController {
         }
     }
 
-    @DeleteMapping("/company/interest")
-    public ResponseEntity<CommonResult> deleteInterestingCompany(
-        @AuthenticationPrincipal LoginVO loginVO,
-        @RequestBody Map<String, Object> paramMap
-    ){
-        try {
-            paramMap.put("email", loginVO.getEmail());
-            manageService.deleteInterestCompany(paramMap);
-            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e.fillInStackTrace());
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
-        }
-    }
-
-    /*참여인력*/
-    @GetMapping("/user")
-    public ResponseEntity<CommonResult> selectJoinUserList(
+    /*권한관리*/
+    /*권한관리 목록*/
+    @GetMapping("/auth/list")
+    public ResponseEntity<CommonResult> selectAuthManageList(
         @AuthenticationPrincipal LoginVO loginVO,
         @RequestBody(required = false) Map<String, Object> paramMap) throws Exception 
     {
         try {
             if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
             paramMap.put("email", loginVO.getEmail());
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinUserList(Util.initPaginagtion(paramMap))), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectAuthManageList(Util.initPaginagtion(paramMap))), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+
+    /*권한관리 상세정보*/
+    @GetMapping("/auth/{masterLicenseListObid}/{email}")
+    public ResponseEntity<CommonResult> selectAuthManage(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @PathVariable String masterLicenseListObid,
+        @PathVariable String email,
+        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception 
+    {
+        try {
+            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            paramMap.put("masterLicenseListObid", masterLicenseListObid);
+            paramMap.put("email", email);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectAuthManage(paramMap)), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
@@ -195,32 +225,19 @@ public class ManageController {
         }
     }
 
-    @GetMapping("/user/{refObidUser}")
-    public ResponseEntity<CommonResult> selectJoinUser(
+    /*권한관리 등록*/
+    @PostMapping("/auth/{masterLicenseListObid}/{email}")
+    public ResponseEntity<CommonResult> insertAuthManage(
         @AuthenticationPrincipal LoginVO loginVO,
-        @PathVariable String refObidUser,
-        @RequestBody Map<String, Object> paramMap) throws Exception 
+        @PathVariable String masterLicenseListObid,
+        @PathVariable String email,
+        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception
     {
         try {
-            paramMap.put("refObidUser", refObidUser);
-            paramMap.put("email", loginVO.getEmail());
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.selectJoinUser(paramMap)), HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e.fillInStackTrace());
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
-        }
-    }
-
-    @PostMapping("/user")
-    public ResponseEntity<CommonResult> insertJoinUser(
-        @AuthenticationPrincipal LoginVO loginVO,
-        @RequestBody Map<String, Object> paramMap) throws Exception
-    {
-        try {
-            paramMap.put("email", loginVO.getEmail());
-            manageService.insertJoinUser(paramMap);
+            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            paramMap.put("masterLicenseListObid", masterLicenseListObid);
+            paramMap.put("email", email);
+            manageService.insertAuthManage(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
@@ -230,14 +247,19 @@ public class ManageController {
         }
     }
 
-    @PatchMapping("/user")
-    public ResponseEntity<CommonResult> updateJoinUser(
+    /*권한관리 수정*/
+    @PatchMapping("/auth/{masterLicenseListObid}/{email}")
+    public ResponseEntity<CommonResult> updateAuthManage(
         @AuthenticationPrincipal LoginVO loginVO,
-        @RequestBody Map<String, Object> paramMap)
+        @PathVariable String masterLicenseListObid,
+        @PathVariable String email,
+        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception
     {
         try {
-            paramMap.put("email", loginVO.getEmail());
-            manageService.updateJoinUser(paramMap);
+            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            paramMap.put("masterLicenseListObid", masterLicenseListObid);
+            paramMap.put("email", email);
+            manageService.updateAuthManage(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
@@ -247,14 +269,168 @@ public class ManageController {
         }
     }
 
-    @DeleteMapping("/user")
-    public ResponseEntity<CommonResult> deleteJoinUser(
+    /*권한관리 권한저장 다건*/
+    @PatchMapping("/auth/list")
+    public ResponseEntity<CommonResult> updateAuthManageList(
         @AuthenticationPrincipal LoginVO loginVO,
-        @RequestBody Map<String, Object> paramMap)
+        @RequestBody Map<String, Object> paramMap) throws Exception
     {
         try {
+            manageService.updateAuthManageAuthList(paramMap);
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+
+    /*권한관리 삭제 단건*/
+    @DeleteMapping("/auth/{masterLicenseListObid}/{email}")
+    public ResponseEntity<CommonResult> deleteAuthManage(
+        @PathVariable String masterLicenseListObid,
+        @PathVariable String email,
+        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception
+    {
+        try {
+            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            paramMap.put("masterLicenseListObid", masterLicenseListObid);
+            paramMap.put("email", email);
+            manageService.deleteAuthManage(paramMap);
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+
+    /*권한관리 삭제 다건*/
+    @DeleteMapping("/auth/list")
+    public ResponseEntity<CommonResult> deleteAuthManageList(
+        @RequestBody Map<String, Object> paramMap) throws Exception
+    {
+        try {
+            manageService.deleteAuthManageList(paramMap);
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+
+    /*3D제작요청관리*/
+    /*3D제작요청관리 목록*/
+    @GetMapping("/3D/list")
+    public ResponseEntity<CommonResult> select3DManageList(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception 
+    {
+        try {
+            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
             paramMap.put("email", loginVO.getEmail());
-            manageService.deleteJoinUser(paramMap);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.select3DManageList(Util.initPaginagtion(paramMap))), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+
+    /*3D제작요청관리 상세정보*/
+    @GetMapping("/3D/{obid}")
+    public ResponseEntity<CommonResult> select3DManage(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @PathVariable String obid,
+        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception 
+    {
+        try {
+            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            paramMap.put("obid", obid);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(manageService.select3DManage(paramMap)), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+
+    /*3D제작요청관리 등록*/
+    @PostMapping("/3D/{masterLicenseListObid}/{email}")
+    public ResponseEntity<CommonResult> insert3DManage(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @PathVariable String masterLicenseListObid,
+        @PathVariable String email,
+        @RequestBody Map<String, Object> paramMap) throws Exception
+    {
+        try {
+            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            paramMap.put("masterLicenseListObid", masterLicenseListObid);
+            paramMap.put("email", email);
+            manageService.insert3DManage(paramMap);
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+
+    /*3D제작요청관리 수정*/
+    @PatchMapping("/3D/{obid}")
+    public ResponseEntity<CommonResult> update3DManage(
+        @AuthenticationPrincipal LoginVO loginVO,
+        @PathVariable String obid,
+        @RequestBody Map<String, Object> paramMap) throws Exception
+    {
+        try {
+            paramMap.put("obid", obid);
+            manageService.update3DManage(paramMap);
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+
+    /*3D제작요청관리 삭제 단건*/
+    @DeleteMapping("/3D/{obid}")
+    public ResponseEntity<CommonResult> delete3DManage(
+        @PathVariable String obid,
+        @RequestBody(required = false) Map<String, Object> paramMap) throws Exception
+    {
+        try {
+            if(ObjectUtils.isEmpty(paramMap)) paramMap = new HashMap<String,Object>();
+            paramMap.put("obid", obid);
+            manageService.delete3DManage(paramMap);
+            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+
+    /*3D제작요청관리 삭제 다건*/
+    @DeleteMapping("/3D/list")
+    public ResponseEntity<CommonResult> delete3DManageList(
+        @RequestBody Map<String, Object> paramMap) throws Exception
+    {
+        try {
+            manageService.delete3DManageList(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);

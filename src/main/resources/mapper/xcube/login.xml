@@ -5,28 +5,28 @@
 	<select id="selectLoginInfo" resultType="ParamMap">
 		SELECT EMAIL,
 			   PASSWORD
-        FROM USERS
-		WHERE EMAIL = #{email} 
+          FROM USERS
+		 WHERE EMAIL = #{email} 
 	</select>
 
 	<select id="getLoginInfo" resultType="loginVO">
-		SELECT 
-			OBID,
-			CREATED_ON,
-			EMAIL,
-			PASSWORD,
-			NAME,
-			USER_TYPE,
-			USER_STATUS,
-			MOBILE,
-			IDN,
-			COMPANY_NAME,
-			ADDR,
-			TEL,
-			BUSINESS_TYPE,
-			SALES,
-			EMPLOYEE_SIZE
-		FROM USERS
-		WHERE EMAIL = #{email}
+		SELECT OBID,
+			   DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
+			   EMAIL,
+			   PASSWORD,
+			   NAME,
+			   USER_TYPE,
+			   USER_STATUS,
+			   MOBILE,
+			   IDN,
+			   COMPANY_NAME,
+			   ADDR,
+			   TEL,
+			   BUSINESS_TYPE,
+			   SALES,
+			   EMPLOYEE_SIZE
+		  FROM USERS
+		 WHERE EMAIL = #{email}
+		   AND USER_STATUS = 1
 	</select>
 </mapper>

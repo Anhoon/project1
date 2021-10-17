@@ -28,7 +28,7 @@ public class LoginVO implements UserDetails {
     private String companyName;
     private String addr;
     private String tel;
-    private String businessYype;
+    private String businessType;
     private String sales;
     private String employeeSize;
     private List<String> roles = new ArrayList<>();
@@ -161,12 +161,12 @@ public class LoginVO implements UserDetails {
         this.tel = tel;
     }
 
-    public String getBusinessYype() {
-        return this.businessYype;
+    public String getBusinessType() {
+        return this.businessType;
     }
 
-    public void setBusinessYype(String businessYype) {
-        this.businessYype = businessYype;
+    public void setBusinessYype(String businessType) {
+        this.businessType = businessType;
     }
 
     public String getSales() {
@@ -208,7 +208,7 @@ public class LoginVO implements UserDetails {
             ", companyName='" + getCompanyName() + "'" +
             ", addr='" + getAddr() + "'" +
             ", tel='" + getTel() + "'" +
-            ", businessYype='" + getBusinessYype() + "'" +
+            ", businessType='" + getBusinessType() + "'" +
             ", sales='" + getSales() + "'" +
             ", employeeSize='" + getEmployeeSize() + "'" +
             ", roles='" + getRoles() + "'" +

@@ -39,13 +39,16 @@ public class LoginController {
 
     @PostMapping(value = "/api/login")
 	public ResponseEntity<CommonResult> login(@RequestBody Map<String, Object> paramMap, HttpServletResponse response) throws Exception {
-        if(ObjectUtils.isEmpty(paramMap) || ObjectUtils.isEmpty(paramMap.get("email")) || ObjectUtils.isEmpty(paramMap.get("password"))){
+        if( ObjectUtils.isEmpty(paramMap) || 
+            ObjectUtils.isEmpty(paramMap.get("email")) || 
+            ObjectUtils.isEmpty(paramMap.get("password")) || 
+            ObjectUtils.isEmpty(paramMap.get("userType")) )
+        {
             return new ResponseEntity<CommonResult>(responseService.getLoginFailResult(), HttpStatus.CONFLICT);
         }
 
         try {
-            Map<String, Object> returnMap = loginService.login(paramMap, response);
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(returnMap), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(loginService.login(paramMap, response)), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getLoginFailResult(), HttpStatus.CONFLICT);

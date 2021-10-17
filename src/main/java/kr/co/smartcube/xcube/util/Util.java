@@ -158,10 +158,14 @@ public class Util {
     }
 
     public static Map<String,Object> fileToFileInfoMap(File file){
-        return fileToFileInfoMap(file, null);
+        return fileToFileInfoMap(file, null, null);
+    }
+
+    public static Map<String,Object> fileToFileInfoMap(File file, Map<String, Object> paramMap){
+        return fileToFileInfoMap(file, null, paramMap);
     }
     
-    public static Map<String,Object> fileToFileInfoMap(File file, Map<String, Object> paramMap){
+    public static Map<String,Object> fileToFileInfoMap(File file, String refObid, Map<String, Object> paramMap){
         Map<String,Object> map = new HashMap<String, Object>();
         String path = "/api/file/download/";
 
@@ -174,6 +178,7 @@ public class Util {
 
         if(!isEmpty(file)){
             map.put("obid", UUID.randomUUID().toString());
+            map.put("refObid", refObid);
             map.put("fileName", StringUtils.cleanPath(file.getName().substring(file.getName().lastIndexOf("_")+1)));
             map.put("fileContentType", file.getPath());
             map.put("fileSize", file.length());

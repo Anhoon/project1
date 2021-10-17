@@ -16,32 +16,32 @@ public class FileDao {
     @Qualifier("sqlSession")
 	private SqlSession sqlSession;
 
-	public List<Map<String, Object>> selectFileList(Map<String, Object> param) {
-		return sqlSession.selectList(NAMESPACE + "selectFileList",param);
+	public List<Map<String, Object>> selectFileList(Map<String, Object> paramMap) {
+		return sqlSession.selectList(NAMESPACE + "selectFileList",paramMap);
     }
 
-	public Map<String, Object> selectFile(Map<String, Object> param) {
-		return sqlSession.selectOne(NAMESPACE + "selectFile",param);
+	public Map<String, Object> selectFile(Map<String, Object> paramMap) {
+		return sqlSession.selectOne(NAMESPACE + "selectFile",paramMap);
     }
 
-	public int insertFile(List<Map<String, Object>> param){
+	public int insertFile(List<Map<String, Object>> paramMap){
 		int i = 0;
-		for(Map<String,Object> map : param){
+		for(Map<String,Object> map : paramMap){
 			sqlSession.insert(NAMESPACE + "insertFile",map);
 			i++;
 		}
 		return i;
 	}
 
-	public int insertFileList(List<Map<String, Object>> param){
-		return sqlSession.insert(NAMESPACE + "insertFileList",param);
+	public int insertFileList(List<Map<String, Object>> paramList){
+		return sqlSession.insert(NAMESPACE + "insertFileList",paramList);
 	}
 
-	public int deleteFile(Map<String, Object> param){
-		return sqlSession.delete(NAMESPACE + "deleteFile",param);
+	public int deleteFile(Map<String, Object> paramMap){
+		return sqlSession.delete(NAMESPACE + "deleteFile",paramMap);
 	}
 
-	public int deleteFileList(List<Map<String, Object>> param){
-		return sqlSession.delete(NAMESPACE + "deleteFileList",param);
+	public int deleteFileList(Map<String, Object> paramMap){
+		return sqlSession.delete(NAMESPACE + "deleteFileList",paramMap);
 	}
 }

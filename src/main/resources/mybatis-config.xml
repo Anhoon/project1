@@ -2,13 +2,11 @@
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0/EN"
 "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-<!--
 	<settings>
 		<setting name="mapUnderscoreToCamelCase" value="true"/>
-		<setting name="callSettersOnNulls" value="true"/>
-		<setting name="jdbcTypeForNull" value="NULL"/>
+		<!--<setting name="callSettersOnNulls" value="true"/>
+		<setting name="jdbcTypeForNull" value="NULL"/>-->
 	</settings>
--->
 	<typeAliases>
 		<typeAlias alias="paramMap" type="kr.co.smartcube.xcube.util.ParamMap"/>
 		<typeAlias alias="loginVO" type="kr.co.smartcube.xcube.common.security.jwt.LoginVO"/>

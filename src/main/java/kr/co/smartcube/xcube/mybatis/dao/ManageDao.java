@@ -19,61 +19,77 @@ public class ManageDao {
 	private SqlSession sqlSession;
 
 	/*참가기업*/
-	public PageInfo<Map<String, Object>> selectJoinCompanyList(Map<String,Object> paramMap) throws Exception {
-		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "selectJoinCompanyList", paramMap));
+	public PageInfo<Map<String, Object>> selectParticipateManageList(Map<String,Object> paramMap) throws Exception {
+		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "selectParticipateManageList", paramMap));
     }
 
-	public Map<String, Object> selectJoinCompany(Map<String, Object> paramMap) throws Exception {
-		return ( Map<String, Object>)sqlSession.selectOne(NAMESPACE + "selectJoinCompany", paramMap);
+	public Map<String, Object> selectParticipateManage(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.selectOne(NAMESPACE + "selectParticipateManage", paramMap);
     }
 
-	public int insertJoinCompany(Map<String, Object> paramMap) throws Exception {
-		return sqlSession.insert(NAMESPACE + "insertJoinCompany", paramMap);
+	public int insertParticipateManage(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.insert(NAMESPACE + "insertParticipateManage", paramMap);
 	}
 
-	public int updateJoinCompany(Map<String, Object> paramMap) throws Exception {
-		return sqlSession.update(NAMESPACE + "updateJoinCompany", paramMap);
+	public int updateParticipateManage(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.update(NAMESPACE + "updateParticipateManage", paramMap);
 	}
 
-	public int deleteJoinCompany(Map<String, Object> paramMap) throws Exception {
-		return sqlSession.update(NAMESPACE + "deleteJoinCompany", paramMap);
+	public int updateParticipateManageApproval(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.update(NAMESPACE + "updateParticipateManageApproval", paramMap);
 	}
 
-	/*관심기업*/
-	public PageInfo<Map<String, Object>> selectInterestCompanyList(Map<String,Object> paramMap) throws Exception {
-		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "selectInterestCompanyList", paramMap));
+	public int deleteParticipateManage(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.delete(NAMESPACE + "deleteParticipateManage", paramMap);
+	}
+
+	/*권한관리*/
+	public PageInfo<Map<String, Object>> selectAuthManageList(Map<String,Object> paramMap) throws Exception {
+		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "selectAuthManageList", paramMap));
     }
 
-	public Map<String, Object> selectInterestCompany(Map<String,Object> paramMap) throws Exception {
-		return sqlSession.selectOne(NAMESPACE + "selectInterestCompany", paramMap);
+	public Map<String, Object> selectAuthManage(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.selectOne(NAMESPACE + "selectAuthManage", paramMap);
     }
 
-	public int insertInterestCompany(Map<String, Object> paramMap) throws Exception {
-		return sqlSession.insert(NAMESPACE + "insertInterestCompany", paramMap);
+	public int insertAuthManage(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.insert(NAMESPACE + "insertAuthManage", paramMap);
 	}
 
-	public int deleteInterestCompany(Map<String, Object> paramMap) throws Exception {
-		return sqlSession.delete(NAMESPACE + "deleteInterestCompany", paramMap);
+	public int updateAuthManage(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.update(NAMESPACE + "updateAuthManage", paramMap);
 	}
 
-	/*참여인력*/
-	public PageInfo<Map<String, Object>> selectJoinUserList(Map<String,Object> paramMap) throws Exception {
-		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "selectJoinUserList", paramMap));
+	public int updateAuthManageAuth(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.update(NAMESPACE + "updateAuthManageAuth", paramMap);
+	}
+
+	public int deleteAuthManage(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.delete(NAMESPACE + "deleteAuthManage", paramMap);
+	}
+
+	/*3D제작요청관리*/
+	public PageInfo<Map<String, Object>> select3DManageList(Map<String,Object> paramMap) throws Exception {
+		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "select3DManageList", paramMap));
     }
 
-	public Map<String, Object> selectJoinUser(Map<String, Object> paramMap) throws Exception {
-		return sqlSession.selectOne(NAMESPACE + "selectJoinUser", paramMap);
+	public Map<String, Object> select3DManage(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.selectOne(NAMESPACE + "select3DManage", paramMap);
     }
 
-	public int insertJoinUser(Map<String, Object> paramMap) throws Exception {
-		return sqlSession.insert(NAMESPACE + "insertJoinUser", paramMap);
-	}
+	public int insert3DManage(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.insert(NAMESPACE + "insert3DManage", paramMap);
+    }
 
-	public int updateJoinUser(Map<String, Object> paramMap) throws Exception {
-		return sqlSession.update(NAMESPACE + "updateJoinUser", paramMap);
-	}
+	public int update3DManage(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.update(NAMESPACE + "update3DManage", paramMap);
+    }
 
-	public int deleteJoinUser(Map<String, Object> paramMap) throws Exception {
-		return sqlSession.update(NAMESPACE + "deleteJoinUser", paramMap);
-	}
+	public int delete3DManage(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.delete(NAMESPACE + "delete3DManage", paramMap);
+    }
+
+	public int delete3DManageList(List<Map<String, Object>> paramList) throws Exception {
+		return sqlSession.delete(NAMESPACE + "delete3DManageList", paramList);
+    }
 }

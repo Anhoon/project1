@@ -109,10 +109,14 @@ public class FileService {
     }
 
     public Map<String, Object> fileUploadByte(String fileName, String fileBase64) throws Exception{
-        return fileUploadByte(fileName, fileBase64, null);
+        return fileUploadByte(fileName, fileBase64, null, null);
     }
 
     public Map<String, Object> fileUploadByte(String fileName, String fileBase64, Map<String, Object> fileGroupInfoMap) throws Exception{
+        return fileUploadByte(fileName, fileBase64, null, fileGroupInfoMap);
+    }
+
+    public Map<String, Object> fileUploadByte(String fileName, String fileBase64, String refObid, Map<String, Object> fileGroupInfoMap) throws Exception{
         try {
             Path path = uploadPath(fileGroupInfoMap);
             String regex = "^\\S+;(base64,)";
@@ -139,7 +143,7 @@ public class FileService {
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             fileOutputStream.write(decodedBytes);
             fileOutputStream.close();
-            return Util.fileToFileInfoMap(file, fileGroupInfoMap);
+            return Util.fileToFileInfoMap(file, refObid, fileGroupInfoMap);
         } catch(IOException e) {
             throw new IOException("["+fileName+"] 파일 업로드에 실패하였습니다. 다시 시도하십시오.",e);
         } catch(Exception e) {
@@ -188,19 +192,20 @@ public class FileService {
 
     }
 
-    public int deleteFileList(List<Map<String,Object>> paramList) throws Exception{
-        if(ObjectUtils.isEmpty(paramList)){
+    public int deleteFileList(Map<String,Object> paramMap) throws Exception{
+        if(ObjectUtils.isEmpty(paramMap) || ObjectUtils.isEmpty(paramMap.get("refObid"))){
             return 0;
         }
-
-        for(Map<String,Object> map : paramList){
-            if(!ObjectUtils.isEmpty(map)) deleteRealFile(map);
+        
+        List<Map<String, Object>> fileList = fileDao.selectFileList(paramMap);
+        for(Map<String, Object> file : fileList){
+            deleteRealFile(file);
         }
-        return fileDao.deleteFileList(paramList);
+        return fileDao.deleteFileList(paramMap);
     }
 
     public int deleteFile(Map<String,Object> paramMap) throws Exception{
-        if(ObjectUtils.isEmpty(paramMap)){
+        if(ObjectUtils.isEmpty(paramMap) || ObjectUtils.isEmpty(paramMap.get("obid"))){
             return 0;
         }
 
@@ -209,23 +214,7 @@ public class FileService {
     }
 
     public List<Map<String, Object>> selectFileList(Map<String, Object> paramMap) throws Exception {
-        if(ObjectUtils.isEmpty(paramMap) || ObjectUtils.isEmpty(paramMap.get("attachObid"))){
-            return null;
-        }
-
-        ArrayList<Object> fileObidList = new ArrayList<Object>();
-        Map<String,Object> fileInfo = new HashMap<String,Object>();
-
-        if(!paramMap.get("attachObid").toString().contains(",")){
-            List<Map<String, Object>> returnList = new ArrayList<Map<String, Object>>();
-            Map<String, Object> map = selectFile(paramMap);
-            if(!ObjectUtils.isEmpty(map)) returnList.add(map);
-            return returnList;
-        }
-
-        fileObidList = Util.jsonToArray(paramMap.get("attachObid").toString());
-        fileInfo.put("attachObid", fileObidList);
-        return fileDao.selectFileList(fileInfo);
+        return fileDao.selectFileList(paramMap);
     }
 
 	public Map<String, Object> selectFile(Map<String, Object> paramMap)  throws Exception{

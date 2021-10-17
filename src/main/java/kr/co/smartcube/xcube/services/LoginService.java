@@ -48,11 +48,16 @@ public class LoginService implements UserDetailsService {
         return loginVO;
 	}
 
-    public Map<String,Object> login(Map<String,Object> paramMap, HttpServletResponse response) throws Exception{
+    public Map<String,Object> login(Map<String,Object> paramMap, HttpServletResponse response) throws Exception {
         Authentication authentication = 
             authenticationManagerBuilder
                 .getObject()
                 .authenticate(new UsernamePasswordAuthenticationToken(paramMap.get("email"), paramMap.get("password")) );
+                
+        LoginVO loginVO = (LoginVO)authentication.getPrincipal();
+        if(!ObjectUtils.isEmpty(loginVO.getUserType()) && !loginVO.getUserType().equals(paramMap.get("userType"))) 
+            throw new RuntimeException("사용자 정보를 찾을 수 없습니다.");
+        
         return SecurityUtil.setLoginHeader(tokenProvider.generateToken(authentication), response);
     }
 
