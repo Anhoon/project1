@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import kr.co.smartcube.xcube.common.security.jwt.LoginVO;
 import kr.co.smartcube.xcube.common.security.jwt.TokenProvider;
@@ -55,9 +56,9 @@ public class LoginService implements UserDetailsService {
                 .authenticate(new UsernamePasswordAuthenticationToken(paramMap.get("email"), paramMap.get("password")) );
                 
         LoginVO loginVO = (LoginVO)authentication.getPrincipal();
-        if(!ObjectUtils.isEmpty(loginVO.getUserType()) && !loginVO.getUserType().equals(paramMap.get("userType"))) 
-            throw new RuntimeException("사용자 정보를 찾을 수 없습니다.");
-        
+        if(!ObjectUtils.isEmpty(paramMap.get("userType")) && StringUtils.hasText(loginVO.getUserType()) && 
+           !loginVO.getUserType().equals(paramMap.get("userType").toString())) throw new RuntimeException("사용자 정보를 찾을 수 없습니다.");
+
         return SecurityUtil.setLoginHeader(tokenProvider.generateToken(authentication), response);
     }
 
