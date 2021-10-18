@@ -208,6 +208,7 @@ public class EventService {
         if(ObjectUtils.isEmpty(map.get("scale"))){
             throw new RuntimeException(name +" 참가규모 정보를 입력해 주세요.");
         }
+        /*
         if(ObjectUtils.isEmpty(map.get("applyType"))){
             throw new RuntimeException(name +" 모집인원타입 정보를 입력해 주세요.");
         }
@@ -217,6 +218,7 @@ public class EventService {
         if(ObjectUtils.isEmpty(map.get("applyFee"))){
             throw new RuntimeException(name +" 참가비 종료일 정보를 입력해 주세요.");
         }
+        */
         if(ObjectUtils.isEmpty(map.get("startApplyDate"))){
             throw new RuntimeException(name +" 신청기간 시작일 정보를 입력해 주세요.");
         }
