@@ -104,17 +104,19 @@ public class EventService {
     public void insertParticipate(Map<String, Object> map) throws Exception{
         Map<String,Object> fileMap = new HashMap<String,Object>();
         List<Map<String,Object>> fileList = new ArrayList<Map<String,Object>>();
-        Map<String,Object> eventFileMap = Util.objToMap(map.get("files"));
-        String attatchObid = UUID.randomUUID().toString();
-        map.put("attatchFileObid", attatchObid);
-        if(!ObjectUtils.isEmpty(eventFileMap)){
-            fileMap = fileService.fileUploadByte(Util.objToStr(eventFileMap.get("fileName")), Util.objToStr(eventFileMap.get("fileContent")));
-            fileMap.put("refObid", attatchObid);
-            fileList.add(fileMap);
+        List<Map<String,Object>> eventFileList = Util.objToList(map.get("files"));
+        if(!ObjectUtils.isEmpty(eventFileList)){
+            String attatchObid = UUID.randomUUID().toString();
+            map.put("attatchFileObid", attatchObid);
+            for(Map<String,Object>eventFileMap : eventFileList){
+                fileMap = fileService.fileUploadByte(Util.objToStr(eventFileMap.get("fileName")), Util.objToStr(eventFileMap.get("fileContent")));
+                fileMap.put("refObid", attatchObid);
+                fileList.add(fileMap);
+            }
+            if(!ObjectUtils.isEmpty(fileList)) fileDao.insertFile(fileList);
         }
         validationParticipateCheck(map);
         eventDao.insertParticipate(map);
-        fileDao.insertFile(fileList);
     }
 
     public int updateEvent(Map<String, Object> map) throws Exception{
