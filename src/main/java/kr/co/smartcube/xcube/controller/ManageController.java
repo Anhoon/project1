@@ -44,6 +44,7 @@ public class ManageController {
     public ResponseEntity<CommonResult> selectParticipateManageList(
         @AuthenticationPrincipal LoginVO loginVO,
         @RequestParam(required = false) String masterLicenseListObid,
+        @RequestParam(required = false) String masterLicenseListType,
         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
         @RequestParam(required = false) String orderBy,
@@ -54,6 +55,7 @@ public class ManageController {
             Map<String,Object> paramMap = new HashMap<String,Object>();
             paramMap.put("email", loginVO.getEmail());
             paramMap.put("masterLicenseListObid", masterLicenseListObid);
+            paramMap.put("masterLicenseListType", masterLicenseListType);
             paramMap.put("pageNum", pageNum);
             paramMap.put("pageSize", pageSize);
             paramMap.put("orderBy", orderBy);
@@ -201,6 +203,7 @@ public class ManageController {
     public ResponseEntity<CommonResult> selectAuthManageList(
         @AuthenticationPrincipal LoginVO loginVO,
         @RequestParam(required = false) String masterLicenseListObid,
+        @RequestParam(required = false) String masterLicenseListType,
         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
         @RequestParam(required = false) String orderBy,
@@ -211,6 +214,7 @@ public class ManageController {
             Map<String, Object> paramMap = new HashMap<String,Object>();
             paramMap.put("email", loginVO.getEmail());
             paramMap.put("masterLicenseListObid", masterLicenseListObid);
+            paramMap.put("masterLicenseListType", masterLicenseListType);
             paramMap.put("pageNum", pageNum);
             paramMap.put("pageSize", pageSize);
             paramMap.put("orderBy", orderBy);
@@ -350,6 +354,7 @@ public class ManageController {
     public ResponseEntity<CommonResult> select3DManageList(
         @AuthenticationPrincipal LoginVO loginVO,
         @RequestParam(required = false) String masterLicenseListObid,
+        @RequestParam(required = false) String masterLicenseListType,
         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
         @RequestParam(required = false) String orderBy,
@@ -360,6 +365,7 @@ public class ManageController {
             Map<String, Object> paramMap = new HashMap<String,Object>();
             paramMap.put("email", loginVO.getEmail());
             paramMap.put("masterLicenseListObid", masterLicenseListObid);
+            paramMap.put("masterLicenseListType", masterLicenseListType);
             paramMap.put("pageNum", pageNum);
             paramMap.put("pageSize", pageSize);
             paramMap.put("orderBy", orderBy);
