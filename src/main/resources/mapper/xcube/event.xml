@@ -14,7 +14,10 @@
 									WHEN 'S' THEN '공연' 
 									ELSE '미등록코드' END
 				) AS TYPE_NM,
-				(SELECT TITLE FROM MASTER_LICENSE WHERE OBID = B.MASTER_LICENSE_OBID) AS MASTER_TITLE
+				(SELECT TITLE FROM MASTER_LICENSE WHERE OBID = B.MASTER_LICENSE_OBID) AS MASTER_TITLE,
+				B.START_DATE,
+				B.END_DATE,
+				CONCAT(DATE_FORMAT(B.START_DATE,'%Y-%m-%d'),'~',DATE_FORMAT(B.END_DATE,'%Y-%m-%d')) AS LICENSE_DAY
 				FROM (
 					SELECT 
 						A.MASTER_LICENSE_LIST_OBID,
@@ -33,7 +36,7 @@
 						A.ATTATCH_FILE_OBID,
 						B.OBJECT_FOR,
 						(CASE B.OBJECT_FOR WHEN '0' THEN '전체' WHEN '1' THEN '일반' WHEN '2' THEN '기업' END) OBJECT_FOR_NM,
-						(CASE WHEN DATE_FORMAT(SYSDATE(),'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(B.END_APPLY_DATE,'%Y-%m-%d') THEN CONCAT('D-',DATEDIFF(B.end_apply_date, B.start_apply_date)) ELSE '모집 완료' END) AS EVENT_DAY
+						(CASE WHEN DATE_FORMAT(SYSDATE(),'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(B.END_APPLY_DATE,'%Y-%m-%d') THEN CONCAT('D-',DATEDIFF(B.end_apply_date, B.start_apply_date)) ELSE '모집 완료' END) AS PARTICIPATE_DAY
 					FROM EVENT_LIST A, PARTICIPATE_LIST B
 					WHERE A.MASTER_LICENSE_LIST_OBID = B.MASTER_LICENSE_LIST_OBID
 			) E, MASTER_LICENSE_LIST B
@@ -48,6 +51,11 @@
 		</if>
 		<if test="searchKeyWord != null and searchKeyWord != '' " >
 			AND TYPE = #{searchKeyWord}
+		</if>
+		<if test="eventType != null and eventType != '' " >
+			<if test="eventType == 'ing' " >
+				AND DATE_FORMAT(SYSDATE(),'%Y-%m-%d') BETWEEN DATE_FORMAT(A.START_DATE,'%Y-%m-%d') AND DATE_FORMAT(A.END_DATE,'%Y-%m-%d')
+			</if>
 		</if>
 	</select>
 
@@ -76,6 +84,7 @@
 			MASTER_LICENSE_LIST_OBID,
 			DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
 			OBJECT_FOR,
+			(CASE OBJECT_FOR WHEN '0' THEN '전체' WHEN '1' THEN '일반' WHEN '2' THEN '기업' END) OBJECT_FOR_NM,
 			SCALE,
 			QUALIFY_APPLY_OBJECTS,
 			DATE_FORMAT(START_APPLY_DATE,'%Y-%m-%d %T') AS START_OBJECTS_DATE,
