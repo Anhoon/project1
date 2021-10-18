@@ -33,7 +33,7 @@
 			   AND A.EMAIL = #{email}
 		</if>
 		<if test="masterLicenseListObid != null and masterLicenseListObid !=''">
-			   AND B.MASTER_LICENSE_OBID = #{masterLicenseListObid}
+			   AND B.OBID = #{masterLicenseListObid}
 		</if>
 		<if test="searchKey == 'eventName'">
 			   AND A.TITLE LIKE CONCAT('%',#{searchKeyWord},'%')
@@ -192,7 +192,7 @@
 		    AND A.EMAIL = #{email}
 		</if>
 		<if test="masterLicenseListObid != null and masterLicenseListObid !=''">
-			   AND B.MASTER_LICENSE_OBID = #{masterLicenseListObid}
+			AND B.OBID = #{masterLicenseListObid}
 		</if>
 		<if test="searchKey == 'id'">
 		    AND D.EMAIL LIKE CONCAT('%',#{searchKeyWord},'%')
@@ -286,7 +286,7 @@
 		    AND A.EMAIL = #{email}
 		</if>
 		<if test="masterLicenseListObid != null and masterLicenseListObid !=''">
-			AND B.MASTER_LICENSE_OBID = #{masterLicenseListObid}
+			AND B.OBID = #{masterLicenseListObid}
 		</if>
 		<if test="searchKey == 'title'">
 		    AND A.TITLE LIKE CONCAT('%',#{searchKeyWord},'%')
