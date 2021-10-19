@@ -4,34 +4,28 @@
 <mapper namespace="myPage">
 	
 	<select id="selectMyEventList" resultType="ParamMap">
-		SELECT
-			A.OBID,
-			A.EMAIL,
-			B.OBID AS MASTER_LICENSE_LIST_OBID,
-			B.MASTER_LICENSE_OBID,
-			A.TITLE,
-			(CASE B.TYPE 
-					WHEN 'C' THEN '컨벤션' 
-					WHEN 'E' THEN '전시회' 
-					WHEN 'F' THEN '컨퍼런스' 
-					WHEN 'S' THEN '공연' 
-					ELSE '미등록코드' END
-			) AS TYPE_NM,
-			B.START_DATE,
-			B.END_DATE,
-			CONCAT(DATE_FORMAT(B.START_DATE,'%Y-%m-%d'),'~',DATE_FORMAT(B.END_DATE,'%Y-%m-%d')) AS LICENSE_DAY,
-			CASE WHEN DATE_FORMAT(SYSDATE(),'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(B.END_DATE,'%Y-%m-%d') THEN CONCAT('D-',DATEDIFF(B.END_DATE, B.START_DATE)) ELSE '' END AS ING_DAY
-		FROM MASTER_LICENSE A, MASTER_LICENSE_LIST B
-		WHERE A.OBID = B.MASTER_LICENSE_OBID
-		AND A.EMAIL = #{email}
-		<if test="eventType != null and eventType != '' " >
-			<if test="eventType == 'pre' " >
-			AND DATE_FORMAT(B.END_DATE,'%Y-%m-%d') <![CDATA[ < ]]> DATE_FORMAT(SYSDATE(),'%Y-%m-%d') 
+		SELECT A.* FROM (
+			SELECT
+				A.OBID,
+				A.EMAIL,
+				B.OBID AS MASTER_LICENSE_LIST_OBID,
+				B.MASTER_LICENSE_OBID,
+				A.TITLE,
+				B.START_DATE,
+				B.END_DATE
+			FROM MASTER_LICENSE A, MASTER_LICENSE_LIST B
+			WHERE A.OBID = B.MASTER_LICENSE_OBID
+			AND A.EMAIL = #{email}
+			<if test="eventType != null and eventType != '' " >
+				<if test="eventType == 'pre' " >
+				AND DATE_FORMAT(B.END_DATE,'%Y-%m-%d') <![CDATA[ < ]]> DATE_FORMAT(SYSDATE(),'%Y-%m-%d') 
+				</if>
+				<if test="eventType == 'ing' " >
+				AND DATE_FORMAT(SYSDATE(),'%Y-%m-%d') BETWEEN DATE_FORMAT(B.START_DATE,'%Y-%m-%d') AND DATE_FORMAT(B.END_DATE,'%Y-%m-%d')
+				</if>
 			</if>
-			<if test="eventType == 'ing' " >
-			AND DATE_FORMAT(SYSDATE(),'%Y-%m-%d') BETWEEN DATE_FORMAT(B.START_DATE,'%Y-%m-%d') AND DATE_FORMAT(B.END_DATE,'%Y-%m-%d')
-			</if>
-		</if>
+			ORDER BY A.CREATED_ON DESC
+		) A
 	</select>
 
 	<select id="participateCompanyHist" resultType="ParamMap">
