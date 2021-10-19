@@ -1,7 +1,8 @@
 package kr.co.smartcube.xcube.mybatis.dao;
 
-import java.util.List;
 import java.util.Map;
+
+import com.github.pagehelper.PageInfo;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,8 @@ public class UserDao {
     @Qualifier("sqlSession")
 	private SqlSession sqlSession;
 
-	public List<Map<String, Object>> selectUserList(Map<String, Object> map) {
-		return sqlSession.selectList(NAMESPACE + "selectUserList", map);
+	public PageInfo<Map<String, Object>> selectUserList(Map<String,Object> param) {
+		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "selectUserList",param));
     }
 	public Map<String, Object> selectUser(Map<String, Object> param) {
 		return sqlSession.selectOne(NAMESPACE + "selectUser",param);

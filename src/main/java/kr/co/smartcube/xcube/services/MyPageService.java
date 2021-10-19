@@ -5,15 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import kr.co.smartcube.xcube.mybatis.dao.EventCompanyDao;
-import kr.co.smartcube.xcube.mybatis.dao.EventDao;
 import kr.co.smartcube.xcube.mybatis.dao.MyPageDao;
 import kr.co.smartcube.xcube.mybatis.dao.UserDao;
+import kr.co.smartcube.xcube.util.Util;
 
 @Service
 public class MyPageService {
@@ -26,6 +30,9 @@ public class MyPageService {
 
     @Autowired 
     private EventCompanyDao eventCompanyDao;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
         
     @Transactional
     public Map<String, Object> selectMyEvent(Map<String,Object> map) {
@@ -60,37 +67,44 @@ public class MyPageService {
     }
 
     @Transactional
-    public List<Map<String, Object>> participateCompanyHist(Map<String,Object> map) {
-        List<Map<String,Object>> resultList = new ArrayList<Map<String,Object>>();
+    public PageInfo<Map<String, Object>> participateCompanyHist(Map<String,Object> map) {
         Map<String, Object> userMap = userDao.selectUser(map);
         if(!ObjectUtils.isEmpty(userMap)){
-            resultList = myPageDao.participateCompanyHist(map);
+            PageHelper.startPage((int)map.get("pageNum"), (int)map.get("pageSize"), (String) map.get("orderBy"));
+            return myPageDao.participateCompanyHist(map);
         }else{
             throw new RuntimeException("일치하는 정보가 없습니다.");
         }
-        return resultList;
     }
 
     @Transactional
-    public List<Map<String, Object>> participateUserHist(Map<String,Object> map) {
-        List<Map<String,Object>> resultList = new ArrayList<Map<String,Object>>();
+    public PageInfo<Map<String, Object>> participateUserHist(Map<String,Object> map) {
         Map<String, Object> userMap = userDao.selectUser(map);
         if(!ObjectUtils.isEmpty(userMap)){
-            resultList = myPageDao.participateUserHist(map);
+            PageHelper.startPage((int)map.get("pageNum"), (int)map.get("pageSize"), (String) map.get("orderBy"));
+            return myPageDao.participateUserHist(map);
         }else{
             throw new RuntimeException("일치하는 정보가 없습니다.");
         }
-        return resultList;
     }
 
     @Transactional
     public void insertParticipateUser(Map<String, Object> map) throws Exception{
         Map<String, Object> userMap = userDao.selectUser(map);
-        System.out.println(map);
         if(!ObjectUtils.isEmpty(userMap)){
             myPageDao.insertParticipateUser(map);
         }else{
             throw new RuntimeException("일치하는 정보가 없습니다.");
+        }
+    }
+
+    @Transactional
+    public void userPasswordCheck(Map<String,Object> map) throws Exception{
+        Map<String, Object> resultMap = userDao.selectUser(map);
+        if(ObjectUtils.isEmpty(resultMap)) throw new RuntimeException("일치하는 정보가 없습니다.");
+        boolean pwdChk = passwordEncoder.matches(Util.objToStr(map.get("password")), Util.objToStr(resultMap.get("password")));
+        if(!pwdChk) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다. 비밀번호를 확인해주세요");
         }
     }
 }

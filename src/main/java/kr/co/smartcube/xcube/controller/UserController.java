@@ -1,16 +1,14 @@
 package kr.co.smartcube.xcube.controller;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,14 +39,24 @@ public class UserController {
     private ResponseService responseService;
 
     @GetMapping("")
-    public ResponseEntity<CommonResult> selectUserList() throws Exception{
+    public ResponseEntity<CommonResult> selectUserList(
+            @RequestParam(required = false) String searchKey,
+            @RequestParam(required = false) String searchKeyWord,
+            @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+            @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+            @RequestParam(required = false) String orderBy) throws Exception{
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("pageNum", 0);
         map.put("pageSize", 2);
         map.put("orderBy", "1 desc");
         map = Util.initPaginagtion(map);
+        if(!ObjectUtils.isEmpty(searchKey)) map.put("searchKey", searchKey);
+        if(!ObjectUtils.isEmpty(searchKeyWord)) map.put("searchKeyWord", searchKeyWord);
+        map.put("pageNum", pageNum);
+        map.put("pageSize", pageSize);
+        map.put("orderBy", orderBy);
         try {
-            return new ResponseEntity<CommonResult>(responseService.getListResult(userService.selectUserList(map)), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(userService.selectUserList(Util.initPaginagtion(map))), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {

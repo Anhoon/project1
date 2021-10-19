@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class EventService {
     @Autowired
     private FileDao fileDao;
 
-    public List<Map<String, Object>> selectEventList(Map<String,Object> map) {
+    public PageInfo<Map<String, Object>> selectEventList(Map<String,Object> map) {
         PageHelper.startPage((int)map.get("pageNum"), (int)map.get("pageSize"), (String) map.get("orderBy"));
         return eventDao.selectEventList(map);
     }

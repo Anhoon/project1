@@ -1,11 +1,11 @@
 package kr.co.smartcube.xcube.services;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,9 +28,9 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public List<Map<String, Object>> selectUserList(Map<String,Object> map) throws Exception{
+    public PageInfo<Map<String, Object>> selectUserList(Map<String,Object> map) {
         PageHelper.startPage((int)map.get("pageNum"), (int)map.get("pageSize"), (String) map.get("orderBy"));
-        return userDao.selectUserList(map);    
+        return userDao.selectUserList(map);
     }
 
     public Map<String, Object> selectUser(Map<String, Object> map) throws Exception{
@@ -140,7 +140,7 @@ public class UserService {
         Map<String, Object> resultMap = userDao.selectUser(map);
         if(!ObjectUtils.isEmpty(resultMap)) throw new RuntimeException("이미 존재하는 회원입니다.");
     }
-
+        
     //이력 저장 맵 생성
     public Map<String,Object> getHistMap(Map<String,Object> map,String type, Map<String, Object> detailMap){
         String hisObid = UUID.randomUUID().toString();

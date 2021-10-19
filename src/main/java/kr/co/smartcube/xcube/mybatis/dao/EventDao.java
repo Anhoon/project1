@@ -3,6 +3,8 @@ package kr.co.smartcube.xcube.mybatis.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.github.pagehelper.PageInfo;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,9 +18,10 @@ public class EventDao {
     @Qualifier("sqlSession")
 	private SqlSession sqlSession;
 
-	public List<Map<String, Object>> selectEventList(Map<String,Object> param) {
-		return sqlSession.selectList(NAMESPACE + "selectEventList",param);
+	public PageInfo<Map<String, Object>> selectEventList(Map<String,Object> param) {
+		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "selectEventList",param));
     }
+	
 	public Map<String, Object> selectEvent(Map<String, Object> param) {
 		return sqlSession.selectOne(NAMESPACE + "selectEvent",param);
     }

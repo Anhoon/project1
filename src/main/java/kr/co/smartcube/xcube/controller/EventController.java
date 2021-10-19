@@ -41,7 +41,10 @@ public class EventController {
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String eventType,
             @RequestParam(required = false) String searchKey,
-            @RequestParam(required = false) String searchKeyWord
+            @RequestParam(required = false) String searchKeyWord,
+            @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+            @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+            @RequestParam(required = false) String orderBy
             ){
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("pageNum", 0);
@@ -51,9 +54,12 @@ public class EventController {
         if(!ObjectUtils.isEmpty(eventType)) map.put("eventType", eventType);
         if(!ObjectUtils.isEmpty(searchKey)) map.put("searchKey", searchKey);
         if(!ObjectUtils.isEmpty(searchKeyWord)) map.put("searchKeyWord", searchKeyWord);
+        map.put("pageNum", pageNum);
+        map.put("pageSize", pageSize);
+        map.put("orderBy", orderBy);
         map = Util.initPaginagtion(map);
         try {
-            return new ResponseEntity<CommonResult>(responseService.getListResult(eventService.selectEventList(map)), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(eventService.selectEventList(Util.initPaginagtion(map))), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {

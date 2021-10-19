@@ -4,17 +4,23 @@
 <mapper namespace="eventCompany">
 	
 	<select id="selectMasterLicenseList" resultType="ParamMap">
-		SELECT 
-			A.OBID, 
+		SELECT
 			DATE_FORMAT(A.CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
 			A.EMAIL, 
 			A.ORGANIZER, 
 			A.TEL, 
 			A.MANAGER, 
 			A.JOB_POSITION, 
-			A.HOMEPAGE,
+			A.HOMEPAGE
 			A.TITLE,
-			B.TYPE
+			B.OBID, 
+			B.MASTER_LICENSE_OBID,
+			B.TYPE, 
+			B.STATUS, 
+			B.DATE_FORMAT(START_DATE,'%Y-%m-%d %T') AS START_DATE,
+			B.DATE_FORMAT(END_DATE,'%Y-%m-%d %T') AS END_DATE,
+			B.EXPRESSION, 
+			B.HOLD_TYPE
 		FROM MASTER_LICENSE A , MASTER_LICENSE_LIST B
 		WHERE A.OBID = B.MASTER_LICENSE_OBID
 		AND A.EMAIL = #{email}
