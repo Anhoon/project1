@@ -138,7 +138,6 @@ public class UserController {
         try {
             userService.userCheck(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
-            //return new ResponseEntity<CommonResult>(responseService.getSingleResult(userService.selectUser(paramMap)), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {

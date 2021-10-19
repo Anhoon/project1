@@ -5,17 +5,22 @@
 	
 	<select id="selectMasterLicenseList" resultType="ParamMap">
 		SELECT 
-			OBID, 
-			DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
-			EMAIL, 
-			ORGANIZER, 
-			TEL, 
-			MANAGER, 
-			JOB_POSITION, 
-			HOMEPAGE,
-			TITLE
-		FROM MASTER_LICENSE
-		WHERE EMAIL = #{email}
+			A.OBID, 
+			DATE_FORMAT(A.CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
+			A.EMAIL, 
+			A.ORGANIZER, 
+			A.TEL, 
+			A.MANAGER, 
+			A.JOB_POSITION, 
+			A.HOMEPAGE,
+			A.TITLE,
+			B.TYPE
+		FROM MASTER_LICENSE A , MASTER_LICENSE_LIST B
+		WHERE A.OBID = B.MASTER_LICENSE_OBID
+		AND A.EMAIL = #{email}
+		<if test="type != null and type != '' " >
+			AND B.TYPE = #{type}
+		</if>
 	</select>
 
 	<select id="selectMasterLicense" resultType="ParamMap">
