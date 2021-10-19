@@ -4,23 +4,36 @@
 <mapper namespace="user">
 	
 	<select id="selectUserList" resultType="ParamMap">
-		SELECT 
-			OBID,
-			CREATED_ON,
-			EMAIL,
-			PASSWORD,
-			NAME,
-			USER_TYPE,
-			USER_STATUS,
-			MOBILE,
-			IDN,
-			COMPANY_NAME,
-			ADDR,
-			TEL,
-			BUSINESS_TYPE,
-			SALES,
-			EMPLOYEE_SIZE
-		FROM USERS
+		SELECT A.* FROM (
+			SELECT 
+				OBID,
+				CREATED_ON,
+				EMAIL,
+				PASSWORD,
+				NAME,
+				USER_TYPE,
+				USER_STATUS,
+				MOBILE,
+				IDN,
+				COMPANY_NAME,
+				ADDR,
+				TEL,
+				BUSINESS_TYPE,
+				SALES,
+				EMPLOYEE_SIZE
+			FROM USERS
+			WHERE 1=1
+			<if test="searchKey == 'email'">
+				AND A.EMAIL = #{email}
+			</if>
+			<if test="searchKey == 'name'">
+				AND A.NAME LIKE CONCAT('%',#{searchKeyWord},'%')
+			</if>
+			<if test="searchKey == 'companyName'">
+				AND A.COMPANY_NAME LIKE CONCAT('%',#{searchKeyWord},'%')
+			</if>
+			ORDER BY CREATED_ON DESC
+		) A
 	</select>
 
 	<select id="selectUser" resultType="ParamMap">
