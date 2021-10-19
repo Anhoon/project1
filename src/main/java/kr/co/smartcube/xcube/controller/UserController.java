@@ -163,7 +163,7 @@ public class UserController {
         Map<String,Object> paramMap = new HashMap<String,Object>();
         paramMap.put("email", email);
         try {
-            userService.selectUser(paramMap);
+            userService.userCheck(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);

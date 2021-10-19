@@ -135,6 +135,12 @@ public class UserService {
         userDao.updateUserPassword(map);
     }
 
+    @Transactional
+    public void userCheck(Map<String,Object> map) throws Exception{
+        Map<String, Object> resultMap = userDao.selectUser(map);
+        if(!ObjectUtils.isEmpty(resultMap)) throw new RuntimeException("이미 존재하는 회원입니다.");
+    }
+
     //이력 저장 맵 생성
     public Map<String,Object> getHistMap(Map<String,Object> map,String type, Map<String, Object> detailMap){
         String hisObid = UUID.randomUUID().toString();
