@@ -40,11 +40,10 @@ public class ManageController {
 
     /*참가신청관리*/
     /*참가신청관리 목록*/
-    @GetMapping("/participate/list")
+    @GetMapping("/participate/apply/list")
     public ResponseEntity<CommonResult> selectParticipateManageList(
         @AuthenticationPrincipal LoginVO loginVO,
-        @RequestParam(required = false) String masterLicenseListObid,
-        @RequestParam(required = false) String masterLicenseListType,
+        @RequestParam(required = false) String[] masterLicenseListObid,
         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
         @RequestParam(required = false) String orderBy,
@@ -53,9 +52,7 @@ public class ManageController {
     {
         try {
             Map<String,Object> paramMap = new HashMap<String,Object>();
-            paramMap.put("email", loginVO.getEmail());
             paramMap.put("masterLicenseListObid", masterLicenseListObid);
-            paramMap.put("masterLicenseListType", masterLicenseListType);
             paramMap.put("pageNum", pageNum);
             paramMap.put("pageSize", pageSize);
             paramMap.put("orderBy", orderBy);
@@ -69,7 +66,7 @@ public class ManageController {
     }
 
     /*참가신청관리 상세정보*/
-    @GetMapping("/participate/{masterLicenseListObid}/{email}")
+    @GetMapping("/participate/apply/{masterLicenseListObid}/{email}")
     public ResponseEntity<CommonResult> selectParticipateManage(
         @AuthenticationPrincipal LoginVO loginVO,
         @PathVariable String masterLicenseListObid,
@@ -89,7 +86,7 @@ public class ManageController {
     }
 
     /*참가신청관리 등록*/
-    @PostMapping("/participate/{masterLicenseListObid}/{email}")
+    @PostMapping("/participate/apply/{masterLicenseListObid}/{email}")
     public ResponseEntity<CommonResult> insertParticipateManage(
         @AuthenticationPrincipal LoginVO loginVO,
         @PathVariable String masterLicenseListObid,
@@ -110,7 +107,7 @@ public class ManageController {
     }
 
     /*참가신청관리 변경*/
-    @PatchMapping("/participate/{masterLicenseListObid}/{email}")
+    @PatchMapping("/participate/apply/{masterLicenseListObid}/{email}")
     public ResponseEntity<CommonResult> updateParticipateManage(
         @AuthenticationPrincipal LoginVO loginVO,
         @PathVariable String masterLicenseListObid,
@@ -131,7 +128,7 @@ public class ManageController {
     }
 
     /*참가신청관리 승인/불가 다건*/
-    @PatchMapping("/participate/list/{approval}")
+    @PatchMapping("/participate/apply/list/{approval}")
     public ResponseEntity<CommonResult> updateParticipateManageListApproval(
         @AuthenticationPrincipal LoginVO loginVO,
         @PathVariable String approval,
@@ -151,7 +148,7 @@ public class ManageController {
     }
 
     /*참가신청관리 승인/불가 단건*/
-    @PatchMapping("/participate/{masterLicenseListObid}/{email}/{approval}")
+    @PatchMapping("/participate/apply/{masterLicenseListObid}/{email}/{approval}")
     public ResponseEntity<CommonResult> updateParticipateManageApproval(
         @AuthenticationPrincipal LoginVO loginVO,
         @PathVariable String masterLicenseListObid,
@@ -176,7 +173,7 @@ public class ManageController {
     }
 
     /*참가신청관리 삭제 단건*/
-    @DeleteMapping("/participate/{masterLicenseListObid}/{email}")
+    @DeleteMapping("/participate/apply/{masterLicenseListObid}/{email}")
     public ResponseEntity<CommonResult> deleteParticipateManage(
         @AuthenticationPrincipal LoginVO loginVO,
         @PathVariable String masterLicenseListObid,
@@ -202,8 +199,7 @@ public class ManageController {
     @GetMapping("/auth/list")
     public ResponseEntity<CommonResult> selectAuthManageList(
         @AuthenticationPrincipal LoginVO loginVO,
-        @RequestParam(required = false) String masterLicenseListObid,
-        @RequestParam(required = false) String masterLicenseListType,
+        @RequestParam(required = false) String[] masterLicenseListObid,
         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
         @RequestParam(required = false) String orderBy,
@@ -212,9 +208,7 @@ public class ManageController {
     {
         try {
             Map<String, Object> paramMap = new HashMap<String,Object>();
-            paramMap.put("email", loginVO.getEmail());
             paramMap.put("masterLicenseListObid", masterLicenseListObid);
-            paramMap.put("masterLicenseListType", masterLicenseListType);
             paramMap.put("pageNum", pageNum);
             paramMap.put("pageSize", pageSize);
             paramMap.put("orderBy", orderBy);
@@ -353,8 +347,7 @@ public class ManageController {
     @GetMapping("/3D/list")
     public ResponseEntity<CommonResult> select3DManageList(
         @AuthenticationPrincipal LoginVO loginVO,
-        @RequestParam(required = false) String masterLicenseListObid,
-        @RequestParam(required = false) String masterLicenseListType,
+        @RequestParam(required = false) String[] masterLicenseListObid,
         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
         @RequestParam(required = false) String orderBy,
@@ -365,7 +358,6 @@ public class ManageController {
             Map<String, Object> paramMap = new HashMap<String,Object>();
             paramMap.put("email", loginVO.getEmail());
             paramMap.put("masterLicenseListObid", masterLicenseListObid);
-            paramMap.put("masterLicenseListType", masterLicenseListType);
             paramMap.put("pageNum", pageNum);
             paramMap.put("pageSize", pageSize);
             paramMap.put("orderBy", orderBy);

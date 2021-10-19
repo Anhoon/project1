@@ -35,18 +35,6 @@ public class ManageService {
         List<Map<String,Object>> fileList = null;
         PageHelper.startPage((int)paramMap.get("pageNum"), (int)paramMap.get("pageSize"), (String) paramMap.get("orderBy"));
         PageInfo<Map<String, Object>> participateManageList = manageDao.selectParticipateManageList(paramMap);
-
-        if(!ObjectUtils.isEmpty(participateManageList)){
-            for(Map<String, Object> participateManageMap:participateManageList.getList()){
-                if(!ObjectUtils.isEmpty(participateManageMap) && !ObjectUtils.isEmpty(participateManageMap.get("attatchFileObid"))){
-                    Map<String, Object> fileParamMap = new HashMap<String, Object>();
-                    fileParamMap.put("refObid", participateManageMap.get("attatchFileObid"));
-                    fileList = fileService.selectFileList(fileParamMap);
-                    if(!ObjectUtils.isEmpty(fileList)) participateManageMap.put("file", fileList);
-                }
-            }
-        }
-
         return participateManageList;
     }
 
@@ -204,7 +192,10 @@ public class ManageService {
 
     public Map<String, Object> selectAuthManage(Map<String,Object> paramMap) throws Exception {
         validateAuth(paramMap, "S");
-        return manageDao.selectAuthManage(paramMap);
+        Map<String,Object> authManageMap = manageDao.selectAuthManage(paramMap);
+        if(ObjectUtils.isEmpty(authManageMap)) 
+            throw new RuntimeException("일치하는 정보가 없습니다."); 
+        return authManageMap;
     }
 
     @Transactional
