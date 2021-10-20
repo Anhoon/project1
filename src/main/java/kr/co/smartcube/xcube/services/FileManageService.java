@@ -134,22 +134,22 @@ public class FileManageService {
     @Transactional
     public void deleteFileManageList(Map<String, Object> paramMap) throws Exception{
         validateFileManage(paramMap, "DL");
-        Map<String, Object> map = null;
+        Map<String, Object> fileMap = null;
         Map<String,Object> fileParamMap = null;
 
-        List<Map<String,Object>> authList = Util.objToList(paramMap.get("list"));
+        List<Map<String,Object>> paramList = Util.objToList(paramMap.get("list"));
         
-        for(Map<String,Object> authMap : authList){
-            if(!ObjectUtils.isEmpty(authMap) && !ObjectUtils.isEmpty(authMap.get("obid")))
+        for(Map<String,Object> map : paramList){
+            if(!ObjectUtils.isEmpty(map) && !ObjectUtils.isEmpty(map.get("obid")))
             {
-                map = fileManageDao.selectFileManage(authMap);
+                fileMap = fileManageDao.selectFileManage(map);
                 fileParamMap = new HashMap<String, Object>();
-                fileParamMap.put("refObid", map.get("attatchFileObid"));
+                fileParamMap.put("refObid", fileMap.get("attatchFileObid"));
                 fileService.deleteFileList(fileParamMap);
             }
         }
 
-        fileManageDao.deleteFileManageList(authList);
+        fileManageDao.deleteFileManageList(paramList);
     }
 
     public void validateFileManage(Map<String, Object> paramMap, String type){

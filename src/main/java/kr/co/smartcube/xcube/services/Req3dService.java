@@ -184,24 +184,25 @@ public class Req3dService {
     @Transactional
     public void deleteReq3dList(Map<String, Object> paramMap) throws Exception{
         validateReq3d(paramMap, "DL");
-        Map<String, Object> map = null;
+        Map<String, Object> fileMap = null;
         Map<String,Object> fileParamMap = null;
 
-        List<Map<String,Object>> authList = Util.objToList(paramMap.get("list"));
+        List<Map<String,Object>> paramList = Util.objToList(paramMap.get("list"));
+        if(ObjectUtils.isEmpty(paramList)) throw new RuntimeException("대상이 없습니다."); 
         
-        for(Map<String,Object> authMap : authList){
-            if(!ObjectUtils.isEmpty(authMap) && !ObjectUtils.isEmpty(authMap.get("obid")))
+        for(Map<String,Object> map : paramList){
+            if(!ObjectUtils.isEmpty(map) && !ObjectUtils.isEmpty(map.get("obid")))
             {
-                map = req3dDao.selectReq3d(authMap);
+                fileMap = req3dDao.selectReq3d(map);
                 fileParamMap = new HashMap<String, Object>();
-                fileParamMap.put("refObid", map.get("attatchFileObid"));
+                fileParamMap.put("refObid", fileMap.get("attatchFileObid"));
                 fileService.deleteFileList(fileParamMap);
-                fileParamMap.put("refObid", map.get("imageFileObid"));
+                fileParamMap.put("refObid", fileMap.get("imageFileObid"));
                 fileService.deleteFileList(fileParamMap);
             }
         }
 
-        req3dDao.deleteReq3dList(authList);
+        req3dDao.deleteReq3dList(paramList);
     }
 
     public void validateReq3d(Map<String, Object> paramMap, String type){
