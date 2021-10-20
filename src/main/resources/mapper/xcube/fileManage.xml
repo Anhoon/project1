@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd">
+
+<mapper namespace="fileManage">
+	<!--파일관리-->
+	<select id="selectFileManageList" resultType="ParamMap">
+		<![CDATA[
+			SELECT ROW_NUMBER() OVER() AS NUM, 
+			       X.*
+			  FROM (
+					SELECT OBID,
+					       MASTER_LICENSE_LIST_OBID,
+						   DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
+						   FILE_NAME,
+						   FILE_TYPE,
+						   FILE_DESCRIPT,
+						   ATTATCH_FILE_OBID
+					  FROM FILE_LIST_FOR_EVENT
+					 WHERE 1=1
+		]]>
+		<if test="masterLicenseListObid != null and masterLicenseListObid !=''">
+			AND MASTER_LICENSE_LIST_OBID IN
+			<foreach collection="masterLicenseListObid" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="searchKey == 'fileType'">
+		    AND FILE_TYPE = #{searchKeyWord}
+		</if>
+		<if test="searchKey == 'fileName'">
+		    AND FILE_NAME LIKE CONCAT('%',#{searchKeyWord},'%')
+		</if>
+		<![CDATA[
+				ORDER BY CREATED_ON DESC
+					) X
+		]]>	
+	</select>
+
+	<select id="selectFileManage" resultType="ParamMap">
+		SELECT OBID,
+			   MASTER_LICENSE_LIST_OBID,
+			   DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
+			   FILE_NAME,
+			   FILE_TYPE,
+			   FILE_DESCRIPT,
+			   ATTATCH_FILE_OBID
+		  FROM FILE_LIST_FOR_EVENT
+		 WHERE OBID = #{obid}
+	</select>
+
+	<insert id="insertFileManage" parameterType="java.util.HashMap">
+		INSERT INTO FILE_LIST_FOR_EVENT
+		(
+			OBID,
+			MASTER_LICENSE_LIST_OBID,
+			CREATED_ON,
+			FILE_NAME,
+			FILE_TYPE,
+			FILE_DESCRIPT,
+			ATTATCH_FILE_OBID
+		)
+		VALUES 
+		(
+			#{obid},
+			#{masterLicenseListObid},
+			SYSDATE(),
+			#{fileName},
+			#{fileType},
+			#{fileDescript},
+			#{attatchFileObid}
+		)
+	</insert>
+
+	<update id="updateFileManage" parameterType="java.util.HashMap">
+		UPDATE FILE_LIST_FOR_EVENT
+		   SET MASTER_LICENSE_LIST_OBID = #{masterLicenseListObid},
+		       FILE_NAME = #{fileName},
+			   FILE_TYPE = #{fileType},
+			   FILE_DESCRIPT = #{fileDescript},
+			   ATTATCH_FILE_OBID = #{attatchFileObid}
+		 WHERE OBID = #{obid}
+	</update>
+
+	<delete id="deleteFileManage" parameterType="java.util.HashMap">
+		DELETE FROM FILE_LIST_FOR_EVENT
+		 WHERE OBID = #{obid}
+	</delete>
+
+	<delete id="deleteFileManageList" parameterType="java.util.HashMap">
+		DELETE FROM FILE_LIST_FOR_EVENT
+		 WHERE OBID IN 
+		 <foreach collection="list" item="item" open="(" separator="," close=")">
+			#{item.obid}
+		</foreach>
+	</delete>
+</mapper>

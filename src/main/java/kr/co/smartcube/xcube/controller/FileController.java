@@ -41,7 +41,8 @@ public class FileController {
 
   @Autowired
   private FileService fileService;
- 
+
+  /*파일업로드 SAMPLE*/
   @PostMapping("/api/file/upload")
   public ResponseEntity<CommonResult> uploadMultipleFiles(
     @RequestParam("files") MultipartFile[] files, 
@@ -59,6 +60,7 @@ public class FileController {
       }
   }
   
+  /*파일다운로드(공통)*/
   @GetMapping(value = {"/api/file/download/{fileName:.+}", 
               "/api/file/download/{fileGroup}/{fileName:.+}", 
               "/api/file/download/{fileGroup}/{fileSubGroup}/{fileName:.+}"})
