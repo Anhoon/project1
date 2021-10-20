@@ -22,15 +22,19 @@ public class MyPageDao {
 		return sqlSession.selectList(NAMESPACE + "selectMyEventList",param);
     }
 
-	public PageInfo<Map<String, Object>> participateCompanyHist(Map<String,Object> param) {
-		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "participateCompanyHist",param));
+	public PageInfo<Map<String, Object>> selectParticipateApplyHist(Map<String,Object> param) {
+		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "selectParticipateApplyHist",param));
     }
 
-	public PageInfo<Map<String, Object>> participateUserHist(Map<String,Object> param) {
-		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "participateUserHist",param));
+	public Map<String, Object> selectParticipateApplyHistDetail(Map<String,Object> param) {
+		return sqlSession.selectOne(NAMESPACE + "selectParticipateApplyHistDetail",param);
     }
 
-	public int insertParticipateUser(Map<String, Object> paramMap) throws Exception {
-		return sqlSession.insert(NAMESPACE + "insertParticipateUser", paramMap);
+	public PageInfo<Map<String, Object>> selectParticipateAuthHist(Map<String,Object> param) {
+		return new PageInfo<Map<String,Object>> (sqlSession.selectList(NAMESPACE + "selectParticipateAuthHist",param));
+    }
+
+	public int insertParticipateAuth(Map<String, Object> paramMap) throws Exception {
+		return sqlSession.insert(NAMESPACE + "insertParticipateAuth", paramMap);
 	}
 }

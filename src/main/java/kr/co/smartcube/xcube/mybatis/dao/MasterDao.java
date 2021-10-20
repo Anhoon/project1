@@ -10,10 +10,9 @@ import org.springframework.stereotype.Repository;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Repository
-public class EventCompanyDao {
-	protected static final String NAMESPACE = "eventCompany.";
+public class MasterDao {
+	protected static final String NAMESPACE = "master.";
 
     @Autowired
     @Qualifier("sqlSession")

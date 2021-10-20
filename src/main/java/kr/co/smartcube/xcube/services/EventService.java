@@ -39,20 +39,24 @@ public class EventService {
         Map<String,Object> resultMap = new HashMap<String,Object>();
         Map<String, Object> eventMap = eventDao.selectEvent(map);
         if(ObjectUtils.isEmpty(eventMap)) throw new RuntimeException("행사등록 정보가 없습니다.");
-        //파일이 있을경우 추가
         Map<String,Object> fileParam = new HashMap<String,Object>();
         List<Map<String,Object>> fileList = new ArrayList<Map<String,Object>>();
         fileParam.put("refObid", eventMap.get("attatchFileObid"));
         fileList = fileDao.selectFileList(fileParam);
         if(!ObjectUtils.isEmpty(fileList)) eventMap.put("files", fileList);
-        //파일이 있을경우 추가
-        
+        resultMap.put("eventLists", eventMap);
+        return resultMap;
+    }
+
+    public Map<String, Object> selectParticipate(Map<String,Object> map) {
+        Map<String,Object> resultMap = new HashMap<String,Object>();
+        Map<String,Object> fileParam = new HashMap<String,Object>();
+        List<Map<String,Object>> fileList = new ArrayList<Map<String,Object>>();
         Map<String, Object> participateListMap = eventDao.selectParticipate(map);
         if(ObjectUtils.isEmpty(participateListMap)) throw new RuntimeException("참가모집 정보가 없습니다.");
         fileParam.put("refObid", participateListMap.get("attatchFileObid"));
         fileList = fileDao.selectFileList(fileParam);
         if(!ObjectUtils.isEmpty(fileList)) participateListMap.put("files", fileList);
-        resultMap.put("eventLists", eventMap);
         resultMap.put("participateLists", participateListMap);
         return resultMap;
     }
@@ -183,35 +187,15 @@ public class EventService {
         if(ObjectUtils.isEmpty(map.get("title"))){
             throw new RuntimeException(name +" 행사타이틀 정보를 입력해 주세요.");
         }
-        /*
-        if(ObjectUtils.isEmpty(map.get("enTitle"))){
-            throw new RuntimeException(name +" 영문타이틀 정보를 입력해 주세요.");
+        if(ObjectUtils.isEmpty(map.get("email"))){
+            throw new RuntimeException(name +" 행사타이틀 정보를 입력해 주세요.");
         }
-        if(ObjectUtils.isEmpty(map.get("alias"))){
-            throw new RuntimeException(name +" 약칭 정보를 입력해 주세요.");
+        if(!Util.dateCheck(map.get("startDate"))){
+            throw new RuntimeException(name +" 신청기간 시작일 날짜 형식이 맞지 않습니다.");
         }
-        if(ObjectUtils.isEmpty(map.get("objects"))){
-            throw new RuntimeException(name +" 행사대상 정보를 입력해 주세요.");
+        if(!Util.dateCheck(map.get("endDate"))){
+            throw new RuntimeException(name +" 신청기간 종료일 날짜 형식이 맞지 않습니다.");
         }
-        if(ObjectUtils.isEmpty(map.get("contents"))){
-            throw new RuntimeException(name +" 행사내용 입력해 주세요.");
-        }
-        if(ObjectUtils.isEmpty(map.get("showProducts"))){
-            throw new RuntimeException(name +" 전시품목 정보를 입력해 주세요.");
-        }
-        if(ObjectUtils.isEmpty(map.get("organizer"))){
-            throw new RuntimeException(name +" 주최 정보를 입력해 주세요.");
-        }
-        if(ObjectUtils.isEmpty(map.get("subjectivity"))){
-            throw new RuntimeException(name +" 주관 정보를 입력해 주세요.");
-        }
-        if(ObjectUtils.isEmpty(map.get("support"))){
-            throw new RuntimeException(name +" 후원 정보를 입력해 주세요.");
-        }
-        if(ObjectUtils.isEmpty(map.get("hompage"))){
-            throw new RuntimeException(name +" 홈페이지 정보를 입력해 주세요.");
-        }
-        */
     }   
 
     public void validationParticipateCheck(Map<String,Object> map){
@@ -222,17 +206,6 @@ public class EventService {
         if(ObjectUtils.isEmpty(map.get("scale"))){
             throw new RuntimeException(name +" 참가규모 정보를 입력해 주세요.");
         }
-        /*
-        if(ObjectUtils.isEmpty(map.get("applyType"))){
-            throw new RuntimeException(name +" 모집인원타입 정보를 입력해 주세요.");
-        }
-        if(ObjectUtils.isEmpty(map.get("applyCount"))){
-            throw new RuntimeException(name +" 모집인원 정보를 입력해 주세요.");
-        }
-        if(ObjectUtils.isEmpty(map.get("applyFee"))){
-            throw new RuntimeException(name +" 참가비 종료일 정보를 입력해 주세요.");
-        }
-        */
         if(ObjectUtils.isEmpty(map.get("startApplyDate"))){
             throw new RuntimeException(name +" 신청기간 시작일 정보를 입력해 주세요.");
         }

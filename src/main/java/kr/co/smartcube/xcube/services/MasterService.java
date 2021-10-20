@@ -12,15 +12,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import kr.co.smartcube.xcube.mybatis.dao.EventCompanyDao;
+import kr.co.smartcube.xcube.mybatis.dao.MasterDao;
 import kr.co.smartcube.xcube.mybatis.dao.FileDao;
 import kr.co.smartcube.xcube.util.Util;
 
 @Service
-public class EventCompanyService {
+public class MasterService {
 
     @Autowired 
-    private EventCompanyDao eventCompanyDao;
+    private MasterDao eventCompanyDao;
 
     @Autowired
     private FileService fileService;
@@ -32,28 +32,6 @@ public class EventCompanyService {
         return eventCompanyDao.selectMasterLicenseList(map);
     }
 
-    public Map<String, Object> selectMasterLicenseListDetailList(Map<String, Object> map) {
-        //Map<String,Object> resultMap = eventCompanyDao.selectMasterLicense(map);
-        //if(ObjectUtils.isEmpty(resultMap)) throw new RuntimeException("일치하는 정보가 없습니다.");
-        //map.put("masterLicenseObid", map.get("obid"));
-        //Map<String,Object> fileParam = new HashMap<String,Object>();
-        //Map<String,Object> fileMap = new HashMap<String,Object>();
-        //fileParam.put("attachObid", resultMap.get("attatchObid"));
-        //fileMap = fileDao.selectFile(fileParam);
-        //if(!ObjectUtils.isEmpty(fileMap)) resultMap.put("files", fileMap);
-        Map<String,Object> resultMap = new HashMap<String,Object>();
-        List<Map<String,Object>> resultList = eventCompanyDao.selectMasterLicenseListDetailList(map);
-        /*
-        for(Map<String,Object> licenseMap : resultList){
-            fileParam.put("attachObid", licenseMap.get("attatchObid"));
-            fileMap = fileDao.selectFile(fileParam);
-            if(!ObjectUtils.isEmpty(fileMap)) licenseMap.put("files", fileMap);
-        }
-        */
-        resultMap.put("masterLicenseLists", resultList);
-        return resultMap;
-    }
-    
     @Transactional
     public void insertMasterLicense(Map<String, Object> map) throws Exception{
         //Map<String,Object> fileMap = new HashMap<String,Object>();

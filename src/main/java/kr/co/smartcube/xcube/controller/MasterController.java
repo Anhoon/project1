@@ -17,23 +17,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import kr.co.smartcube.xcube.common.CommonResult;
 import kr.co.smartcube.xcube.common.ResponseService;
-import kr.co.smartcube.xcube.services.EventCompanyService;
+import kr.co.smartcube.xcube.services.MasterService;
 import kr.co.smartcube.xcube.util.Util;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
 @CrossOrigin(origins="*")
-@RequestMapping("/api/event/company")
-public class EventCompanyController {
+@RequestMapping("/api/master/license")
+public class MasterController {
 
     @Autowired
-    private EventCompanyService eventCompanyService;
+    private MasterService eventCompanyService;
     
     @Autowired
     private ResponseService responseService;
 
-    @GetMapping("/license/master/{email}")
+    @GetMapping("/{email}")
     public ResponseEntity<CommonResult> selectMasterLicenseList(@PathVariable String email){
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("pageNum", 0);
@@ -51,21 +51,7 @@ public class EventCompanyController {
         }
     }
 
-    @GetMapping("/license/master/list/{obid}")
-    public ResponseEntity<CommonResult> selectMasterLicenseListDetailList(@PathVariable String obid) throws Exception {
-        Map<String,Object> paramMap = new HashMap<String,Object>();
-        paramMap.put("masterLicenseObid", obid);
-        try {
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(eventCompanyService.selectMasterLicenseListDetailList(paramMap)), HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e.fillInStackTrace());
-            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
-        }
-    }
-
-    @PostMapping("/license/master")
+    @PostMapping("")
     public ResponseEntity<CommonResult> insertMasterLicense(@RequestBody Map<String, Object> map) throws Exception{
         try {
             eventCompanyService.insertMasterLicense(map);
@@ -78,7 +64,7 @@ public class EventCompanyController {
         }
     }
 
-    @PatchMapping("/license/master")
+    @PatchMapping("")
     public ResponseEntity<CommonResult> updateMasterLicense(@RequestBody Map<String, Object> map){
         try {
             eventCompanyService.updateMasterLicense(map);
@@ -91,7 +77,7 @@ public class EventCompanyController {
         }
     }
 
-    @PatchMapping("/license/master/list")
+    @PatchMapping("/list")
     public ResponseEntity<CommonResult> updateMasterLicenseList(@RequestBody Map<String, Object> map){
         try {
             eventCompanyService.updateMasterLicenseList(map);

@@ -85,8 +85,8 @@ public class MyPageController {
         }
     }
 
-    @GetMapping("/participateCompanyHist/{email}")
-    public ResponseEntity<CommonResult> selectParticipateCompanyHist(
+    @GetMapping("/participateApplyHist/{email}")
+    public ResponseEntity<CommonResult> selectParticipateApplyHist(
             @PathVariable String email,
             @RequestParam(required = false) String searchKey,
             @RequestParam(required = false) String searchKeyWord,
@@ -102,7 +102,7 @@ public class MyPageController {
             map.put("pageNum", pageNum);
             map.put("pageSize", pageSize);
             map.put("orderBy", orderBy);
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.participateCompanyHist(Util.initPaginagtion(map))), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.selectParticipateApplyHist(Util.initPaginagtion(map))), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
@@ -111,8 +111,27 @@ public class MyPageController {
         }
     }
 
-    @GetMapping("/participateUserHist/{email}")
-    public ResponseEntity<CommonResult> selectParticipateUserHist(
+    @GetMapping("/participateApplyDetail")
+    public ResponseEntity<CommonResult> selectParticipateApplyHistDetail(
+            @RequestParam String email,
+            @RequestParam String masterLicenseListObid) throws Exception
+    {
+        try {
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("email", email);
+            map.put("masterLicenseListObid", masterLicenseListObid);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.selectParticipateApplyHistDetail(map)), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+    
+
+    @GetMapping("/participateAuthHist/{email}")
+    public ResponseEntity<CommonResult> selectParticipateAuthHist(
             @PathVariable String email,
             @RequestParam(required = false) String searchKey,
             @RequestParam(required = false) String searchKeyWord,
@@ -128,21 +147,21 @@ public class MyPageController {
             map.put("pageNum", pageNum);
             map.put("pageSize", pageSize);
             map.put("orderBy", orderBy);
-            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.participateUserHist(Util.initPaginagtion(map))), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.selectParticipateAuthHist(Util.initPaginagtion(map))), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
         }
-    } 
+    }
     
-    @PostMapping("/insertParticipateUser/{email}")
-    public ResponseEntity<CommonResult> participateUserInsert(@PathVariable String email,@RequestBody Map<String, Object> map) throws Exception
+    @PostMapping("/insertParticipateAuth/{email}")
+    public ResponseEntity<CommonResult> insertParticipateAuth(@PathVariable String email,@RequestBody Map<String, Object> map) throws Exception
     {
         try {
             map.put("email", email);
-            myPageService.insertParticipateUser(map);
+            myPageService.insertParticipateAuth(map);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.CREATED);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
@@ -173,8 +192,7 @@ public class MyPageController {
         paramMap.put("email", email);
         paramMap.put("password", password);
         try {
-            myPageService.userPasswordCheck(paramMap);
-            return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(myPageService.userPasswordCheck(paramMap)), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {

@@ -8,83 +8,116 @@
 			SELECT
 				A.OBID,
 				A.EMAIL,
+				B.TYPE,
 				B.OBID AS MASTER_LICENSE_LIST_OBID,
 				B.MASTER_LICENSE_OBID,
 				A.TITLE,
 				B.START_DATE,
-				B.END_DATE
+				B.END_DATE,
+				B.STATUS
 			FROM MASTER_LICENSE A, MASTER_LICENSE_LIST B
 			WHERE A.OBID = B.MASTER_LICENSE_OBID
 			AND A.EMAIL = #{email}
-			<if test="eventType != null and eventType != '' " >
-				<if test="eventType == 'pre' " >
-				AND DATE_FORMAT(B.END_DATE,'%Y-%m-%d') <![CDATA[ < ]]> DATE_FORMAT(SYSDATE(),'%Y-%m-%d') 
-				</if>
-				<if test="eventType == 'ing' " >
-				AND DATE_FORMAT(SYSDATE(),'%Y-%m-%d') BETWEEN DATE_FORMAT(B.START_DATE,'%Y-%m-%d') AND DATE_FORMAT(B.END_DATE,'%Y-%m-%d')
-				</if>
+			<if test="status != null and status != '' " >
+				AND B.STATUS = #{status}
 			</if>
 			ORDER BY A.CREATED_ON DESC
 		) A
 	</select>
 
-	<select id="participateCompanyHist" resultType="ParamMap">
-		SELECT A.* FROM (
-		SELECT
-			A.OBID,
-			A.EMAIL,
-			B.OBID AS LISTOBID,
-			B.MASTER_LICENSE_OBID,
-			A.TITLE
-		FROM MASTER_LICENSE A, MASTER_LICENSE_LIST B, PARTICIPATE_COMPANY_LIST C
-		WHERE A.OBID = B.MASTER_LICENSE_OBID
-		AND B.OBID = C.MASTER_LICENSE_LIST_OBID
-		AND A.EMAIL = #{email}
-		<if test="searchKey == 'eventName'">
-			AND A.TITLE LIKE CONCAT('%',#{searchKeyWord},'%')
-		</if>
-		ORDER BY C.CREATED_ON DESC
-		) A
-	</select>
-
-	<select id="participateUserHist" resultType="ParamMap">
+	<select id="selectParticipateApplyHist" resultType="ParamMap">
 		SELECT A.* FROM (
 			SELECT
-				A.OBID,
+				A.MASTER_LICENSE_LIST_OBID,
+				DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
 				A.EMAIL,
-				B.OBID AS LISTOBID,
-				B.MASTER_LICENSE_OBID,
-				A.TITLE,
-				C.REQ_GRADE
-			FROM MASTER_LICENSE A, MASTER_LICENSE_LIST B, PARTICIPATE_USER_LIST C
-			WHERE A.OBID = B.MASTER_LICENSE_OBID
-			AND B.OBID = C.MASTER_LICENSE_LIST_OBID
-			AND A.EMAIL = #{email}
-			<if test="searchKey == 'eventName'">
-				AND A.TITLE LIKE CONCAT('%',#{searchKeyWord},'%')
+				A.NAME,
+				A.APPROVAL_CODE,
+				A.COMPANY_NAME,
+				A.BUSINESS_TYPE,
+				A.HOMEPAGE,
+				A.OWNER,
+				A.IDN,
+				A.MANAGER_NAME,
+				A.MANAGER_JOB_POSITION,
+				A.MANAGER_EMAIL,
+				A.MANAGER_TEL,
+				A.ADDR,
+				A.INTRODUCE,
+				A.COMPANY_MAIN_OBJECTS,
+				A.ATTATCH_FILE_OBID,
+				A.REQ_SCALE_TYPE,
+				A.REQ_SCALE
+			FROM PARTICIPATE_APPLY_LIST A
+			WHERE A.EMAIL = #{email}
+			<if test="searchKey == 'approvalCode'">
+				AND A.APPROVAL_CODE = #{approvalCode}
 			</if>
-			ORDER BY C.CREATED_ON DESC
+			ORDER BY A.CREATED_ON DESC
 		) A
 	</select>
 
-	<insert id="insertParticipateUser" parameterType="java.util.HashMap">
-		INSERT INTO PARTICIPATE_USER_LIST
+	<select id="selectParticipateApplyHistDetail" resultType="ParamMap">
+		SELECT A.* FROM (
+			SELECT
+				A.MASTER_LICENSE_LIST_OBID,
+				DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
+				A.EMAIL,
+				A.NAME,
+				A.APPROVAL_CODE,
+				A.COMPANY_NAME,
+				A.BUSINESS_TYPE,
+				A.HOMEPAGE,
+				A.OWNER,
+				A.IDN,
+				A.MANAGER_NAME,
+				A.MANAGER_JOB_POSITION,
+				A.MANAGER_EMAIL,
+				A.MANAGER_TEL,
+				A.ADDR,
+				A.INTRODUCE,
+				A.COMPANY_MAIN_OBJECTS,
+				A.ATTATCH_FILE_OBID,
+				A.REQ_SCALE_TYPE,
+				A.REQ_SCALE
+			FROM PARTICIPATE_APPLY_LIST A
+			WHERE A.EMAIL = #{email}
+			AND A.MASTER_LICENSE_LIST_OBID = #{masterLicenseListObid}
+			ORDER BY A.CREATED_ON DESC
+		) A
+	</select>
+
+	<select id="selectParticipateAuthHist" resultType="ParamMap">
+		SELECT A.* FROM (
+			SELECT
+				 A.MASTER_LICENSE_LIST_OBID,
+				 DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
+				 A.EMAIL,
+				 A.NAME,
+				 A.REQ_GRADE,
+				 A.GRADE
+			FROM PARTICIPATE_USER_LIST A
+			WHERE A.EMAIL = #{email}
+			ORDER BY A.CREATED_ON DESC
+		) A
+	</select>
+
+	<insert id="insertParticipateAuth" parameterType="java.util.HashMap">
+		INSERT INTO PARTICIPATE_AUTH_LIST
 		(
 			MASTER_LICENSE_LIST_OBID,
 			CREATED_ON,
 			EMAIL,
 			NAME,
-			REQ_GRADE,
-			GRADE
+			REQ_GRADE
 		)
 		VALUES 
 		(
 			#{masterLicenseListObid},
 			SYSDATE(),
 			#{email},
-			#{name},
-			#{reqGrade},
-			#{grade}
+			(SELECT NAME FROM USERS WHERE EMAIL = #{email}),
+			#{reqGrade}
 		)
 	</insert>
 

@@ -39,7 +39,6 @@ public class EventController {
     @GetMapping("")
     public ResponseEntity<CommonResult> selectEventList(
             @RequestParam(required = false) String type,
-            @RequestParam(required = false) String eventType,
             @RequestParam(required = false) String searchKey,
             @RequestParam(required = false) String searchKeyWord,
             @RequestParam(required = false, defaultValue = "1") Integer pageNum,
@@ -51,7 +50,6 @@ public class EventController {
         map.put("pageSize", 2);
         map.put("orderBy", "1 desc");
         if(!ObjectUtils.isEmpty(type)) map.put("type", type);
-        if(!ObjectUtils.isEmpty(eventType)) map.put("eventType", eventType);
         if(!ObjectUtils.isEmpty(searchKey)) map.put("searchKey", searchKey);
         if(!ObjectUtils.isEmpty(searchKeyWord)) map.put("searchKeyWord", searchKeyWord);
         map.put("pageNum", pageNum);
@@ -68,12 +66,26 @@ public class EventController {
         }
     }
 
-    @GetMapping("/{masterLicenseListObid}")
+    @GetMapping("/detailEvent/{masterLicenseListObid}")
     public ResponseEntity<CommonResult> selectEvent(@PathVariable String masterLicenseListObid) throws Exception {
         Map<String,Object> paramMap = new HashMap<String,Object>();
         paramMap.put("masterLicenseListObid", masterLicenseListObid);
         try {
             return new ResponseEntity<CommonResult>(responseService.getSingleResult(eventService.selectEvent(paramMap)), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e.fillInStackTrace());
+            return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);
+        }
+    }
+
+    @GetMapping("/detailParticipate/{masterLicenseListObid}")
+    public ResponseEntity<CommonResult> selectParticipate(@PathVariable String masterLicenseListObid) throws Exception {
+        Map<String,Object> paramMap = new HashMap<String,Object>();
+        paramMap.put("masterLicenseListObid", masterLicenseListObid);
+        try {
+            return new ResponseEntity<CommonResult>(responseService.getSingleResult(eventService.selectParticipate(paramMap)), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<CommonResult>(responseService.getFailResult(e.getMessage()), HttpStatus.CONFLICT);
         } catch (Exception e) {

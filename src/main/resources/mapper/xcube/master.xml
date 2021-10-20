@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd">
 
-<mapper namespace="eventCompany">
+<mapper namespace="master">
 	
 	<select id="selectMasterLicenseList" resultType="ParamMap">
 		SELECT
@@ -11,49 +11,22 @@
 			A.TEL, 
 			A.MANAGER, 
 			A.JOB_POSITION, 
-			A.HOMEPAGE
+			A.HOMEPAGE,
 			A.TITLE,
 			B.OBID, 
 			B.MASTER_LICENSE_OBID,
 			B.TYPE, 
 			B.STATUS, 
-			B.DATE_FORMAT(START_DATE,'%Y-%m-%d %T') AS START_DATE,
-			B.DATE_FORMAT(END_DATE,'%Y-%m-%d %T') AS END_DATE,
+			DATE_FORMAT(B.START_DATE,'%Y-%m-%d %T') AS START_DATE,
+			DATE_FORMAT(B.END_DATE,'%Y-%m-%d %T') AS END_DATE,
 			B.EXPRESSION, 
 			B.HOLD_TYPE
 		FROM MASTER_LICENSE A , MASTER_LICENSE_LIST B
 		WHERE A.OBID = B.MASTER_LICENSE_OBID
 		AND A.EMAIL = #{email}
-	</select>
-
-	<select id="selectMasterLicense" resultType="ParamMap">
-		SELECT 
-			OBID, 
-			DATE_FORMAT(CREATED_ON,'%Y-%m-%d %T') AS CREATED_ON,
-			EMAIL, 
-			ORGANIZER, 
-			TEL, 
-			MANAGER, 
-			JOB_POSITION, 
-			HOMEPAGE,
-			TITLE
-		FROM MASTER_LICENSE
-		WHERE OBID = #{obid}
-	</select>
-
-	<select id="selectMasterLicenseListDetailList" resultType="ParamMap">
-		SELECT 
-			OBID, 
-			MASTER_LICENSE_OBID, 
-			TITLE,
-			TYPE, 
-			STATUS, 
-			DATE_FORMAT(START_DATE,'%Y-%m-%d %T') AS START_DATE,
-			DATE_FORMAT(END_DATE,'%Y-%m-%d %T') AS END_DATE,
-			EXPRESSION, 
-			HOLD_TYPE
-		FROM MASTER_LICENSE_LIST
-		WHERE MASTER_LICENSE_OBID = #{masterLicenseObid}
+		<if test="status != null and status != '' " >
+			AND B.STATUS = #{status}
+		</if>
 	</select>
 
 	<insert id="insertMasterLicense" parameterType="java.util.HashMap">

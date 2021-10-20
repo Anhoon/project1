@@ -6,27 +6,24 @@
 	<select id="selectEventList" resultType="ParamMap">
 		SELECT A.* FROM (
 			SELECT 
+				A.MASTER_LICENSE_LIST_OBID,
+				A.TYPE,
+				B.OBJECT_FOR,
 				A.TITLE,
 				DATE_FORMAT(A.START_DATE,'%Y-%m-%d %T') AS START_DATE,
 				DATE_FORMAT(A.END_DATE,'%Y-%m-%d %T') AS END_DATE,
-				A.TYPE,
-				B.MASTER_LICENSE_LIST_OBID,
-				B.CREATED_ON,
-				B.OBJECT_FOR,
 				DATE_FORMAT(B.START_APPLY_DATE,'%Y-%m-%d %T') AS START_APPLY_DATE,
 				DATE_FORMAT(B.END_APPLY_DATE,'%Y-%m-%d %T') AS END_APPLY_DATE
-			FROM MASTER_LICENSE_LIST A , PARTICIPATE_LIST B
-			WHERE A.OBID = B.MASTER_LICENSE_LIST_OBID
-			<if test="type != null and type != '' " >
+			FROM EVENT_LIST A , PARTICIPATE_LIST B
+			WHERE A.MASTER_LICENSE_LIST_OBID = B.MASTER_LICENSE_LIST_OBID
+			<if test="status != null and status != '' " >
+				AND A.STATUS = #{status}
+			</if>
+			<if test="sattu != null and type != '' " >
 				AND TYPE = #{type}
 			</if>
-			<if test="searchKey == 'eventName'">
+			<if test="searchKey == 'title'">
 			   AND A.TITLE LIKE CONCAT('%',#{searchKeyWord},'%')
-			</if>
-			<if test="eventType != null and eventType != '' " >
-				<if test="eventType == 'ing' " >
-					AND DATE_FORMAT(SYSDATE(),'%Y-%m-%d') BETWEEN DATE_FORMAT(A.START_DATE,'%Y-%m-%d') AND DATE_FORMAT(A.END_DATE,'%Y-%m-%d')
-				</if>
 			</if>
 			ORDER BY B.CREATED_ON DESC
 		) A
@@ -46,8 +43,14 @@
 			SUBJECTIVITY,
 			SUPPORT,
 			HOMPAGE,
+			ATTATCH_FILE_OBID,
+			SUBJECT,
 			PROGRAM,
-			ATTATCH_FILE_OBID
+			TYPE,
+			START_DATE,
+			END_DATE,
+			EMAIL,
+			STATUS
 		FROM EVENT_LIST
 		WHERE MASTER_LICENSE_LIST_OBID = #{masterLicenseListObid}
 	</select>
@@ -88,8 +91,14 @@
 			SUBJECTIVITY,
 			SUPPORT,
 			HOMPAGE,
+			ATTATCH_FILE_OBID,
+			SUBJECT,
 			PROGRAM,
-			ATTATCH_FILE_OBID
+			TYPE,
+			START_DATE,
+			END_DATE,
+			EMAIL,
+			STATUS
 		)
 		VALUES 
 		(
@@ -105,8 +114,14 @@
 			#{subjectivity},
 			#{support},
 			#{hompage},
+			#{attatchFileObid},
+			#{subject},
 			#{program},
-			#{attatchFileObid}
+			#{type},
+			CONVERT(#{startDate}, DATETIME),
+			CONVERT(#{endDate}, DATETIME),
+			#{email},
+			#{status}
 		)
 	</insert>
 
@@ -122,11 +137,11 @@
 			END_APPLY_DATE,
 			SUPPORT_CONTENT,
 			APPLY_DOC,
+			ATTATCH_FILE_OBID,
 			APPLY_TYPE,
 			APPLY_COUNT,
 			APPLY_FEE,
-			APPLY_FOR_OBJECT,
-			ATTATCH_FILE_OBID
+			APPLY_FOR_OBJECT
 		)
 		VALUES 
 		(
@@ -139,11 +154,11 @@
 			CONVERT(#{endApplyDate}, DATETIME),
 			#{supportContent},
 			#{applyDoc},
+			#{attatchFileObid},
 			#{applyType},
 			#{applyCount},
 			#{applyFee},
-			#{applyForObject},
-			#{attatchFileObid}
+			#{applyForObject}
 		)
 	</insert>
 
@@ -159,8 +174,13 @@
 			SUBJECTIVITY = #{subjectivity},
 			SUPPORT = #{support},
 			HOMPAGE = #{hompage},
+			ATTATCH_FILE_OBID = #{attatchFileObid},
 			PROGRAM = #{program},
-			ATTATCH_FILE_OBID = #{attatchFileObid}
+			SUBJECT = #{subject},
+			TYPE = #{type},
+			START_DATE = CONVERT(#{startDate}, DATETIME),
+			END_DATE = CONVERT(#{endDate}, DATETIME),
+			EMAIL = #{email}
 		WHERE MASTER_LICENSE_LIST_OBID = #{masterLicenseListObid}
 	</update>
 
@@ -190,53 +210,4 @@
 		DELETE FROM PARTICIPATE_LIST
 		WHERE MASTER_LICENSE_LIST_OBID = #{masterLicenseListObid}
 	</delete>
-
-	<select id="selectMyEventList" resultType="ParamMap">
-		SELECT A.* FROM (
-			SELECT 
-				E.*,
-				B.TYPE,
-				(CASE TYPE WHEN 'C' THEN '컨벤션' 
-									WHEN 'E' THEN '전시회' 
-									WHEN 'F' THEN '컨퍼런스' 
-									WHEN 'S' THEN '공연' 
-									ELSE '미등록코드' END
-				) AS TYPE_NM,
-				(SELECT TITLE FROM MASTER_LICENSE WHERE OBID = B.MASTER_LICENSE_OBID) AS MASTER_TITLE
-				FROM (
-					SELECT 
-						A.MASTER_LICENSE_LIST_OBID,
-						A.CREATED_ON,
-						A.TITLE,
-						A.EN_TITLE,
-						A.ALIAS,
-						A.OBJECTS,
-						A.CONTENTS,
-						A.SHOW_PRODUCTS,
-						A.ORGANIZER,
-						A.SUBJECTIVITY,
-						A.SUPPORT,
-						A.HOMPAGE,
-						A.PROGRAM,
-						A.ATTATCH_FILE_OBID,
-						B.OBJECT_FOR,
-						B.START_APPLY_DATE,
-						B.END_APPLY_DATE,
-						(CASE B.OBJECT_FOR WHEN '0' THEN '전체' WHEN '1' THEN '일반' WHEN '2' THEN '기업' END) OBJECT_FOR_NM
-					FROM EVENT_LIST A, PARTICIPATE_LIST B
-					WHERE A.MASTER_LICENSE_LIST_OBID = B.MASTER_LICENSE_LIST_OBID
-			) E, MASTER_LICENSE_LIST B
-			WHERE E.MASTER_LICENSE_LIST_OBID = B.OBID
-			AND B.MASTER_LICENSE_OBID = (SELECT OBID FROM MASTER_LICENSE WHERE EMAIL = 'shine_foryou@hanmail.net')
-		) A
-		WHERE 1=1
-		<if test="type != null and type != '' " >
-			<if test="type == 'pre' " >
-			AND SYSDATE() BETWEEN SYSDATE() <![CDATA[ < ]]> A.END_APPLY_DATE
-			</if>
-			<if test="type == 'ing' " >
-			AND SYSDATE() BETWEEN A.START_APPLY_DATE AND A.END_APPLY_DATE
-			</if>
-		</if>
-	</select>
 </mapper>
