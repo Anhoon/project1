@@ -32,7 +32,7 @@
 		    AND FILE_TYPE = #{searchKeyWord}
 		</if>
 		<![CDATA[
-				ORDER BY CREATED_ON DESC
+				ORDER BY CREATED_ON ASC
 					) X
 		]]>	
 	</select>
