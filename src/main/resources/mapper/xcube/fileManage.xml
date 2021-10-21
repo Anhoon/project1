@@ -14,7 +14,8 @@
 						   FILE_NAME,
 						   FILE_TYPE,
 						   FILE_DESCRIPT,
-						   ATTATCH_FILE_OBID
+						   ATTATCH_FILE_OBID,
+						   FILE_LIST_TYPE
 					  FROM FILE_LIST_FOR_EVENT
 					 WHERE 1=1
 		]]>
@@ -26,6 +27,9 @@
 		</if>
 		<if test="searchKey == 'fileType'">
 		    AND FILE_TYPE = #{searchKeyWord}
+		</if>
+		<if test="searchKey == 'fileListType'">
+		    AND FILE_LIST_TYPE = #{searchKeyWord}
 		</if>
 		<if test="searchKey == 'fileName'">
 		    AND FILE_NAME LIKE CONCAT('%',#{searchKeyWord},'%')
@@ -43,7 +47,8 @@
 			   FILE_NAME,
 			   FILE_TYPE,
 			   FILE_DESCRIPT,
-			   ATTATCH_FILE_OBID
+			   ATTATCH_FILE_OBID,
+			   FILE_LIST_TYPE
 		  FROM FILE_LIST_FOR_EVENT
 		 WHERE OBID = #{obid}
 	</select>
@@ -57,7 +62,8 @@
 			FILE_NAME,
 			FILE_TYPE,
 			FILE_DESCRIPT,
-			ATTATCH_FILE_OBID
+			ATTATCH_FILE_OBID,
+			FILE_LIST_TYPE
 		)
 		VALUES 
 		(
@@ -67,7 +73,8 @@
 			#{fileName},
 			#{fileType},
 			#{fileDescript},
-			#{attatchFileObid}
+			#{attatchFileObid},
+			#{fileListType}
 		)
 	</insert>
 
@@ -77,7 +84,8 @@
 		       FILE_NAME = #{fileName},
 			   FILE_TYPE = #{fileType},
 			   FILE_DESCRIPT = #{fileDescript},
-			   ATTATCH_FILE_OBID = #{attatchFileObid}
+			   ATTATCH_FILE_OBID = #{attatchFileObid},
+			   FILE_LIST_TYPE = #{fileListType}
 		 WHERE OBID = #{obid}
 	</update>
 
