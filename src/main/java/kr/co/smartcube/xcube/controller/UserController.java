@@ -142,7 +142,7 @@ public class UserController {
     @GetMapping("/findUser/{name}")
     public ResponseEntity<CommonResult> findUser(@PathVariable String name) throws Exception {
         Map<String,Object> paramMap = new HashMap<String,Object>();
-        paramMap.put("name", name);
+        paramMap.put("userName", name);
         try {
             userService.userCheck(paramMap);
             return new ResponseEntity<CommonResult>(responseService.getSuccessResult(), HttpStatus.OK);
