@@ -14,7 +14,7 @@ public class SchedulerController {
   @Autowired
   private SchedulerService schedulerService;
 
-  @Scheduled(cron = "0 1 * * * ?")
+  @Scheduled(cron = "0 0 1 * * ?")
    public void eventStateUpdate() {
       int i = schedulerService.updateEventState();
       log.info("변경완료 :::" + i);
