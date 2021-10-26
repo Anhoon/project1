@@ -190,11 +190,15 @@ public class EventService {
         if(ObjectUtils.isEmpty(map.get("email"))){
             throw new RuntimeException(name +" 행사타이틀 정보를 입력해 주세요.");
         }
-        if(!Util.dateCheck(map.get("startDate"))){
-            throw new RuntimeException(name +" 신청기간 시작일 날짜 형식이 맞지 않습니다.");
+        if(!ObjectUtils.isEmpty(map.get("startDate"))){
+            if(!Util.dateCheck(map.get("startDate"))){
+                throw new RuntimeException(name +" 신청기간 시작일 날짜 형식이 맞지 않습니다.");
+            }
         }
-        if(!Util.dateCheck(map.get("endDate"))){
-            throw new RuntimeException(name +" 신청기간 종료일 날짜 형식이 맞지 않습니다.");
+        if(!ObjectUtils.isEmpty(map.get("endDate"))){
+            if(!Util.dateCheck(map.get("endDate"))){
+                throw new RuntimeException(name +" 신청기간 종료일 날짜 형식이 맞지 않습니다.");
+            }
         }
     }   
 
