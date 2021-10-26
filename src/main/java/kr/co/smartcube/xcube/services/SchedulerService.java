@@ -17,7 +17,7 @@ public class SchedulerService {
     @Transactional
     public int updateEventState(){
         int i = schedulerDao.updateEventStatus();
-        //i = i + schedulerDao.updateParticipateStatus();
+        i = i + schedulerDao.updateParticipateStatus();
         return i;
     }
 }
