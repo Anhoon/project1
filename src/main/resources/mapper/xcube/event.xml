@@ -141,7 +141,8 @@
 			APPLY_TYPE,
 			APPLY_COUNT,
 			APPLY_FEE,
-			APPLY_FOR_OBJECT
+			APPLY_FOR_OBJECT,
+			STATUS
 		)
 		VALUES 
 		(
@@ -158,7 +159,8 @@
 			#{applyType},
 			#{applyCount},
 			#{applyFee},
-			#{applyForObject}
+			#{applyForObject},
+			#{status}
 		)
 	</insert>
 
