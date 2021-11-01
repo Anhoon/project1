@@ -74,7 +74,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET, "/api/user/findPassword/**").permitAll()
             .antMatchers(HttpMethod.GET, "/api/user/findUser/**").permitAll()
             .antMatchers(HttpMethod.GET, "/api/file/download/**").permitAll()
-            .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
+            //.anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
 
             // JwtFilter 를 addFilterBefore 로 등록했던 JwtSecurityConfig 클래스를 적용
             .and()
