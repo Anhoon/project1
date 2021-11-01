@@ -5,7 +5,7 @@ plugins {
 	id 'war'
 }
 
-group = 'kr.co.smartcube'
+group = 'kr.co.project'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 

@@ -8,7 +8,7 @@
 		<setting name="jdbcTypeForNull" value="NULL"/>-->
 	</settings>
 	<typeAliases>
-		<typeAlias alias="paramMap" type="kr.co.smartcube.xcube.util.ParamMap"/>
-		<typeAlias alias="loginVO" type="kr.co.smartcube.xcube.common.security.jwt.LoginVO"/>
+		<typeAlias alias="paramMap" type="kr.co.springboot.project.util.ParamMap"/>
+		<typeAlias alias="loginVO" type="kr.co.springboot.project.common.security.jwt.LoginVO"/>
 	</typeAliases>
 </configuration>
