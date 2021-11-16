@@ -6,7 +6,7 @@
 	<select id="selectUserList" resultType="ParamMap">
 		SELECT A.* FROM (
 			SELECT 
-				OBID,
+				USER_IDX,
 				CREATED_ON,
 				EMAIL,
 				PASSWORD,
@@ -38,7 +38,7 @@
 
 	<select id="selectUser" resultType="ParamMap">
 		SELECT 
-			OBID,
+			USER_IDX,
 			CREATED_ON,
 			EMAIL,
 			PASSWORD,

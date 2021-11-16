@@ -61,7 +61,6 @@ public class LoginController {
         try {
             String accessToken = tokenProvider.getAccessToken(request);
             String refreshToken = tokenProvider.getRefreshToken(request);
-            
             if(!StringUtils.hasLength(accessToken) || !StringUtils.hasLength(refreshToken)){
                 return new ResponseEntity<CommonResult>(responseService.getFailResult(), HttpStatus.CONFLICT);  
             }

@@ -1,1 +1,1 @@
-# xcube_api
+# project_api
